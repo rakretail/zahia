@@ -1,0 +1,576 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUH Zahia Showroom Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, onValue, push, set, remove, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfjbpGfUEzYCbKYyQi6XVt7zZ4Tp54phU",
+            authDomain: "rakretail.firebaseapp.com",
+            databaseURL: "https://rakretail-default-rtdb.firebaseio.com",
+            projectId: "rakretail",
+            storageBucket: "rakretail.firebasestorage.app",
+            messagingSenderId: "507453199562",
+            appId: "1:507453199562:web:520cf23c6baf435e5f1033"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Make database functions and the specific showroom path globally accessible
+        window.db = db;
+        window.dbRef = ref;
+        window.dbPush = push;
+        window.dbSet = set;
+        window.dbRemove = remove;
+        window.dbGet = get;
+        window.dbOnValue = onValue;
+        
+        // This ensures data stays under stores/zahia/
+        window.basePath = "stores/zahia/";
+
+        initAppLogic();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #006666; 
+            --primary-dark: #004d4d;
+            --accent: #00d2d2;
+            --bg: #f2f7f7;
+            --card-bg: #ffffff;
+            --text-main: #1a2a2a;
+            --rak-text: #1a2a2a;
+            --fujairah-color: #1a2a2a; 
+            --shadow-soft: 0 10px 30px rgba(0, 102, 102, 0.08);
+        }
+        body.dark {
+            --bg: #050a0a;
+            --card-bg: #0f1a1a;
+            --text-main: #e0f2f2;
+            --rak-text: #ffffff;
+            --primary: #00a8a8;
+            --fujairah-color: #ffffff; 
+        }
+        body { 
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg); 
+            color: var(--text-main);
+            margin: 0; padding: 15px; 
+            transition: background 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header { 
+            text-align: center; 
+            margin-bottom: 10px; 
+            position: relative; 
+            padding-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .rak-left {
+            position: absolute;
+            left: 0; top: 10px;
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--rak-text);
+            letter-spacing: -1.5px;
+        }
+        .top-controls { position: absolute; right: 0; top: 10px; display: flex; gap: 8px; }
+        .showroom-title { 
+            font-size: 2.4rem; 
+            font-weight: 800;
+            margin: 10px 0;
+            color: var(--fujairah-color); 
+            letter-spacing: -1.5px;
+        }
+        .bulletin-board {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            box-sizing: border-box;
+        }
+        .bulletin-label {
+            background: #004d4d;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .ticker-wrap { flex: 1; overflow: hidden; display: flex; align-items: center; }
+        #smart-insight {
+            display: inline-block;
+            font-weight: 500;
+            font-size: 1rem;
+            white-space: nowrap;
+            padding-left: 100%; 
+            animation: ticker 35s linear infinite; 
+        }
+        @keyframes ticker { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
+        .btn-tool {
+            width: 40px; height: 40px; border-radius: 12px; border: none;
+            background: var(--card-bg); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow-soft); color: var(--primary); font-size: 1.2rem;
+        }
+        #time { font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 800; color: var(--primary); margin: 0; letter-spacing: -1px; }
+        #date-info { font-size: 1.1rem; opacity: 0.8; font-weight: 500; margin-bottom: 15px; }
+        .peak-card {
+            background: var(--card-bg); padding: 15px; border-radius: 20px;
+            box-shadow: var(--shadow-soft); border-left: 5px solid var(--primary);
+            border-right: 5px solid var(--primary); text-align: center; width: 100%; max-width: 320px; margin: 0 auto 20px;
+            box-sizing: border-box;
+        }
+        .totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { 
+            background: var(--card-bg); padding: 20px 10px; border-radius: 25px; text-align: center; 
+            box-shadow: var(--shadow-soft); border-bottom: 6px solid var(--primary); border-top: 6px solid var(--primary);
+        }
+        .stat-card h3 { font-size: 0.9rem; margin: 0 0 5px 0; }
+        .stat-card span { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+        .executives { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 30px; }
+        .card { background: var(--card-bg); padding: 20px 10px; border-radius: 26px; box-shadow: var(--shadow-soft); text-align: center; border-bottom: 6px solid var(--primary); }
+        .controls { display: flex; align-items: center; justify-content: space-around; background: rgba(0, 102, 102, 0.05); padding: 8px; border-radius: 50px; }
+        .controls button { width: 40px; height: 40px; border: none; border-radius: 50%; background: var(--primary); color: white; cursor: pointer; font-size: 1.4rem; }
+        .chart-wrapper { background: var(--card-bg); padding: 20px; border-radius: 35px; box-shadow: var(--shadow-soft); margin-bottom: 30px; height: 400px; }
+        #adminPanel {
+            position: fixed; right: -100%; top: 0; width: 100%; max-width: 400px; 
+            height: 100vh; background: var(--card-bg); box-shadow: -20px 0 50px rgba(0,0,0,0.15);
+            transition: 0.5s ease; z-index: 1000; padding: 25px; box-sizing: border-box;
+        }
+        #adminPanel.active { right: 0; }
+        .locked { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
+        .locked-tag { color: #ff4757; font-size: 0.7rem; font-weight: 800; display: block; }
+        .footer-export { 
+            text-align: center; padding: 30px 15px; background: var(--card-bg); border-radius: 35px; 
+            box-shadow: var(--shadow-soft); margin-bottom: 40px; 
+        }
+        .footer-export h3 { margin-top: 0; }
+        .footer-export input { margin-bottom: 10px; width: 130px; }
+        @media (max-width: 768px) {
+            .rak-left { position: static; font-size: 2rem; margin-bottom: -10px; }
+            .top-controls { position: static; margin-bottom: 15px; }
+            .showroom-title { font-size: 1.8rem; }
+            .totals { grid-template-columns: 1fr; }
+            .stat-card { padding: 15px; }
+            .executives { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .executives { grid-template-columns: 1fr; }
+            .footer-export button { width: 100%; margin: 10px 0 0 0; }
+            .footer-export input { width: 40%; }
+            #time { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="rak-left">RAK</div>
+        <div class="top-controls">
+            <button class="btn-tool" onclick="toggleFullScreen()">⛶</button>
+            <button class="btn-tool" onclick="toggleDark()">🌓</button>
+            <button class="btn-tool" onclick="openAdmin()">⚙️</button>
+        </div>
+        <h2 class="showroom-title">AUH Zahia Showroom</h2>
+        
+        <div class="bulletin-board">
+            <div class="bulletin-label">Live Feed</div>
+            <div class="ticker-wrap">
+                <div id="smart-insight">Syncing performance records...</div>
+            </div>
+        </div>
+
+        <div id="datetime">
+            <h1 id="time">00:00:00</h1>
+            <div id="date-info"><span id="day"></span>, <span id="date"></span></div>
+        </div>
+    </header>
+
+    <div class="peak-card">
+        <h4 style="margin:0; font-size:0.8rem; opacity:0.6; text-transform:uppercase;">Peak Activity (30D)</h4>
+        <div id="peak-hour-val" style="font-size:1.6rem; font-weight:800; color:var(--primary);">...</div>
+    </div>
+
+    <div class="totals">
+        <div class="stat-card"><h3>Daily</h3><span id="daily">0</span></div>
+        <div class="stat-card"><h3>Weekly</h3><span id="weekly">0</span></div>
+        <div class="stat-card"><h3>Monthly</h3><span id="monthly">0</span></div>
+    </div>
+
+    <div class="executives" id="grid"></div>
+
+    <div class="chart-wrapper">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin:0; font-weight: 700;">Traffic Trends</h3>
+            <select id="viewSelector" onchange="renderChart()" style="padding:8px; border-radius:10px; border:1px solid #ddd; font-family:inherit;">
+                <option value="line">Daily Trend (Line)</option>
+                <option value="bar">Day of Week Analysis (Bar)</option>
+            </select>
+        </div>
+        <canvas id="walkinChart"></canvas>
+    </div>
+
+    <div class="footer-export">
+        <h3>Export Records</h3>
+        <input type="date" id="startDate" style="padding:10px; border-radius:10px; border:1px solid #ddd;"> 
+        <span style="font-weight:bold; margin:0 10px;">TO</span>
+        <input type="date" id="endDate" style="padding:10px; border-radius:10px; border:1px solid #ddd;">
+        <button onclick="exportData()" style="padding:12px 24px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:700; margin-left:10px;">EXPORT EXCEL</button>
+    </div>
+</div>
+
+<div id="adminPanel">
+    <h2 style="font-weight: 800; margin: 0;">Admin Tools</h2>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+        <input type="text" id="newExecName" placeholder="Name" style="flex:1; padding:10px; border-radius:10px; border:1px solid #ddd;">
+        <button onclick="addExecutive()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">ADD</button>
+    </div>
+    <div id="unifiedExecList" style="margin-top:20px; max-height: 70vh; overflow-y: auto;"></div>
+    <button onclick="closeAdmin()" style="width:100%; padding:18px; border:none; border-radius:18px; background: var(--primary); color: white; font-weight: 700; cursor: pointer; margin-top:10px;">SAVE & CLOSE</button>
+</div>
+
+<script>
+let executives = [];
+let lockedUsers = {};
+let walkinChart;
+let historyData = [];
+const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const showroomLat = 24.494089, showroomLon = 54.375722, allowedRadiusKM = 1.2;
+
+function initAppLogic() {
+    // SYNC: Point to stores/zahia/executiveList
+    window.dbOnValue(window.dbRef(window.db, window.basePath + "executiveList"), snap => {
+        const val = snap.val() || {};
+        executives = Object.values(val).sort();
+        renderGrid();
+        syncWalkins();
+    });
+
+    // SYNC: Point to stores/zahia/locks
+    window.dbOnValue(window.dbRef(window.db, window.basePath + "locks"), snap => {
+        lockedUsers = snap.val() || {};
+        executives.forEach(name => {
+            const card = document.getElementById(`card-${name}`);
+            if(card) {
+                const isLocked = lockedUsers[name] || false;
+                card.classList.toggle("locked", isLocked);
+                const label = document.getElementById(`label-${name}`);
+                label.innerHTML = isLocked ? `${name} <span class="locked-tag">OFF DUTY</span>` : name;
+            }
+        });
+    });
+}
+
+function renderGrid() {
+    const grid = document.getElementById("grid");
+    grid.innerHTML = executives.map(name => `
+        <div class="card" id="card-${name}">
+            <h3 id="label-${name}">${name}</h3>
+            <div class="controls">
+                <button onclick="update('${name}', -1)">−</button>
+                <span class="count" id="count-${name}">0</span>
+                <button onclick="update('${name}', 1)">+</button>
+            </div>
+        </div>`).join('');
+}
+
+function syncWalkins() {
+    // SYNC: Point to stores/zahia/walkins
+    window.dbOnValue(window.dbRef(window.db, window.basePath + "walkins"), snap => {
+        historyData = [];
+        let d=0, w=0, m=0;
+        const counts = {};
+        const now = new Date();
+        const startOfWeek = new Date(now); 
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        snap.forEach(child => {
+            const val = child.val(); 
+            historyData.push(val);
+            const recordDate = new Date(val.timestamp);
+            if(recordDate.toDateString() === now.toDateString()) d += val.count;
+            if(recordDate >= startOfWeek) w += val.count;
+            if(recordDate >= startOfMonth) {
+                m += val.count;
+                counts[val.executive] = (counts[val.executive] || 0) + val.count;
+            }
+        });
+
+        executives.forEach(e => {
+            const el = document.getElementById(`count-${e}`);
+            if(el) el.innerText = counts[e] || 0;
+        });
+        document.getElementById("daily").innerText = d;
+        document.getElementById("weekly").innerText = w;
+        document.getElementById("monthly").innerText = m;
+        document.getElementById("peak-hour-val").innerText = calculatePeakHour(historyData);
+        
+        updateInsights(counts, d);
+        renderChart();
+    });
+}
+
+function update(name, val) { 
+    if(lockedUsers[name]) return;
+    if (!navigator.geolocation) { alert("Geolocation not supported."); return; }
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const dist = calculateDistance(pos.coords.latitude, pos.coords.longitude, showroomLat, showroomLon);
+            if (dist <= allowedRadiusKM) {
+                // UPDATE: Pushing to stores/zahia/walkins
+                window.dbPush(window.dbRef(window.db, window.basePath + "walkins"), { 
+                    executive: name, 
+                    count: val, 
+                    timestamp: Date.now() 
+                });
+            } else {
+                alert(`Access Denied: You are ${dist.toFixed(2)}km away. You must be at AUH Zahia Showroom.`);
+            }
+        }, 
+        (err) => alert("Location Error: Please ensure GPS is ON and permission is granted."), 
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; 
+    const dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function updateInsights(monthlyCounts, dailyTotal) {
+    const insightEl = document.getElementById("smart-insight");
+    let messages = [];
+
+    const nasarJokes = [
+        `MARIAM'S RULE: If a customer smiles, they've basically bought a bathroom set. 📋`,
+        `MARIAM: "The dashboard is green, but my tea is cold. More sales please!" ☕`,
+        `MARIAM'S SECRET: She doesn't sleep, she just waits for the next Order. 🧱`,
+        `MARIAM: "If you have time to sit, you have time to sell." 🪑`,
+        `MARIAM'S RULE: No phone scrolling unless it's checking a confirmed order. 📱`,
+        `MARIAM: "Smile wider… that customer looks expensive." 😏`,
+        `MARIAM'S ALERT: Someone just walked in. Why are we still breathing normally? 🚨`,
+        `MARIAM: "Every 'just looking' is a future invoice. Act accordingly." 🧾`,
+        `MARIAM: "If they ask for discount, increase your confidence." 💼`,
+        `MARIAM: "Don't show tiles… show them their dream home." ✨`,
+        `MARIAM: "I can smell a big sale from the parking lot. Get ready!" 👃💰`
+    ];
+    messages.push(`👔          : ${nasarJokes[Math.floor(Math.random() * nasarJokes.length)]}`);
+
+    let activeExecs = executives.filter(name => !lockedUsers[name]);
+    if (activeExecs.length > 0) {
+        let sorted = [...activeExecs].sort((a, b) => (monthlyCounts[a] || 0) - (monthlyCounts[b] || 0));
+        messages.push(`🎯 SPOTLIGHT: ${sorted[0]}, you're up! Time to close a deal.`);
+    }
+
+    const teamMojo = [
+        "is out-charming the showroom lights. 💡",
+        "just drank a double espresso. Run, walk-ins! ⚡",
+        "is turning browsers into buyers like magic. 🎩",
+        "is casually closing deals in their head already. 🧠",
+        "is making every step count on the showroom floor. 👣",
+        "is in 'The Zone'. Do not disturb unless buying 1000sqm! 📈",
+        "is turning questions into quotations instantly. 🧾",
+        "is officially the Tile Whisperer of AUH Zahia SR. 🧘‍♂️"
+    ];
+
+    if (executives.length > 0) {
+        let shuffled = [...executives].sort(() => 0.5 - Math.random());
+        let selected = shuffled.slice(0, 2); 
+        selected.forEach(name => {
+            const joke = teamMojo[Math.floor(Math.random() * teamMojo.length)];
+            messages.push(`😎 ${name.toUpperCase()} ${joke}`);
+        });
+    }
+
+    if (dailyTotal > 0) messages.push(`🚀 POWER TEAM: ${dailyTotal} customers served today.`);
+    let topExec = Object.keys(monthlyCounts).reduce((a, b) => (monthlyCounts[a] || 0) > (monthlyCounts[b] || 0) ? a : b, "");
+    if (topExec) messages.push(`👑 TOP GUN: ${topExec} is ruling the leaderboard!`);
+
+    insightEl.innerText = messages.join("        |        ") + "        |        ⚡ TEAM AUH ZAHIA: CONVERTING 'MAYBES' INTO 'INVOICES'.        |        ";
+}
+
+function calculatePeakHour(data) {
+    const hourCounts = Array(24).fill(0);
+    const thirtyDaysAgo = Date.now() - (30*86400000);
+    data.forEach(e => { 
+        if(e.timestamp > thirtyDaysAgo && e.count > 0) 
+            hourCounts[new Date(e.timestamp).getHours()] += e.count; 
+    });
+    let maxHr = 0, maxV = 0;
+    hourCounts.forEach((v, h) => { if(v > maxV) { maxV = v; maxHr = h; } });
+    return maxV === 0 ? "No Data" : `${maxHr < 10 ? '0'+maxHr : maxHr}:00 - ${maxHr+1 < 10 ? '0'+(maxHr+1) : maxHr+1}:00`;
+}
+
+function renderChart() {
+    const type = document.getElementById("viewSelector").value;
+    const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+    const isDark = document.body.classList.contains('dark');
+    const now = new Date();
+    let labels = [], data = [];
+
+    if(type === 'line') {
+        labels = Array.from({length: now.getDate()}, (_, i) => i + 1);
+        const dailyMap = {};
+        historyData.forEach(h => {
+            const dt = new Date(h.timestamp);
+            if(dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear()) {
+                dailyMap[dt.getDate()] = (dailyMap[dt.getDate()] || 0) + h.count;
+            }
+        });
+        data = labels.map(day => dailyMap[day] || 0);
+    } else {
+        labels = dayNames;
+        const weekMap = [0,0,0,0,0,0,0]; 
+        historyData.forEach(h => {
+            const dt = new Date(h.timestamp);
+            if(dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear()) {
+                weekMap[dt.getDay()] += h.count;
+            }
+        });
+        data = weekMap;
+    }
+
+    if (walkinChart) walkinChart.destroy();
+    walkinChart = new Chart(document.getElementById('walkinChart'), {
+        type: type === 'line' ? 'line' : 'bar',
+        data: { 
+            labels: labels, 
+            datasets: [{ 
+                label: 'Visitors', 
+                data: data, 
+                borderColor: primary, 
+                backgroundColor: type === 'line' ? 'rgba(0,168,168,0.1)' : primary, 
+                fill: true, tension: 0.4, borderRadius: type === 'bar' ? 8 : 0,
+                pointBackgroundColor: primary, pointRadius: 4
+            }] 
+        },
+        options: { 
+            responsive: true, maintainAspectRatio: false, 
+            plugins: { legend: { display: false } }, 
+            scales: { 
+                y: { beginAtZero: true, grid: { color: isDark ? '#1a2b2b' : '#f0f0f0' }, ticks: { stepSize: 1 } }, 
+                x: { grid: { display: false } } 
+            } 
+        }
+    });
+}
+
+function updateDateTime(){
+    const now = new Date();
+    document.getElementById('day').innerText = now.toLocaleDateString('en-US', { weekday: 'long' });
+    document.getElementById('date').innerText = now.toLocaleDateString('en-GB');
+    document.getElementById('time').innerText = now.toLocaleTimeString([], { hour12: false });
+}
+setInterval(updateDateTime, 1000);
+
+function toggleDark(){ document.body.classList.toggle("dark"); setTimeout(renderChart, 50); }
+function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+function openAdmin() { if(prompt("PIN:") === "7255") { renderAdmin(); document.getElementById("adminPanel").classList.add("active"); } }
+function closeAdmin() { document.getElementById("adminPanel").classList.remove("active"); }
+
+function renderAdmin() {
+    const list = document.getElementById("unifiedExecList");
+    list.innerHTML = executives.map(name => {
+        const locked = lockedUsers[name] || false;
+        return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; background:rgba(0,102,102,0.05); padding:12px; border-radius:15px;">
+            <span style="font-weight:600;">${name}</span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="toggleLock('${name}')" style="background:${locked ? '#ff4757' : '#006666'}; color:white; border:none; padding:6px 12px; border-radius:8px;">${locked ? 'LOCKED' : 'ACTIVE'}</button>
+                <button onclick="deleteExecutive('${name}')" style="background:rgba(255,71,87,0.1); color:#ff4757; border:none; padding:6px 12px; border-radius:8px;">Remove</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function addExecutive() { 
+    const input = document.getElementById("newExecName"); 
+    const name = input.value.trim(); 
+    if(name && !executives.includes(name)) {
+        // UPDATE: Pointing to stores/zahia/executiveList
+        window.dbPush(window.dbRef(window.db, window.basePath + "executiveList"), name).then(() => { 
+            input.value = ""; 
+            renderAdmin(); 
+        }); 
+    }
+}
+
+async function deleteExecutive(name) { 
+    if(confirm(`Delete ${name}?`)) { 
+        // UPDATE: Looking within stores/zahia/executiveList
+        const snapshot = await window.dbGet(window.dbRef(window.db, window.basePath + "executiveList"));
+        snapshot.forEach(c => { 
+            if(c.val() === name) window.dbRemove(c.ref); 
+        }); 
+        // UPDATE: Removing from stores/zahia/locks
+        window.dbRemove(window.dbRef(window.db, window.basePath + "locks/" + name));
+    } 
+}
+
+function toggleLock(name) { 
+    // UPDATE: Setting within stores/zahia/locks
+    window.dbSet(window.dbRef(window.db, window.basePath + "locks/" + name), !lockedUsers[name]); 
+    renderAdmin(); 
+}
+
+function exportData() {
+    const s = document.getElementById("startDate").value; 
+    const e = document.getElementById("endDate").value;
+    if(!s || !e) return alert("Please select both Start and End dates");
+
+    const rows = [["Executive", "Count", "Date", "Time"]];
+    const filteredRecords = historyData.filter(d => {
+        const dt = new Date(d.timestamp);
+        const year = dt.getFullYear();
+        const month = String(dt.getMonth() + 1).padStart(2, '0');
+        const day = String(dt.getDate()).padStart(2, '0');
+        const localDateStr = `${year}-${month}-${day}`;
+        return localDateStr >= s && localDateStr <= e;
+    });
+
+    if(filteredRecords.length === 0) return alert("No records found for the selected range.");
+
+    filteredRecords.forEach(d => {
+        const dt = new Date(d.timestamp);
+        rows.push([d.executive, d.count, dt.toLocaleDateString('en-GB'), dt.toLocaleTimeString([], { hour12: false })]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Walkins");
+    XLSX.writeFile(wb, `Alain_Report_${s}_to_${e}.xlsx`);
+}
+</script>
+
+<footer style="text-align:center; padding:20px; color:#888; font-size:13px; background: var(--card-bg); border-radius: 0 0 35px 35px;"> 
+      © 2026 Hesper. All rights reserved.
+</footer>
+</body>
+</html>
