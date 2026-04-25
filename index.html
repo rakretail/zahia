@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUH Zahia Showroom Tracker</title>
+    <title>Al Zahia Showroom Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script type="module">
@@ -33,10 +33,15 @@
         window.dbGet = get;
         window.dbOnValue = onValue;
         
+        // ============================================================
+        //  NEW: STORE_ID constant — fixed per showroom installation
+        // ============================================================
+        window.STORE_ID = "zahia";
         // This ensures data stays under stores/zahia/
-        window.basePath = "stores/zahia/";
+        window.basePath = "stores/" + window.STORE_ID + "/";
 
-        initAppLogic();
+        // Boot the auth/PIN layer first; it will call initAppLogic() after login
+        bootAuth();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -51,7 +56,7 @@
             --card-bg: #ffffff;
             --text-main: #1a2a2a;
             --rak-text: #1a2a2a;
-            --fujairah-color: #1a2a2a; 
+            --Zahia-color: #1a2a2a; 
             --shadow-soft: 0 10px 30px rgba(0, 102, 102, 0.08);
         }
         body.dark {
@@ -60,7 +65,7 @@
             --text-main: #e0f2f2;
             --rak-text: #ffffff;
             --primary: #00a8a8;
-            --fujairah-color: #ffffff; 
+            --Zahia-color: #ffffff; 
         }
         body { 
             font-family: 'Poppins', sans-serif;
@@ -93,41 +98,102 @@
             font-size: 2.4rem; 
             font-weight: 800;
             margin: 10px 0;
-            color: var(--fujairah-color); 
+            color: var(--Zahia-color); 
             letter-spacing: -1.5px;
         }
         .bulletin-board {
             width: 100%;
-            background: var(--primary);
+            background: linear-gradient(120deg, #004d4d 0%, var(--primary) 35%, #00897b 70%, #00b894 100%);
+            background-size: 200% 200%;
+            animation: feed-gradient 15s ease infinite;
             color: white;
-            padding: 10px;
-            border-radius: 15px;
+            padding: 12px 14px;
+            border-radius: 18px;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             overflow: hidden;
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 8px 24px rgba(0, 102, 102, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
             box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.12);
+            position: relative;
+        }
+        .bulletin-board::before {
+            content: '';
+            position: absolute; left: 0; top: 0; bottom: 0; width: 60px;
+            background: linear-gradient(90deg, rgba(0,77,77,1), rgba(0,77,77,0));
+            z-index: 5; pointer-events: none;
+        }
+        .bulletin-board::after {
+            content: '';
+            position: absolute; right: 0; top: 0; bottom: 0; width: 40px;
+            background: linear-gradient(270deg, rgba(0,184,148,0.6), rgba(0,184,148,0));
+            z-index: 5; pointer-events: none;
+        }
+        @keyframes feed-gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         .bulletin-label {
-            background: #004d4d;
-            padding: 5px 12px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            padding: 6px 12px;
+            border-radius: 10px;
             font-weight: 800;
             font-size: 0.7rem;
             text-transform: uppercase;
             z-index: 10;
             white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255,255,255,0.15);
+            margin-right: 10px;
+        }
+        .live-dot {
+            display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+            background: #ff3b3b; box-shadow: 0 0 8px #ff3b3b;
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
         }
         .ticker-wrap { flex: 1; overflow: hidden; display: flex; align-items: center; }
         #smart-insight {
             display: inline-block;
-            font-weight: 500;
-            font-size: 1rem;
+            font-weight: 600;
+            font-size: 1.02rem;
             white-space: nowrap;
             padding-left: 100%; 
-            animation: ticker 35s linear infinite; 
+            animation: ticker 240s linear infinite;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+            letter-spacing: 0.2px;
         }
+        #smart-insight:hover { animation-play-state: paused; }
+        .feed-sep {
+            display: inline-block;
+            margin: 0 18px;
+            opacity: 0.55;
+            font-size: 0.85rem;
+            transform: translateY(-1px);
+        }
+        .feed-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
+            font-weight: 800;
+            font-size: 0.78rem;
+            margin-right: 6px;
+            letter-spacing: 0.5px;
+        }
+        .feed-pill.gold { background: linear-gradient(135deg, #ffd86b, #f7971e); color: #4a2900; border-color: rgba(255,255,255,0.4); }
+        .feed-pill.green { background: linear-gradient(135deg, #00d68f, #00a86b); }
+        .feed-pill.red   { background: linear-gradient(135deg, #ff6b6b, #ee0979); }
+        .feed-pill.blue  { background: linear-gradient(135deg, #4facfe, #00c6fb); }
+        .feed-pill.purple{ background: linear-gradient(135deg, #b06ab3, #4568dc); }
         @keyframes ticker { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
         .btn-tool {
             width: 40px; height: 40px; border-radius: 12px; border: none;
@@ -136,31 +202,519 @@
         }
         #time { font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 800; color: var(--primary); margin: 0; letter-spacing: -1px; }
         #date-info { font-size: 1.1rem; opacity: 0.8; font-weight: 500; margin-bottom: 15px; }
+        /* ============================================================
+           ENHANCED: Peak Activity card — gradient hero look with
+           primary window, sub-metrics, and a busiest day-of-week badge.
+           ============================================================ */
+        /* Side-by-side row containing Peak Activity + Monthly Leaderboard. */
+        .peak-and-board {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 18px;
+            margin-bottom: 22px;
+            align-items: stretch;
+        }
+        @media (max-width: 820px) {
+            .peak-and-board { grid-template-columns: 1fr; }
+        }
+
+        /* Compact horizontal banner: icon + text on the left, meta pills on the right.
+           Drops the centered hero look — no wasted side gutters, ~40% less height. */
         .peak-card {
-            background: var(--card-bg); padding: 15px; border-radius: 20px;
-            box-shadow: var(--shadow-soft); border-left: 5px solid var(--primary);
-            border-right: 5px solid var(--primary); text-align: center; width: 100%; max-width: 320px; margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(120deg, #004d4d 0%, #006666 40%, #00897b 75%, #00b894 100%);
+            background-size: 220% 220%;
+            animation: peak-shimmer 18s ease infinite;
+            color: #ffffff;
+            padding: 14px 18px;
+            border-radius: 18px;
+            box-shadow: 0 10px 26px rgba(0,102,102,0.28), inset 0 1px 0 rgba(255,255,255,0.18);
+            width: 100%;
+            margin: 0;
             box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
         }
-        .totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .peak-card::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 12% 0%, rgba(255,255,255,0.22), transparent 50%),
+                        radial-gradient(circle at 95% 100%, rgba(0,255,212,0.22), transparent 55%);
+            pointer-events: none;
+        }
+        @keyframes peak-shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .peak-card .peak-left {
+            display: flex; align-items: center; gap: 14px;
+            position: relative; z-index: 2;
+            flex: 1 1 280px; min-width: 0;
+        }
+        .peak-card .peak-icon-circle {
+            width: 46px; height: 46px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.28);
+            font-size: 1.4rem; flex-shrink: 0;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.25);
+            backdrop-filter: blur(4px);
+        }
+        .peak-card .peak-text { min-width: 0; }
+        .peak-card .peak-head-tag {
+            display: inline-block;
+            font-size: 0.62rem; font-weight: 800; letter-spacing: 1.6px;
+            text-transform: uppercase; opacity: 0.85;
+            background: rgba(0,0,0,0.22);
+            padding: 3px 10px; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 4px;
+        }
+        .peak-card .peak-window {
+            font-size: clamp(1.05rem, 3vw, 1.45rem);
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.3px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.22);
+            line-height: 1.15;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .peak-card .peak-sub {
+            font-size: 0.74rem; font-weight: 600; opacity: 0.88;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .peak-card .peak-meta {
+            display: flex; flex-wrap: wrap; justify-content: flex-end;
+            gap: 6px;
+            position: relative; z-index: 2;
+            flex: 0 1 auto;
+        }
+        .peak-card .peak-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.22);
+            padding: 5px 10px; border-radius: 999px;
+            font-size: 0.72rem; font-weight: 700;
+            backdrop-filter: blur(6px);
+            white-space: nowrap;
+        }
+        .peak-card .peak-pill strong { font-weight: 800; letter-spacing: 0.3px; }
+        @media (max-width: 560px) {
+            .peak-card { padding: 12px 14px; gap: 10px; }
+            .peak-card .peak-meta { justify-content: flex-start; width: 100%; }
+            .peak-card .peak-window { white-space: normal; }
+        }
+
+        /* ============================================================
+           Monthly Leaderboard — ranks executives by this month's
+           walk-ins with medals + trend vs last month.
+           ============================================================ */
+        .leaderboard-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 14px 16px 12px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(0,102,102,0.08);
+            margin: 0;
+            display: flex; flex-direction: column;
+            min-width: 0;
+        }
+        .leaderboard-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 10px; gap: 10px; flex-wrap: wrap;
+        }
+        .leaderboard-list {
+            position: relative;
+            transition: opacity 0.35s ease;
+            flex: 1 1 auto;
+        }
+        .leaderboard-list.is-fading { opacity: 0; }
+        .lb-pages {
+            display: flex; justify-content: center; gap: 6px;
+            margin-top: 10px; min-height: 8px;
+        }
+        .lb-pages span {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: rgba(0,102,102,0.18);
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+        .lb-pages span.active {
+            background: var(--primary);
+            transform: scale(1.25);
+        }
+        body.dark .lb-pages span { background: rgba(255,255,255,0.18); }
+        .leaderboard-title {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 1rem; font-weight: 800;
+            color: var(--primary);
+        }
+        .leaderboard-title .lb-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 10px;
+            background: linear-gradient(135deg, #f7971e, #ffd86b);
+            color: #fff; font-size: 0.95rem;
+            box-shadow: 0 6px 14px rgba(247,151,30,0.35);
+        }
+        .leaderboard-sub {
+            font-size: 0.72rem; opacity: 0.6; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .lb-rows { display: flex; flex-direction: column; gap: 6px; }
+        .lb-row {
+            display: grid;
+            grid-template-columns: 30px minmax(0, 1fr) auto auto;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 10px;
+            border-radius: 12px;
+            background: rgba(0,102,102,0.04);
+            border: 1px solid rgba(0,102,102,0.06);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .lb-row:hover { transform: translateX(2px); box-shadow: 0 6px 14px rgba(0,102,102,0.12); }
+        .lb-row.is-me { background: rgba(0,168,168,0.10); border-color: rgba(0,168,168,0.30); }
+        .lb-rank {
+            display: flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 9px;
+            font-weight: 800; font-size: 0.82rem;
+            background: rgba(0,102,102,0.10); color: var(--primary);
+        }
+        .lb-rank.is-1 { background: linear-gradient(135deg, #ffd86b, #f7971e); color: #fff; box-shadow: 0 4px 10px rgba(247,151,30,0.35); font-size: 1rem; }
+        .lb-rank.is-2 { background: linear-gradient(135deg, #e2e8f0, #94a3b8); color: #fff; box-shadow: 0 4px 10px rgba(148,163,184,0.35); font-size: 1rem; }
+        .lb-rank.is-3 { background: linear-gradient(135deg, #f4a978, #c0703a); color: #fff; box-shadow: 0 4px 10px rgba(192,112,58,0.35); font-size: 1rem; }
+        .lb-name {
+            font-weight: 700; font-size: 0.92rem;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .lb-name .you-tag {
+            display: inline-block; margin-left: 6px;
+            font-size: 0.6rem; font-weight: 800; letter-spacing: 1px;
+            color: var(--primary); background: rgba(0,168,168,0.15);
+            padding: 2px 6px; border-radius: 6px; text-transform: uppercase;
+            vertical-align: middle;
+        }
+        .lb-count {
+            font-weight: 800; font-size: 1.05rem; color: var(--primary);
+            min-width: 36px; text-align: right;
+        }
+        .lb-trend {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 9px; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 800;
+            min-width: 56px; justify-content: center;
+        }
+        .lb-trend.up   { background: rgba(0,196,106,0.14); color: #00925a; }
+        .lb-trend.down { background: rgba(255,71,87,0.14);  color: #d8344a; }
+        .lb-trend.flat { background: rgba(120,120,120,0.12); color: #6b7280; }
+        .lb-empty {
+            text-align: center; padding: 22px 10px;
+            opacity: 0.55; font-size: 0.85rem; font-weight: 600;
+        }
+        body.dark .leaderboard-card { border-color: rgba(255,255,255,0.06); }
+        body.dark .lb-row { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.06); }
+        body.dark .lb-row.is-me { background: rgba(0,168,168,0.18); border-color: rgba(0,168,168,0.40); }
+
+        /* ============================================================
+           ENHANCED: Daily / Weekly / Monthly stat cards.
+           Each gets its own accent color, icon, and animated number.
+           ============================================================ */
+        .totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
         .stat-card { 
-            background: var(--card-bg); padding: 20px 10px; border-radius: 25px; text-align: center; 
-            box-shadow: var(--shadow-soft); border-bottom: 6px solid var(--primary); border-top: 6px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+            background: var(--card-bg);
+            padding: 20px 14px 18px;
+            border-radius: 24px;
+            text-align: center; 
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(0,102,102,0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-        .stat-card h3 { font-size: 0.9rem; margin: 0 0 5px 0; }
-        .stat-card span { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
-        .executives { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 30px; }
-        .card { background: var(--card-bg); padding: 20px 10px; border-radius: 26px; box-shadow: var(--shadow-soft); text-align: center; border-bottom: 6px solid var(--primary); }
-        .controls { display: flex; align-items: center; justify-content: space-around; background: rgba(0, 102, 102, 0.05); padding: 8px; border-radius: 50px; }
-        .controls button { width: 40px; height: 40px; border: none; border-radius: 50%; background: var(--primary); color: white; cursor: pointer; font-size: 1.4rem; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(0,102,102,0.18); }
+        .stat-card::before {
+            content: '';
+            position: absolute; left: 0; right: 0; top: 0;
+            height: 5px;
+            background: var(--accent-grad, linear-gradient(90deg, var(--primary), var(--accent)));
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute; right: -30px; bottom: -30px;
+            width: 110px; height: 110px; border-radius: 50%;
+            background: var(--accent-grad, linear-gradient(135deg, rgba(0,102,102,0.12), rgba(0,210,210,0.08)));
+            opacity: 0.25;
+            pointer-events: none;
+        }
+        .stat-card .stat-icon-wrap {
+            width: 44px; height: 44px;
+            margin: 0 auto 10px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--accent-grad, linear-gradient(135deg, var(--primary), var(--accent)));
+            color: #ffffff; font-size: 1.15rem; font-weight: 800;
+            box-shadow: 0 8px 20px rgba(0,102,102,0.25);
+            position: relative; z-index: 1;
+        }
+        .stat-card h3 {
+            font-size: 0.72rem; margin: 0 0 4px 0;
+            font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+            opacity: 0.65;
+            position: relative; z-index: 1;
+        }
+        .stat-card .stat-num {
+            font-size: clamp(2rem, 5vw, 2.6rem); font-weight: 800;
+            color: var(--accent-color, var(--primary));
+            display: block;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            position: relative; z-index: 1;
+        }
+        .stat-card .stat-foot {
+            font-size: 0.68rem; font-weight: 700;
+            opacity: 0.55; text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 6px;
+            position: relative; z-index: 1;
+        }
+        .stat-card.daily   { --accent-color: #00897b; --accent-grad: linear-gradient(135deg, #00897b, #00d2c2); }
+        .stat-card.weekly  { --accent-color: #006666; --accent-grad: linear-gradient(135deg, #004d4d, #00a8a8); }
+        .stat-card.monthly { --accent-color: #f7971e; --accent-grad: linear-gradient(135deg, #f7971e, #ffd86b); }
+        body.dark .stat-card { border-color: rgba(255,255,255,0.06); }
+        .executives { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 30px; }
+        .card {
+            background: var(--card-bg);
+            padding: 18px 12px 14px;
+            border-radius: 26px;
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            border-bottom: 6px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            min-height: 168px;
+        }
+        .card h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.2;
+            height: 2.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 4px;
+            overflow: hidden;
+            word-break: break-word;
+        }
+        .card-status {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px 0 8px;
+        }
+        .controls { display: flex; align-items: center; justify-content: space-around; background: rgba(0, 102, 102, 0.05); padding: 8px; border-radius: 50px; margin-top: auto; }
+        .controls button { width: 40px; height: 40px; border: none; border-radius: 50%; background: var(--primary); color: white; cursor: pointer; font-size: 1.4rem; flex-shrink: 0; }
+        .controls .count { flex: 1; font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+
+        /* ---------- Manager-only Activity Log ---------- */
+        #activityLog {
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: var(--shadow-soft);
+            padding: 18px 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary);
+        }
+        #activityLog .al-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+        }
+        #activityLog .al-title {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 1rem; font-weight: 800; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        #activityLog .al-title .live-dot { width: 9px; height: 9px; }
+        #activityLog .al-meta {
+            font-size: 0.75rem; opacity: 0.65; font-weight: 600;
+        }
+        #activityLog .al-pill-row { display: flex; gap: 6px; flex-wrap: wrap; }
+        #activityLog .al-filter {
+            background: rgba(0,102,102,0.06);
+            border: 1px solid rgba(0,102,102,0.15);
+            color: var(--primary);
+            padding: 4px 12px; border-radius: 999px;
+            cursor: pointer; font-weight: 700; font-size: 0.72rem;
+            text-transform: uppercase; font-family: inherit;
+            transition: all 0.15s;
+        }
+        #activityLog .al-filter.active {
+            background: var(--primary); color: white;
+        }
+        #activityLog .al-list {
+            max-height: 320px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 8px;
+            padding-right: 4px;
+        }
+        #activityLog .al-list::-webkit-scrollbar { width: 6px; }
+        #activityLog .al-list::-webkit-scrollbar-thumb {
+            background: rgba(0,102,102,0.3); border-radius: 6px;
+        }
+        .al-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(0,102,102,0.04);
+            border-radius: 14px;
+            border-left: 3px solid var(--primary);
+            font-size: 0.88rem;
+        }
+        .al-row.minus { border-left-color: #ff4757; background: rgba(255,71,87,0.05); }
+        .al-row.proxy { background: linear-gradient(90deg, rgba(255,216,107,0.18), rgba(0,102,102,0.04)); border-left-color: #f7971e; }
+        .al-icon {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--primary); color: white; font-weight: 800; font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .al-row.minus .al-icon { background: #ff4757; }
+        .al-row.proxy .al-icon { background: linear-gradient(135deg, #f7971e, #ffd86b); color: #4a2900; }
+        .al-text { line-height: 1.35; min-width: 0; }
+        .al-text .al-who { font-weight: 800; color: var(--text); }
+        .al-text .al-action { opacity: 0.85; }
+        .al-text .al-target { font-weight: 800; color: var(--primary); }
+        .al-text .al-tag {
+            display: inline-block; margin-left: 6px;
+            background: linear-gradient(135deg, #f7971e, #ffd86b);
+            color: #4a2900; font-size: 0.62rem; font-weight: 800;
+            padding: 1px 6px; border-radius: 999px;
+            letter-spacing: 0.5px; vertical-align: middle;
+        }
+        .al-time {
+            text-align: right; font-size: 0.72rem; opacity: 0.65;
+            font-weight: 700; white-space: nowrap;
+            display: flex; flex-direction: column; align-items: flex-end;
+        }
+        .al-time .al-rel { color: var(--primary); font-size: 0.7rem; }
+        .al-empty {
+            text-align: center; padding: 30px 10px;
+            opacity: 0.5; font-style: italic; font-size: 0.9rem;
+        }
         .chart-wrapper { background: var(--card-bg); padding: 20px; border-radius: 35px; box-shadow: var(--shadow-soft); margin-bottom: 30px; height: 400px; }
+
+        /* ============================================================
+           Shift Heatmap — day-of-week × hour grid showing walk-in
+           intensity over the last 30 days. Helps managers spot every
+           busy/quiet pocket at a glance, not just the single peak hour.
+           ============================================================ */
+        .heatmap-card {
+            background: var(--card-bg);
+            padding: 22px 22px 18px;
+            border-radius: 28px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary);
+        }
+        .heatmap-head {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+        }
+        .heatmap-title {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 1rem; font-weight: 800; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .heatmap-title .hm-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 9px;
+            background: linear-gradient(135deg, var(--primary), #00b894);
+            color: white; font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,102,102,0.25);
+        }
+        .heatmap-sub { font-size: 0.78rem; opacity: 0.65; font-weight: 600; }
+        .heatmap-scroll { overflow-x: auto; padding-bottom: 6px; }
+        .heatmap-scroll::-webkit-scrollbar { height: 6px; }
+        .heatmap-scroll::-webkit-scrollbar-thumb { background: rgba(0,102,102,0.3); border-radius: 6px; }
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 56px repeat(24, minmax(22px, 1fr));
+            gap: 3px;
+            min-width: 640px;
+        }
+        .heatmap-grid .hm-corner { }
+        .heatmap-grid .hm-hour-label,
+        .heatmap-grid .hm-day-label {
+            font-size: 0.65rem; font-weight: 700; opacity: 0.55;
+            display: flex; align-items: center; justify-content: center;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .heatmap-grid .hm-day-label {
+            justify-content: flex-start; padding-left: 4px;
+            font-size: 0.72rem; opacity: 0.75;
+        }
+        .heatmap-grid .hm-cell {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            min-height: 22px;
+            border-radius: 6px;
+            background: rgba(0,102,102,0.06);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            cursor: default;
+        }
+        body.dark .heatmap-grid .hm-cell { background: rgba(255,255,255,0.04); }
+        .heatmap-grid .hm-cell[data-i="1"] { background: rgba(0,168,168,0.18); }
+        .heatmap-grid .hm-cell[data-i="2"] { background: rgba(0,168,168,0.32); }
+        .heatmap-grid .hm-cell[data-i="3"] { background: rgba(0,150,150,0.50); }
+        .heatmap-grid .hm-cell[data-i="4"] { background: rgba(0,124,124,0.72); }
+        .heatmap-grid .hm-cell[data-i="5"] {
+            background: linear-gradient(135deg, #006666, #f7971e);
+            box-shadow: 0 2px 8px rgba(247,151,30,0.35);
+        }
+        .heatmap-grid .hm-cell:hover {
+            transform: scale(1.18);
+            box-shadow: 0 4px 14px rgba(0,102,102,0.35);
+            z-index: 2;
+        }
+        .heatmap-legend {
+            display: flex; align-items: center; justify-content: flex-end;
+            gap: 8px; margin-top: 12px;
+            font-size: 0.7rem; font-weight: 700; opacity: 0.7;
+        }
+        .heatmap-legend .lg-bar {
+            display: inline-flex; gap: 3px;
+        }
+        .heatmap-legend .lg-bar span {
+            width: 14px; height: 14px; border-radius: 4px;
+        }
+        .heatmap-empty {
+            text-align: center; padding: 28px 10px;
+            opacity: 0.5; font-style: italic; font-size: 0.9rem;
+        }
         #adminPanel {
             position: fixed; right: -100%; top: 0; width: 100%; max-width: 400px; 
             height: 100vh; background: var(--card-bg); box-shadow: -20px 0 50px rgba(0,0,0,0.15);
             transition: 0.5s ease; z-index: 1000; padding: 25px; box-sizing: border-box;
         }
         #adminPanel.active { right: 0; }
-        .locked { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
+        /* When a card is locked (Off Duty), dim it but keep the manager's
+           ACTIVE/OFF-DUTY toggle clickable so they can re-activate from the
+           card itself. Only the +/- counter controls become non-interactive. */
+        .locked { opacity: 0.7; filter: grayscale(0.5); }
+        .locked .controls { opacity: 0.4; pointer-events: none; }
         .locked-tag { color: #ff4757; font-size: 0.7rem; font-weight: 800; display: block; }
         .footer-export { 
             text-align: center; padding: 30px 15px; background: var(--card-bg); border-radius: 35px; 
@@ -183,9 +737,193 @@
             .footer-export input { width: 40%; }
             #time { font-size: 3rem; }
         }
+
+        /* ============================================================
+           NEW STYLES: PIN lock overlay, modals, exec picker, change-pin
+           ============================================================ */
+        .pin-overlay {
+            position: fixed; inset: 0; z-index: 5000;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+        }
+        .pin-overlay.hidden { display: none; }
+        .pin-card {
+            width: 100%; max-width: 420px;
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 32px 26px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .pin-card h2 {
+            margin: 0 0 6px; font-weight: 800; font-size: 1.6rem;
+            color: var(--text-main); letter-spacing: -0.5px;
+        }
+        .pin-card p.sub {
+            margin: 0 0 22px; opacity: 0.7; font-size: 0.92rem;
+        }
+        .pin-input {
+            width: 100%; box-sizing: border-box;
+            padding: 16px; font-size: 1.6rem; text-align: center;
+            font-weight: 700; letter-spacing: 12px;
+            border-radius: 16px; border: 2px solid rgba(0,102,102,0.15);
+            background: rgba(0,102,102,0.04); color: var(--text-main);
+            font-family: inherit;
+            outline: none; transition: border-color 0.2s, background 0.2s;
+        }
+        .pin-input:focus { border-color: var(--primary); background: var(--card-bg); }
+        .pin-btn {
+            width: 100%; margin-top: 14px; padding: 16px;
+            background: var(--primary); color: white; border: none;
+            border-radius: 16px; font-weight: 800; font-size: 1rem;
+            cursor: pointer; font-family: inherit; letter-spacing: 0.5px;
+        }
+        .pin-btn.secondary {
+            background: transparent; color: var(--primary);
+            border: 2px solid rgba(0,102,102,0.2);
+        }
+        .pin-error {
+            color: #ff4757; font-weight: 600; font-size: 0.85rem;
+            margin-top: 10px; min-height: 18px;
+        }
+        .pin-store-tag {
+            display: inline-block; font-size: 0.7rem; font-weight: 700;
+            background: rgba(0,102,102,0.1); color: var(--primary);
+            padding: 4px 10px; border-radius: 999px;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+        .exec-picker-list {
+            display: flex; flex-direction: column; gap: 8px;
+            max-height: 280px; overflow-y: auto; margin-top: 14px;
+            text-align: left;
+        }
+        .exec-picker-list button {
+            width: 100%; padding: 14px 16px; border: 2px solid rgba(0,102,102,0.15);
+            background: var(--card-bg); color: var(--text-main);
+            border-radius: 14px; font-weight: 600; font-size: 0.95rem;
+            cursor: pointer; font-family: inherit;
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        }
+        .exec-picker-list button:hover { border-color: var(--primary); background: rgba(0,102,102,0.04); }
+        .exec-picker-list .role-tag {
+            font-size: 0.7rem; background: rgba(0,102,102,0.15); color: var(--primary);
+            padding: 3px 10px; border-radius: 999px; font-weight: 800; letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+        .session-bar {
+            display: flex; gap: 10px; justify-content: center; align-items: center;
+            margin: 30px auto 20px; padding: 18px;
+            background: var(--card-bg); border-radius: 24px; box-shadow: var(--shadow-soft);
+            max-width: 500px;
+        }
+        .session-bar .who { flex: 1; font-weight: 600; font-size: 0.9rem; opacity: 0.85; }
+        .session-bar button {
+            padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer;
+            font-family: inherit; font-weight: 700; font-size: 0.85rem;
+        }
+        .session-bar .btn-change { background: rgba(0,102,102,0.1); color: var(--primary); }
+        .session-bar .btn-logout { background: #ff4757; color: white; }
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 4500;
+            background: rgba(0,0,0,0.45);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-card {
+            width: 100%; max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 28px 24px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+            box-sizing: border-box;
+        }
+        .modal-card h3 { margin: 0 0 18px; font-weight: 800; font-size: 1.3rem; }
+        .modal-card label { 
+            display: block; font-size: 0.78rem; font-weight: 700; 
+            text-transform: uppercase; opacity: 0.7; margin: 12px 0 6px; letter-spacing: 0.5px; 
+        }
+        .modal-card input {
+            width: 100%; box-sizing: border-box;
+            padding: 14px; font-size: 1.2rem; text-align: center;
+            font-weight: 700; letter-spacing: 8px;
+            border-radius: 12px; border: 2px solid rgba(0,102,102,0.15);
+            background: rgba(0,102,102,0.04); color: var(--text-main);
+            font-family: inherit; outline: none;
+        }
+        .modal-card input:focus { border-color: var(--primary); background: var(--card-bg); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+        .modal-actions button {
+            flex: 1; padding: 14px; border: none; border-radius: 14px;
+            font-weight: 700; cursor: pointer; font-family: inherit; font-size: 0.95rem;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-cancel { background: rgba(0,0,0,0.06); color: var(--text-main); }
+        .current-user-chip {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(0,102,102,0.08); color: var(--primary);
+            padding: 6px 12px; border-radius: 999px; font-weight: 700;
+            font-size: 0.78rem; margin: 6px 0 4px;
+        }
+        .current-user-chip .dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #00c46a;
+        }
     </style>
 </head>
 <body>
+
+<!-- ============================================================
+     NEW: Full-screen PIN lock overlay (shown until login)
+     ============================================================ -->
+<div id="pinOverlay" class="pin-overlay">
+    <div class="pin-card">
+        <span class="pin-store-tag" id="pinStoreTag">Al Zahia Showroom</span>
+        <h2>Login</h2>
+        <p class="sub">Enter your 4-digit PIN to access the showroom tracker.<br></p>
+        <input id="pinInput" class="pin-input" type="password" inputmode="numeric"
+               maxlength="4" autocomplete="off" placeholder="••••" />
+        <button class="pin-btn" onclick="submitPin()">UNLOCK</button>
+        <div class="pin-error" id="pinError"></div>
+
+        <!-- Executive picker shown when PIN matches multiple users (e.g. default) -->
+        <div id="execPicker" style="display:none;">
+            <p class="sub" style="margin-top:18px;">Select your name to continue:</p>
+            <div class="exec-picker-list" id="execPickerList"></div>
+            <button class="pin-btn secondary" onclick="cancelExecPicker()" style="margin-top:14px;">Back</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     NEW: Change PIN modal
+     ============================================================ -->
+<div id="changePinModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <h3>Change PIN</h3>
+        <p style="margin:0 0 6px; font-size:0.85rem; opacity:0.7;">
+            Logged in as <strong id="changePinExecName">—</strong>
+        </p>
+
+        <label for="currentPinInput">Current PIN</label>
+        <input id="currentPinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" />
+
+        <label for="newPinInput">New PIN</label>
+        <input id="newPinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" />
+
+        <label for="confirmPinInput">Confirm New PIN</label>
+        <input id="confirmPinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" />
+
+        <div class="pin-error" id="changePinError"></div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeChangePin()">Cancel</button>
+            <button class="btn-primary" onclick="submitChangePin()">UPDATE PIN</button>
+        </div>
+    </div>
+</div>
 
 <div class="container">
     <header>
@@ -195,10 +933,16 @@
             <button class="btn-tool" onclick="toggleDark()">🌓</button>
             <button class="btn-tool" onclick="openAdmin()">⚙️</button>
         </div>
-        <h2 class="showroom-title">AUH Zahia Showroom</h2>
+        <h2 class="showroom-title">Al Zahia Showroom</h2>
+
+        <!-- NEW: current user chip -->
+        <div class="current-user-chip" id="currentUserChip" style="display:none;">
+            <span class="dot"></span>
+            <span>Logged in as <span id="currentUserName">—</span></span>
+        </div>
         
         <div class="bulletin-board">
-            <div class="bulletin-label">Live Feed</div>
+            <div class="bulletin-label"><span class="live-dot"></span>Live Feed</div>
             <div class="ticker-wrap">
                 <div id="smart-insight">Syncing performance records...</div>
             </div>
@@ -210,19 +954,61 @@
         </div>
     </header>
 
-    <div class="peak-card">
-        <h4 style="margin:0; font-size:0.8rem; opacity:0.6; text-transform:uppercase;">Peak Activity (30D)</h4>
-        <div id="peak-hour-val" style="font-size:1.6rem; font-weight:800; color:var(--primary);">...</div>
+    <!-- ENHANCED: Peak Activity + Monthly Leaderboard side-by-side row.
+         Stacks on screens narrower than 820px. -->
+    <div class="peak-and-board">
+        <div class="peak-card">
+            <div class="peak-left">
+                <div class="peak-icon-circle">⚡</div>
+                <div class="peak-text">
+                    <span class="peak-head-tag">Peak Activity · Last 30 Days</span>
+                    <div class="peak-window" id="peak-hour-val">Analyzing...</div>
+                    <div class="peak-sub" id="peak-sub">Calculating busiest window from recent traffic</div>
+                </div>
+            </div>
+            <div class="peak-meta" id="peak-meta"></div>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="leaderboard-head">
+                <div class="leaderboard-title">
+                    <span class="lb-icon">🏅</span>
+                    <span>Monthly Leaderboard</span>
+                </div>
+                <div class="leaderboard-sub" id="lb-sub">This month vs last month</div>
+            </div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <div class="lb-rows" id="leaderboardRows"></div>
+            </div>
+            <div class="lb-pages" id="leaderboardPages"></div>
+        </div>
     </div>
 
+    <!-- ENHANCED: Daily / Weekly / Monthly stat cards with icons + color accents -->
     <div class="totals">
-        <div class="stat-card"><h3>Daily</h3><span id="daily">0</span></div>
-        <div class="stat-card"><h3>Weekly</h3><span id="weekly">0</span></div>
-        <div class="stat-card"><h3>Monthly</h3><span id="monthly">0</span></div>
+        <div class="stat-card daily">
+            <div class="stat-icon-wrap">☀</div>
+            <h3>Daily</h3>
+            <span class="stat-num" id="daily">0</span>
+            <div class="stat-foot">Today's walk-ins</div>
+        </div>
+        <div class="stat-card weekly">
+            <div class="stat-icon-wrap">📅</div>
+            <h3>Weekly</h3>
+            <span class="stat-num" id="weekly">0</span>
+            <div class="stat-foot">This week so far</div>
+        </div>
+        <div class="stat-card monthly">
+            <div class="stat-icon-wrap">🏆</div>
+            <h3>Monthly</h3>
+            <span class="stat-num" id="monthly">0</span>
+            <div class="stat-foot">Month to date</div>
+        </div>
     </div>
 
     <div class="executives" id="grid"></div>
 
+    <!-- Charts now appear directly under the executive grid (more important than the log) -->
     <div class="chart-wrapper">
         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 style="margin:0; font-weight: 700;">Traffic Trends</h3>
@@ -234,6 +1020,50 @@
         <canvas id="walkinChart"></canvas>
     </div>
 
+    <!-- ENHANCED: Shift Heatmap — day-of-week × hour intensity grid.
+         Surfaces every busy/quiet pocket, not just the single peak hour. -->
+    <div class="heatmap-card">
+        <div class="heatmap-head">
+            <div class="heatmap-title">
+                <span class="hm-icon">⚡</span>
+                Shift Heatmap
+            </div>
+            <div class="heatmap-sub">Walk-in intensity by day &amp; hour · last 30 days</div>
+        </div>
+        <div class="heatmap-scroll">
+            <div class="heatmap-grid" id="heatmapGrid"></div>
+        </div>
+        <div class="heatmap-legend">
+            <span>Quiet</span>
+            <span class="lg-bar">
+                <span style="background:rgba(0,102,102,0.06);"></span>
+                <span style="background:rgba(0,168,168,0.18);"></span>
+                <span style="background:rgba(0,168,168,0.32);"></span>
+                <span style="background:rgba(0,150,150,0.50);"></span>
+                <span style="background:rgba(0,124,124,0.72);"></span>
+                <span style="background:linear-gradient(135deg,#006666,#f7971e);"></span>
+            </span>
+            <span>Peak</span>
+        </div>
+    </div>
+
+    <!-- Manager-only activity log (hidden for executives) — moved BELOW the chart
+         so the visual KPIs and trend chart get top priority. -->
+    <div id="activityLog" style="display:none;">
+        <div class="al-header">
+            <div class="al-title">
+                <span class="live-dot"></span> Live Activity Log
+                <span class="al-meta" id="al-count">0 events</span>
+            </div>
+            <div class="al-pill-row" id="al-filters">
+                <button class="al-filter active" data-filter="all" onclick="setActivityFilter('all')">All</button>
+                <button class="al-filter" data-filter="today" onclick="setActivityFilter('today')">Today</button>
+               
+            </div>
+        </div>
+        <div class="al-list" id="al-list"></div>
+    </div>
+
     <div class="footer-export">
         <h3>Export Records</h3>
         <input type="date" id="startDate" style="padding:10px; border-radius:10px; border:1px solid #ddd;"> 
@@ -241,25 +1071,370 @@
         <input type="date" id="endDate" style="padding:10px; border-radius:10px; border:1px solid #ddd;">
         <button onclick="exportData()" style="padding:12px 24px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:700; margin-left:10px;">EXPORT EXCEL</button>
     </div>
+
+    <!-- NEW: Session bar (Change PIN + Logout) moved here from header -->
+    <div class="session-bar">
+        <span class="who" id="sessionBarWho">Not signed in</span>
+        <button class="btn-change" onclick="openChangePin()">🔑 Change PIN</button>
+        <button class="btn-logout" onclick="logout()">⏻ Logout</button>
+    </div>
 </div>
 
-<div id="adminPanel">
+<div id="adminPanel" style="overflow-y:auto;">
     <h2 style="font-weight: 800; margin: 0;">Admin Tools</h2>
-    <div style="display:flex; gap:10px; margin-top:20px;">
-        <input type="text" id="newExecName" placeholder="Name" style="flex:1; padding:10px; border-radius:10px; border:1px solid #ddd;">
+
+    <h4 style="margin:18px 0 8px; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; opacity:0.6;">Executives</h4>
+    <div style="display:flex; gap:10px;">
+        <input type="text" id="newExecName" placeholder="Executive name" style="flex:1; padding:10px; border-radius:10px; border:1px solid #ddd;">
         <button onclick="addExecutive()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">ADD</button>
     </div>
-    <div id="unifiedExecList" style="margin-top:20px; max-height: 70vh; overflow-y: auto;"></div>
-    <button onclick="closeAdmin()" style="width:100%; padding:18px; border:none; border-radius:18px; background: var(--primary); color: white; font-weight: 700; cursor: pointer; margin-top:10px;">SAVE & CLOSE</button>
+    <div id="unifiedExecList" style="margin-top:14px; max-height: 35vh; overflow-y: auto;"></div>
+
+    <!-- NEW: Managers section -->
+    <h4 style="margin:18px 0 8px; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; opacity:0.6;">Managers (View-Only)</h4>
+    <div style="display:flex; gap:10px;">
+        <input type="text" id="newManagerName" placeholder="Manager name" style="flex:1; padding:10px; border-radius:10px; border:1px solid #ddd;">
+        <button onclick="addManager()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">ADD</button>
+    </div>
+    <p style="margin:6px 0 0; font-size:0.75rem; opacity:0.6;">New managers get default PIN <strong>1234</strong>. They can change it after first login.</p>
+    <div id="managerList" style="margin-top:14px; max-height: 25vh; overflow-y: auto;"></div>
+
+    <button onclick="closeAdmin()" style="width:100%; padding:18px; border:none; border-radius:18px; background: var(--primary); color: white; font-weight: 700; cursor: pointer; margin-top:14px;">SAVE & CLOSE</button>
 </div>
 
 <script>
 let executives = [];
+let managers = []; // NEW: list of manager names
 let lockedUsers = {};
 let walkinChart;
 let historyData = [];
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const showroomLat = 24.494089, showroomLon = 54.375722, allowedRadiusKM = 1.2;
+const showroomLat = 24.494089, showroomLon = 54.375722, allowedRadiusKM = 1.0;
+
+// ================================================================
+//  NEW: AUTHENTICATION / PIN LAYER
+//  Firebase structure used:
+//    stores/{storeId}/executives/{execName}/pin
+//    stores/{storeId}/validPins/{pin} : true
+//  localStorage keys (scoped by storeId):
+//    zahia_auth_pin
+//    zahia_auth_exec
+// ================================================================
+
+const LS_PIN_KEY = () => `${window.STORE_ID}_auth_pin`;
+const LS_EXEC_KEY = () => `${window.STORE_ID}_auth_exec`;
+const LS_ROLE_KEY = () => `${window.STORE_ID}_auth_role`;
+const DEFAULT_PIN = "1234";
+
+function getCurrentExec() {
+    return localStorage.getItem(LS_EXEC_KEY()) || "";
+}
+function getCurrentPin() {
+    return localStorage.getItem(LS_PIN_KEY()) || "";
+}
+// NEW: role can be "executive" or "manager"
+function getCurrentRole() {
+    return localStorage.getItem(LS_ROLE_KEY()) || "executive";
+}
+function isManager() {
+    return getCurrentRole() === "manager";
+}
+function setCurrentSession(execName, pin, role) {
+    localStorage.setItem(LS_EXEC_KEY(), execName);
+    localStorage.setItem(LS_PIN_KEY(), pin);
+    localStorage.setItem(LS_ROLE_KEY(), role || "executive");
+}
+function clearCurrentSession() {
+    localStorage.removeItem(LS_EXEC_KEY());
+    localStorage.removeItem(LS_PIN_KEY());
+    localStorage.removeItem(LS_ROLE_KEY());
+}
+
+async function bootAuth() {
+    document.getElementById("pinStoreTag").innerText = `Store: ${window.STORE_ID.toUpperCase()}`;
+
+    // Ensure default PIN setup exists in Firebase (idempotent migration).
+    await ensureAuthBootstrap();
+
+    // Already logged in?
+    const exec = getCurrentExec();
+    const pin = getCurrentPin();
+    if (exec && pin) {
+        // Validate the cached session is still good (PIN may have been changed
+        // remotely and the exec may still exist).
+        const stillValid = await validateCachedSession(exec, pin);
+        if (stillValid) {
+            unlockApp();
+            return;
+        }
+        // Cached creds invalid — fall through to login screen.
+        clearCurrentSession();
+    }
+
+    showPinOverlay();
+    setTimeout(() => document.getElementById("pinInput").focus(), 80);
+
+    // Submit on Enter
+    document.getElementById("pinInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") submitPin();
+    });
+}
+
+async function ensureAuthBootstrap() {
+    const base = window.basePath;
+
+    // 1. Make sure validPins/1234 exists
+    const defaultPinSnap = await window.dbGet(window.dbRef(window.db, base + "validPins/" + DEFAULT_PIN));
+    if (!defaultPinSnap.exists()) {
+        await window.dbSet(window.dbRef(window.db, base + "validPins/" + DEFAULT_PIN), true);
+    }
+
+    // ============================================================
+    //  NEW: Always seed an "Admin" manager so it appears in the
+    //  login picker. Default PIN 1234, can be changed by Admin.
+    // ============================================================
+    const adminSnap = await window.dbGet(window.dbRef(window.db, base + "managers/Admin/pin"));
+    if (!adminSnap.exists()) {
+        await window.dbSet(window.dbRef(window.db, base + "managers/Admin/pin"), DEFAULT_PIN);
+    }
+
+    // 2. Migrate any executives from legacy /executiveList into /executives/{name}/pin
+    //    Existing executives without a PIN get the default PIN.
+    const legacySnap = await window.dbGet(window.dbRef(window.db, base + "executiveList"));
+    if (legacySnap.exists()) {
+        const names = Object.values(legacySnap.val() || {});
+        for (const name of names) {
+            if (!name) continue;
+            const execSnap = await window.dbGet(window.dbRef(window.db, base + "executives/" + name + "/pin"));
+            if (!execSnap.exists()) {
+                await window.dbSet(window.dbRef(window.db, base + "executives/" + name + "/pin"), DEFAULT_PIN);
+            }
+        }
+    }
+}
+
+async function validateCachedSession(execName, pin) {
+    try {
+        const base = window.basePath;
+        const role = getCurrentRole();
+        const validSnap = await window.dbGet(window.dbRef(window.db, base + "validPins/" + pin));
+        if (!validSnap.exists() || validSnap.val() !== true) return false;
+
+        // NEW: managers are stored under stores/{store}/managers/{name}/pin
+        const branch = role === "manager" ? "managers" : "executives";
+        const pinSnap = await window.dbGet(window.dbRef(window.db, base + branch + "/" + execName + "/pin"));
+        return pinSnap.exists() && pinSnap.val() === pin;
+    } catch (e) {
+        return false;
+    }
+}
+
+function showPinOverlay() {
+    document.getElementById("pinOverlay").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+}
+function hidePinOverlay() {
+    document.getElementById("pinOverlay").classList.add("hidden");
+    document.body.style.overflow = "";
+    document.getElementById("pinInput").value = "";
+    document.getElementById("pinError").innerText = "";
+    document.getElementById("execPicker").style.display = "none";
+}
+
+async function submitPin() {
+    const pin = (document.getElementById("pinInput").value || "").trim();
+    const errEl = document.getElementById("pinError");
+    errEl.innerText = "";
+
+    if (!/^\d{4}$/.test(pin)) {
+        errEl.innerText = "PIN must be exactly 4 digits.";
+        return;
+    }
+
+    const base = window.basePath;
+
+    // 1. Check pin is in validPins
+    const validSnap = await window.dbGet(window.dbRef(window.db, base + "validPins/" + pin));
+    if (!validSnap.exists() || validSnap.val() !== true) {
+        errEl.innerText = "Invalid PIN.";
+        return;
+    }
+
+    // 2. Find which executive(s) or manager(s) own this PIN
+    const matches = []; // { name, role }
+    const managersSnap = await window.dbGet(window.dbRef(window.db, base + "managers"));
+    if (managersSnap.exists()) {
+        managersSnap.forEach((c) => {
+            const v = c.val();
+            if (v && v.pin === pin) matches.push({ name: c.key, role: "manager" });
+        });
+    }
+    const execsSnap = await window.dbGet(window.dbRef(window.db, base + "executives"));
+    if (execsSnap.exists()) {
+        execsSnap.forEach((c) => {
+            const v = c.val();
+            if (v && v.pin === pin) matches.push({ name: c.key, role: "executive" });
+        });
+    }
+
+    if (matches.length === 0) {
+        errEl.innerText = "PIN not linked to any user.";
+        return;
+    }
+
+    if (matches.length === 1) {
+        loginAs(matches[0].name, pin, matches[0].role);
+        return;
+    }
+
+    // Multiple users share this PIN (e.g. the default 1234) — let them pick.
+    showExecPicker(matches, pin);
+}
+
+function showExecPicker(matches, pin) {
+    const list = document.getElementById("execPickerList");
+    list.innerHTML = matches.map(m => {
+        const tag = m.role === "manager"
+            ? `<span class="role-tag">MANAGER</span>`
+            : `<span class="role-tag" style="background:rgba(0,0,0,0.06); color:var(--text-main); opacity:0.7;">EXECUTIVE</span>`;
+        return `<button onclick="loginAs('${m.name.replace(/'/g, "\\'")}', '${pin}', '${m.role}')"><span>${m.name}</span>${tag}</button>`;
+    }).join("");
+    document.getElementById("execPicker").style.display = "block";
+}
+
+function cancelExecPicker() {
+    document.getElementById("execPicker").style.display = "none";
+    document.getElementById("pinInput").value = "";
+    document.getElementById("pinError").innerText = "";
+    document.getElementById("pinInput").focus();
+}
+
+function loginAs(execName, pin, role) {
+    setCurrentSession(execName, pin, role || "executive");
+    unlockApp();
+}
+
+function unlockApp() {
+    hidePinOverlay();
+    const exec = getCurrentExec();
+    if (exec) {
+        const role = getCurrentRole();
+        const label = role === "manager" ? `${exec} (Manager)` : exec;
+        document.getElementById("currentUserName").innerText = label;
+        document.getElementById("currentUserChip").style.display = "inline-flex";
+        document.getElementById("changePinExecName").innerText = label;
+        const bar = document.getElementById("sessionBarWho");
+        if (bar) bar.innerHTML = `Signed in as <strong>${label}</strong>`;
+    }
+    // Boot the original application logic exactly once
+    if (!window.__appBooted) {
+        window.__appBooted = true;
+        initAppLogic();
+    } else {
+        // already booted (e.g. role changed) — re-render the grid so card
+        // permissions reflect the new login.
+        renderGrid();
+    }
+}
+
+function logout() {
+    if (!confirm("Log out of this device?")) return;
+    clearCurrentSession();
+    location.reload();
+}
+
+// --- Change PIN modal ----------------------------------------------------
+
+function openChangePin() {
+    if (!getCurrentExec()) {
+        alert("You must be logged in to change your PIN.");
+        return;
+    }
+    document.getElementById("changePinExecName").innerText = getCurrentExec();
+    document.getElementById("currentPinInput").value = "";
+    document.getElementById("newPinInput").value = "";
+    document.getElementById("confirmPinInput").value = "";
+    document.getElementById("changePinError").innerText = "";
+    document.getElementById("changePinModal").classList.remove("hidden");
+    setTimeout(() => document.getElementById("currentPinInput").focus(), 80);
+}
+
+function closeChangePin() {
+    document.getElementById("changePinModal").classList.add("hidden");
+}
+
+async function submitChangePin() {
+    const errEl = document.getElementById("changePinError");
+    errEl.innerText = "";
+
+    const exec = getCurrentExec();
+    if (!exec) { errEl.innerText = "Not logged in."; return; }
+
+    const current = (document.getElementById("currentPinInput").value || "").trim();
+    const next = (document.getElementById("newPinInput").value || "").trim();
+    const confirmPin = (document.getElementById("confirmPinInput").value || "").trim();
+
+    if (!/^\d{4}$/.test(current) || !/^\d{4}$/.test(next) || !/^\d{4}$/.test(confirmPin)) {
+        errEl.innerText = "All PINs must be exactly 4 digits.";
+        return;
+    }
+    if (next !== confirmPin) {
+        errEl.innerText = "New PIN and confirmation do not match.";
+        return;
+    }
+    if (next === current) {
+        errEl.innerText = "New PIN must be different from current PIN.";
+        return;
+    }
+
+    const base = window.basePath;
+    // NEW: route to the right branch (managers/executives)
+    const branch = isManager() ? "managers" : "executives";
+
+    // Verify current PIN matches Firebase record
+    const currentSnap = await window.dbGet(window.dbRef(window.db, base + branch + "/" + exec + "/pin"));
+    if (!currentSnap.exists() || currentSnap.val() !== current) {
+        errEl.innerText = "Current PIN is incorrect.";
+        return;
+    }
+
+    try {
+        // 1. Update user's pin
+        await window.dbSet(window.dbRef(window.db, base + branch + "/" + exec + "/pin"), next);
+        // 2. Add new pin to validPins
+        await window.dbSet(window.dbRef(window.db, base + "validPins/" + next), true);
+        // 3. Remove old pin from validPins ONLY if no other user (exec OR manager) still uses it
+        let stillUsed = false;
+        const allExecsSnap = await window.dbGet(window.dbRef(window.db, base + "executives"));
+        if (allExecsSnap.exists()) {
+            allExecsSnap.forEach(c => {
+                if (c.val() && c.val().pin === current) stillUsed = true;
+            });
+        }
+        if (!stillUsed) {
+            const allMgrsSnap = await window.dbGet(window.dbRef(window.db, base + "managers"));
+            if (allMgrsSnap.exists()) {
+                allMgrsSnap.forEach(c => {
+                    if (c.val() && c.val().pin === current) stillUsed = true;
+                });
+            }
+        }
+        if (!stillUsed) {
+            await window.dbRemove(window.dbRef(window.db, base + "validPins/" + current));
+        }
+    } catch (e) {
+        errEl.innerText = "Failed to update PIN. Please try again.";
+        return;
+    }
+
+    alert("PIN updated successfully. Please log in with your new PIN.");
+    clearCurrentSession();
+    location.reload();
+}
+
+// ================================================================
+//  ORIGINAL APP LOGIC (preserved — only enhanced where noted)
+// ================================================================
 
 function initAppLogic() {
     // SYNC: Point to stores/zahia/executiveList
@@ -273,29 +1448,79 @@ function initAppLogic() {
     // SYNC: Point to stores/zahia/locks
     window.dbOnValue(window.dbRef(window.db, window.basePath + "locks"), snap => {
         lockedUsers = snap.val() || {};
-        executives.forEach(name => {
-            const card = document.getElementById(`card-${name}`);
-            if(card) {
-                const isLocked = lockedUsers[name] || false;
-                card.classList.toggle("locked", isLocked);
-                const label = document.getElementById(`label-${name}`);
-                label.innerHTML = isLocked ? `${name} <span class="locked-tag">OFF DUTY</span>` : name;
-            }
-        });
+        // Re-render so the manager Active/Off-Duty toggles & lock styles refresh
+        renderGrid();
+    });
+
+    // NEW: SYNC managers list (used by admin panel)
+    window.dbOnValue(window.dbRef(window.db, window.basePath + "managers"), snap => {
+        const val = snap.val() || {};
+        managers = Object.keys(val).sort();
+        // If admin panel is open, refresh it
+        if (document.getElementById("adminPanel").classList.contains("active")) {
+            renderAdmin();
+        }
     });
 }
 
 function renderGrid() {
     const grid = document.getElementById("grid");
-    grid.innerHTML = executives.map(name => `
-        <div class="card" id="card-${name}">
-            <h3 id="label-${name}">${name}</h3>
-            <div class="controls">
-                <button onclick="update('${name}', -1)">−</button>
+    const me = getCurrentExec();
+    const manager = isManager();
+
+    // ============================================================
+    //  ENHANCED: Logged-in executive's card appears FIRST.
+    //  Managers continue to see the alphabetical order so they can
+    //  scan their team consistently.
+    // ============================================================
+    let displayExecs = [...executives];
+    if (!manager && me && displayExecs.includes(me)) {
+        displayExecs = [me, ...displayExecs.filter(n => n !== me)];
+    }
+
+    grid.innerHTML = displayExecs.map(name => {
+        // ============================================================
+        //  Permission rules per card
+        //   - Manager: every card is editable (full control) AND
+        //     gets a clickable Active/Off-Duty toggle under the name
+        //   - Executive: only their OWN card is editable
+        // ============================================================
+        const isMe = !manager && (name === me);
+        const canEdit = manager || isMe;
+        const locked = !!lockedUsers[name];
+
+        let statusTag;
+        if (manager) {
+            // Clickable Active / Off Duty toggle for managers
+            const bg = locked ? "#ff4757" : "#00c46a";
+            const txt = locked ? "OFF DUTY" : "ACTIVE";
+            const dot = locked ? "" : `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:white;margin-right:6px;vertical-align:middle;box-shadow:0 0 6px rgba(255,255,255,0.9);animation:pulse-dot 1.4s ease-in-out infinite;"></span>`;
+            statusTag = `
+                <button onclick="toggleLock('${name.replace(/'/g, "\\'")}')"
+                    title="Click to ${locked ? 'activate' : 'deactivate'}"
+                    style="padding:5px 16px; border:none; border-radius:999px; cursor:pointer;
+                           background:${bg}; color:white; font-family:inherit;
+                           font-size:0.7rem; font-weight:800; letter-spacing:1px;
+                           text-transform:uppercase;
+                           box-shadow:0 2px 8px ${locked ? 'rgba(255,71,87,0.35)' : 'rgba(0,196,106,0.35)'};">${dot}${txt}</button>`;
+        } else if (isMe) {
+            statusTag = `<span style="font-size:0.65rem; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:1px;">● You</span>`;
+        } else {
+            statusTag = `<span style="font-size:0.65rem; font-weight:600; opacity:0.5; text-transform:uppercase; letter-spacing:1px;">View only</span>`;
+        }
+        const disabledAttr = canEdit ? "" : "disabled";
+        const controlsStyle = canEdit ? "" : "opacity:0.35; pointer-events:none;";
+        return `
+        <div class="card ${locked ? 'locked' : ''}" id="card-${name}">
+            <h3 id="label-${name}" title="${name}">${name}</h3>
+            <div class="card-status">${statusTag}</div>
+            <div class="controls" style="${controlsStyle}">
+                <button onclick="update('${name}', -1)" ${disabledAttr}>−</button>
                 <span class="count" id="count-${name}">0</span>
-                <button onclick="update('${name}', 1)">+</button>
+                <button onclick="update('${name}', 1)" ${disabledAttr}>+</button>
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 
 function syncWalkins() {
@@ -328,15 +1553,145 @@ function syncWalkins() {
         document.getElementById("daily").innerText = d;
         document.getElementById("weekly").innerText = w;
         document.getElementById("monthly").innerText = m;
-        document.getElementById("peak-hour-val").innerText = calculatePeakHour(historyData);
-        
+
+        // ENHANCED: render the full peak-activity card (window + day-of-week +
+        // average + secondary peak) instead of just a single hour string.
+        renderPeakCard(calculatePeakAnalytics(historyData));
+
         updateInsights(counts, d);
         renderChart();
+        renderShiftHeatmap(historyData);
+        renderMonthlyLeaderboard(historyData);
+        renderActivityLog();
     });
 }
 
+// =====================================================================
+//  Manager-only Live Activity Log
+//  Shows the most recent walk-in events with who logged it (submittedBy),
+//  for which executive, +/- count, and time. Hidden entirely for execs.
+// =====================================================================
+let activityFilter = 'all';
+function setActivityFilter(name) {
+    activityFilter = name;
+    document.querySelectorAll('#al-filters .al-filter').forEach(b => {
+        b.classList.toggle('active', b.dataset.filter === name);
+    });
+    renderActivityLog();
+}
+
+function relativeTime(ts) {
+    const diff = Date.now() - ts;
+    const s = Math.floor(diff / 1000);
+    if (s < 5)   return "just now";
+    if (s < 60)  return `${s}s ago`;
+    const m = Math.floor(s / 60);
+    if (m < 60)  return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24)  return `${h}h ago`;
+    const d = Math.floor(h / 24);
+    return `${d}d ago`;
+}
+
+function fmtClockTime(ts) {
+    const d = new Date(ts);
+    return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+function fmtFullDate(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+}
+
+function renderActivityLog() {
+    const wrap = document.getElementById('activityLog');
+    if (!wrap) return;
+    // Show only to managers
+    if (!isManager()) { wrap.style.display = 'none'; return; }
+    wrap.style.display = '';
+
+    const list = document.getElementById('al-list');
+    const meta = document.getElementById('al-count');
+
+    // Sort newest first
+    const sorted = [...historyData].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    // Apply filter
+    const todayStr = new Date().toDateString();
+    let filtered = sorted;
+    if (activityFilter === 'today') {
+        filtered = sorted.filter(e => new Date(e.timestamp).toDateString() === todayStr);
+    } else if (activityFilter === 'proxy') {
+        filtered = sorted.filter(e => e.submittedBy && e.executive && e.submittedBy !== e.executive);
+    }
+
+    meta.innerText = `${filtered.length} event${filtered.length === 1 ? '' : 's'}`;
+
+    if (filtered.length === 0) {
+        list.innerHTML = `<div class="al-empty">No activity to show yet. Walk-in entries will appear here in real time.</div>`;
+        return;
+    }
+
+    // Cap to last 100 for performance
+    const capped = filtered.slice(0, 100);
+
+    list.innerHTML = capped.map(ev => {
+        const who    = ev.submittedBy || 'Unknown';
+        const target = ev.executive || '—';
+        const cnt    = Number(ev.count) || 0;
+        const isMinus = cnt < 0;
+        const isProxy = who && target && who !== target;
+        const initials = who.split(/\s+/).map(p => p[0]).slice(0,2).join('').toUpperCase() || '?';
+        const action = isMinus
+            ? `removed <strong>${Math.abs(cnt)}</strong> walk-in${Math.abs(cnt) === 1 ? '' : 's'} from`
+            : `logged <strong>${cnt}</strong> walk-in${cnt === 1 ? '' : 's'} for`;
+        const proxyTag = isProxy ? `<span class="al-tag" title="${who} logged on behalf of ${target}">PROXY</span>` : '';
+        const rowClass = `al-row${isMinus ? ' minus' : ''}${isProxy ? ' proxy' : ''}`;
+        return `
+            <div class="${rowClass}">
+                <div class="al-icon">${initials}</div>
+                <div class="al-text">
+                    <span class="al-who">${who}</span>
+                    <span class="al-action"> ${action} </span>
+                    <span class="al-target">${target}</span>${proxyTag}
+                </div>
+                <div class="al-time">
+                    <span>${fmtClockTime(ev.timestamp)} · ${fmtFullDate(ev.timestamp)}</span>
+                    <span class="al-rel">${relativeTime(ev.timestamp)}</span>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+// Refresh the relative timestamps every 30s so "2m ago" stays accurate
+setInterval(() => { if (isManager()) renderActivityLog(); }, 30000);
+
 function update(name, val) { 
     if(lockedUsers[name]) return;
+
+    // ============================================================
+    //  NEW: Auto-attach the logged-in executive + pin to each entry
+    //  This makes the count tied to who actually pressed +/- and
+    //  satisfies Firebase rules that validate against validPins.
+    // ============================================================
+    const loggedInExec = getCurrentExec();
+    const loggedInPin = getCurrentPin();
+    if (!loggedInExec || !loggedInPin) {
+        alert("Session expired. Please log in again.");
+        clearCurrentSession();
+        location.reload();
+        return;
+    }
+
+    // ============================================================
+    //  Permission rules:
+    //   - Managers: may log walk-ins for ANY executive
+    //   - Executives: may only log for their OWN card
+    // ============================================================
+    if (!isManager() && name !== loggedInExec) {
+        alert(`You are logged in as "${loggedInExec}". You can only update your own walk-ins.`);
+        return;
+    }
+
     if (!navigator.geolocation) { alert("Geolocation not supported."); return; }
 
     navigator.geolocation.getCurrentPosition(
@@ -344,13 +1699,18 @@ function update(name, val) {
             const dist = calculateDistance(pos.coords.latitude, pos.coords.longitude, showroomLat, showroomLon);
             if (dist <= allowedRadiusKM) {
                 // UPDATE: Pushing to stores/zahia/walkins
+                // The card the user pressed is `name` (the executive whose count
+                // changes). We also record `submittedBy` and `pin` so server-side
+                // rules can validate against /validPins/{pin}.
                 window.dbPush(window.dbRef(window.db, window.basePath + "walkins"), { 
                     executive: name, 
                     count: val, 
-                    timestamp: Date.now() 
+                    timestamp: Date.now(),
+                    submittedBy: loggedInExec,
+                    pin: loggedInPin
                 });
             } else {
-                alert(`Access Denied: You are ${dist.toFixed(2)}km away. You must be at AUH Zahia Showroom.`);
+                alert(`Access Denied: You are ${dist.toFixed(2)}km away. You must be at Al Zahia Showroom.`);
             }
         }, 
         (err) => alert("Location Error: Please ensure GPS is ON and permission is granted."), 
@@ -367,66 +1727,445 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 function updateInsights(monthlyCounts, dailyTotal) {
     const insightEl = document.getElementById("smart-insight");
-    let messages = [];
+    const messages = [];
+    const SEP = `<span class="feed-sep">✦</span>`;
 
-    const nasarJokes = [
-        `MARIAM'S RULE: If a customer smiles, they've basically bought a bathroom set. 📋`,
-        `MARIAM: "The dashboard is green, but my tea is cold. More sales please!" ☕`,
-        `MARIAM'S SECRET: She doesn't sleep, she just waits for the next Order. 🧱`,
-        `MARIAM: "If you have time to sit, you have time to sell." 🪑`,
-        `MARIAM'S RULE: No phone scrolling unless it's checking a confirmed order. 📱`,
-        `MARIAM: "Smile wider… that customer looks expensive." 😏`,
-        `MARIAM'S ALERT: Someone just walked in. Why are we still breathing normally? 🚨`,
-        `MARIAM: "Every 'just looking' is a future invoice. Act accordingly." 🧾`,
-        `MARIAM: "If they ask for discount, increase your confidence." 💼`,
-        `MARIAM: "Don't show tiles… show them their dream home." ✨`,
-        `MARIAM: "I can smell a big sale from the parking lot. Get ready!" 👃💰`
-    ];
-    messages.push(`👩‍💼            ${nasarJokes[Math.floor(Math.random() * nasarJokes.length)]}`);
+    // ---------- Time-based greeting ----------
+    const hour = new Date().getHours();
+    let greetIcon = "🌅", greetWord = "Good morning";
+    if (hour >= 12 && hour < 17) { greetIcon = "☀️"; greetWord = "Good afternoon"; }
+    else if (hour >= 17 && hour < 22) { greetIcon = "🌇"; greetWord = "Good evening"; }
+    else if (hour >= 22 || hour < 5) { greetIcon = "🌙"; greetWord = "Late shift, legends"; }
+    messages.push(`${greetIcon} <span class="feed-pill blue">TEAM ALZAHIA</span> ${greetWord}, Al Zahia Showroom — let's make today legendary!`);
 
-    let activeExecs = executives.filter(name => !lockedUsers[name]);
-    if (activeExecs.length > 0) {
-        let sorted = [...activeExecs].sort((a, b) => (monthlyCounts[a] || 0) - (monthlyCounts[b] || 0));
-        messages.push(`🎯 SPOTLIGHT: ${sorted[0]}, you're up! Time to close a deal.`);
+    // ---------- Headline stats ----------
+    if (dailyTotal > 0) {
+        messages.push(`🚀 <span class="feed-pill green">TODAY</span> ${dailyTotal} walk-in${dailyTotal===1?'':'s'} served so far — momentum is building! 📈`);
+    } else {
+        messages.push(`✨ <span class="feed-pill blue">FRESH START</span> Clean slate today. Who's going to log the first walk-in? 🥇`);
     }
 
-    const teamMojo = [
-        "is out-charming the showroom lights. 💡",
-        "just drank a double espresso. Run, walk-ins! ⚡",
-        "is turning browsers into buyers like magic. 🎩",
-        "is casually closing deals in their head already. 🧠",
-        "is making every step count on the showroom floor. 👣",
-        "is in 'The Zone'. Do not disturb unless buying 1000sqm! 📈",
-        "is turning questions into quotations instantly. 🧾",
-        "is officially the Tile Whisperer of AUH Zahia SR. 🧘‍♂️"
-    ];
+    // ---------- Leaderboard ----------
+    const ranked = Object.keys(monthlyCounts)
+        .filter(n => monthlyCounts[n] > 0)
+        .sort((a, b) => monthlyCounts[b] - monthlyCounts[a]);
 
-    if (executives.length > 0) {
-        let shuffled = [...executives].sort(() => 0.5 - Math.random());
-        let selected = shuffled.slice(0, 2); 
-        selected.forEach(name => {
-            const joke = teamMojo[Math.floor(Math.random() * teamMojo.length)];
-            messages.push(`😎 ${name.toUpperCase()} ${joke}`);
-        });
+    if (ranked.length > 0) {
+        const top = ranked[0];
+        messages.push(`👑 <span class="feed-pill gold">TOP GUN</span> ${top} is leading this month with ${monthlyCounts[top]} walk-ins! 🏆`);
+        if (ranked[1]) {
+            const gap = monthlyCounts[top] - monthlyCounts[ranked[1]];
+            messages.push(`🥈 <span class="feed-pill purple">CHASING</span> ${ranked[1]} is just ${gap} walk-in${gap===1?'':'s'} behind ${top} — game on! ⚔️`);
+        }
+        if (ranked[2]) {
+            messages.push(`🥉 <span class="feed-pill purple">PODIUM</span> ${ranked[2]} holds 3rd place with ${monthlyCounts[ranked[2]]}. Climb that ladder! 🪜`);
+        }
     }
 
-    if (dailyTotal > 0) messages.push(`🚀 POWER TEAM: ${dailyTotal} customers served today.`);
-    let topExec = Object.keys(monthlyCounts).reduce((a, b) => (monthlyCounts[a] || 0) > (monthlyCounts[b] || 0) ? a : b, "");
-    if (topExec) messages.push(`👑 TOP GUN: ${topExec} is ruling the leaderboard!`);
+    // ---------- Personalized message for EVERY active executive ----------
+    const activeExecs = executives.filter(n => !lockedUsers[n]);
+    const personalLines = [
+        (n,c) => `🔥 <span class="feed-pill red">ON FIRE</span> ${n}, you've already logged ${c} this month — keep the streak alive! 💪`,
+        (n,c) => `⭐ <span class="feed-pill gold">RISING STAR</span> ${n}, every walk-in is a future invoice. You've got ${c} so far!`,
+        (n,c) => `🎯 <span class="feed-pill green">FOCUSED</span> ${n}, ${c} customers served. Imagine adding just 2 more before lunch! 🍽️`,
+        (n,c) => `💎 <span class="feed-pill purple">DIAMOND</span> ${n}, your ${c} walk-ins are turning into trust. Keep shining! ✨`,
+        (n,c) => `🚀 <span class="feed-pill blue">ROCKET</span> ${n}, ${c} this month — the next deal could be your biggest yet!`,
+        (n)   => `👋 <span class="feed-pill blue">HELLO</span> ${n}, the showroom floor is your stage — own it! 🎤`,
+        (n)   => `💡 <span class="feed-pill gold">REMINDER</span> ${n}, every smile you give comes back as a signature. 📝`,
+        (n)   => `🧲 <span class="feed-pill green">MAGNETIC</span> ${n}, customers gravitate to confidence. Stand tall! 🦁`
+    ];
+    const noStartLines = [
+        (n) => `🌱 <span class="feed-pill green">FIRST MOVE</span> ${n}, your counter is at 0. The next walk-in has your name on it! ✍️`,
+        (n) => `☕ <span class="feed-pill blue">WAKE UP</span> ${n}, time to greet a customer and break the ice! 🧊`,
+        (n) => `🎬 <span class="feed-pill purple">YOUR SCENE</span> ${n}, every superstar starts with one good take. Action!`
+    ];
 
-    insightEl.innerText = messages.join("        |        ") + "        |        ⚡ TEAM AUH ZAHIA: CONVERTING 'MAYBES' INTO 'INVOICES'.        |        ";
+    activeExecs.forEach(name => {
+        const c = monthlyCounts[name] || 0;
+        if (c === 0) {
+            const line = noStartLines[Math.floor(Math.random() * noStartLines.length)];
+            messages.push(line(name));
+        } else {
+            // pick a line that needs a count when count > 0
+            const withCount = personalLines.slice(0, 5);
+            const generic   = personalLines.slice(5);
+            const pool = Math.random() < 0.7 ? withCount : generic;
+            const line = pool[Math.floor(Math.random() * pool.length)];
+            messages.push(line(name, c));
+        }
+    });
+
+    // ---------- Off-duty acknowledgement ----------
+    const offDuty = executives.filter(n => lockedUsers[n]);
+    if (offDuty.length > 0 && offDuty.length < executives.length) {
+        messages.push(`💤 <span class="feed-pill purple">OFF DUTY</span> ${offDuty.join(' & ')} — recharge well, we'll cover the floor! 🛡️`);
+    }
+
+    // ---------- Motivational quotes ----------
+    const quotes = [
+        `💬 "Sales are contingent upon the attitude of the salesman — not the prospect." — W. Clement Stone`,
+        `💬 "The best salespeople know that their expertise can become their enemy. Stay curious." — Jeff Hoffman`,
+        `💬 "People don't buy for logical reasons. They buy for emotional reasons." — Zig Ziglar`,
+        `💬 "Begin by always expecting good things to happen." — Tom Hopkins`,
+        `💬 "Treat objections as requests for further information." — Brian Tracy`,
+        `💬 "Today's walk-in is tomorrow's repeat customer." — Al Zahia Floor Wisdom`,
+        `💬 "A satisfied customer is the best business strategy of all." — Michael LeBoeuf`,
+        `💬 "Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time." — Thomas Edison`
+    ];
+    messages.push(`✨ ${quotes[Math.floor(Math.random() * quotes.length)]}`);
+
+    // ---------- Manager wisdom (kept, lightly polished) ----------
+    const MARIAM = [
+        `🧠 <span class="feed-pill gold">MARIAM'S RULE</span> "If a customer smiles, they've basically bought a bathroom set." 🛁`,
+        `☕ <span class="feed-pill gold">MARIAM SAYS</span> "The dashboard is green, but my tea is cold. More sales please!"`,
+        `🪑 <span class="feed-pill gold">MARIAM SAYS</span> "If you have time to sit, you have time to sell."`,
+        `🚨 <span class="feed-pill red">MARIAM ALERT</span> "Someone just walked in. Why are we still breathing normally?"`,
+        `🧾 <span class="feed-pill gold">MARIAM SAYS</span> "Every 'just looking' is a future invoice. Act accordingly."`,
+        `💼 <span class="feed-pill gold">MARIAM'S RULE</span> "If they ask for a discount, increase your confidence."`,
+        `🏠 <span class="feed-pill gold">MARIAM SAYS</span> "Don't show tiles… show them their dream home."`,
+        `👃 <span class="feed-pill gold">MARIAM SENSES</span> "I can smell a big sale from the parking lot. Get ready!" 💰`
+    ];
+    messages.push(MARIAM[Math.floor(Math.random() * MARIAM.length)]);
+
+    // ---------- Milestones ----------
+    const monthlyTotal = Object.values(monthlyCounts).reduce((a, b) => a + b, 0);
+    if (monthlyTotal >= 1000) messages.push(`🎉 <span class="feed-pill gold">LEGENDARY</span> Team Al Zahia has crossed ${monthlyTotal} walk-ins this month! 🏅`);
+    else if (monthlyTotal >= 500) messages.push(`🎊 <span class="feed-pill green">MILESTONE</span> ${monthlyTotal} walk-ins this month — halfway to 1000! Push! 💥`);
+    else if (monthlyTotal >= 100) messages.push(`🎈 <span class="feed-pill blue">CENTURY+</span> ${monthlyTotal} walk-ins logged this month. Onwards! 🚀`);
+
+    // ---------- Closing flourish ----------
+    messages.push(`👩‍💻  <span class="feed-pill green">Team Al Zahia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`);
+
+    // Shuffle middle messages for variety, but keep greeting first and closing last
+    const head = messages.slice(0, 1);
+    const tail = messages.slice(-1);
+    const middle = messages.slice(1, -1).sort(() => 0.5 - Math.random());
+
+    insightEl.innerHTML = [...head, ...middle, ...tail].join(SEP) + SEP;
 }
 
-function calculatePeakHour(data) {
+// =====================================================================
+//  ENHANCED Peak Activity Analytics
+//  Returns:
+//    primary    — busiest hour window (e.g. "19:00 - 20:00")
+//    secondary  — second-busiest hour window
+//    busiestDay — day-of-week + hour combo (e.g. "Saturdays · 19:00")
+//    avgPerDay  — avg walk-ins during the peak hour, per day it occurred
+//    totalAtPeak — total walk-ins logged in the peak hour over 30 days
+//  Bucket size is 1 hour because retail shifts (and showroom staffing
+//  decisions) are made in roughly hour-long blocks. Pairing "busiest hour"
+//  with "busiest day-of-week + hour" gives both a daily staffing target
+//  and a weekly scheduling signal.
+// =====================================================================
+function fmtHourRange(h) {
+    const a = h < 10 ? '0' + h : '' + h;
+    const next = (h + 1) % 24;
+    const b = next < 10 ? '0' + next : '' + next;
+    return `${a}:00 – ${b}:00`;
+}
+
+function calculatePeakAnalytics(data) {
     const hourCounts = Array(24).fill(0);
-    const thirtyDaysAgo = Date.now() - (30*86400000);
-    data.forEach(e => { 
-        if(e.timestamp > thirtyDaysAgo && e.count > 0) 
-            hourCounts[new Date(e.timestamp).getHours()] += e.count; 
+    const dowHourCounts = Array.from({ length: 7 }, () => Array(24).fill(0));
+    // track unique calendar-days each hour was active (to compute avg/day)
+    const hourDays = Array.from({ length: 24 }, () => new Set());
+    const thirtyDaysAgo = Date.now() - (30 * 86400000);
+
+    data.forEach(e => {
+        if (!(e.timestamp > thirtyDaysAgo) || !(e.count > 0)) return;
+        const dt = new Date(e.timestamp);
+        const h = dt.getHours();
+        const dow = dt.getDay();
+        hourCounts[h] += e.count;
+        dowHourCounts[dow][h] += e.count;
+        hourDays[h].add(dt.toDateString());
     });
-    let maxHr = 0, maxV = 0;
-    hourCounts.forEach((v, h) => { if(v > maxV) { maxV = v; maxHr = h; } });
-    return maxV === 0 ? "No Data" : `${maxHr < 10 ? '0'+maxHr : maxHr}:00 - ${maxHr+1 < 10 ? '0'+(maxHr+1) : maxHr+1}:00`;
+
+    // Find primary + secondary peak hours
+    let p1 = -1, p2 = -1, v1 = 0, v2 = 0;
+    hourCounts.forEach((v, h) => {
+        if (v > v1) { v2 = v1; p2 = p1; v1 = v; p1 = h; }
+        else if (v > v2) { v2 = v; p2 = h; }
+    });
+
+    // Find busiest day-of-week + hour combo
+    let bestDow = -1, bestDowHour = -1, bestDowVal = 0;
+    for (let d = 0; d < 7; d++) {
+        for (let h = 0; h < 24; h++) {
+            if (dowHourCounts[d][h] > bestDowVal) {
+                bestDowVal = dowHourCounts[d][h]; bestDow = d; bestDowHour = h;
+            }
+        }
+    }
+
+    if (v1 === 0) {
+        return { primary: "No Data", secondary: null, busiestDay: null, avgPerDay: 0, totalAtPeak: 0 };
+    }
+
+    const dayCount = hourDays[p1].size || 1;
+    const avgPerDay = Math.round((v1 / dayCount) * 10) / 10;
+
+    return {
+        primary: fmtHourRange(p1),
+        secondary: v2 > 0 ? fmtHourRange(p2) : null,
+        busiestDay: bestDowVal > 0 ? `${dayNames[bestDow]}s · ${bestDowHour < 10 ? '0' + bestDowHour : bestDowHour}:00` : null,
+        avgPerDay: avgPerDay,
+        totalAtPeak: v1
+    };
+}
+
+// Backwards-compat wrapper (some legacy code paths may still call this).
+function calculatePeakHour(data) {
+    return calculatePeakAnalytics(data).primary;
+}
+
+// =====================================================================
+//  Monthly Leaderboard renderer (paginated + auto-rotating)
+//  Ranks every executive by walk-ins this calendar month with medals
+//  on the top three and a trend arrow vs their previous calendar month.
+//  Shows 3 names per page and auto-cycles every 8 seconds when there
+//  are more than 3 executives.
+// =====================================================================
+const LB_PAGE_SIZE = 3;
+const LB_ROTATE_MS = 8000;
+let _lbAllRows = [];
+let _lbPageIndex = 0;
+let _lbTimer = null;
+
+function _lbBuildRowHtml(r, absoluteRank, me) {
+    const rankCls = absoluteRank <= 3 ? `is-${absoluteRank}` : "";
+    const rankLabel = absoluteRank === 1 ? "🥇"
+                    : absoluteRank === 2 ? "🥈"
+                    : absoluteRank === 3 ? "🥉"
+                    : absoluteRank;
+
+    // Trend vs last month
+    let trendCls, trendTxt;
+    if (r.previous === 0 && r.current === 0) {
+        trendCls = "flat"; trendTxt = "—";
+    } else if (r.previous === 0) {
+        trendCls = "up"; trendTxt = "▲ NEW";
+    } else if (r.current === 0) {
+        trendCls = "down"; trendTxt = "▼ 100%";
+    } else {
+        const pct = Math.round(((r.current - r.previous) / r.previous) * 100);
+        if (pct > 0)      { trendCls = "up";   trendTxt = `▲ ${pct}%`; }
+        else if (pct < 0) { trendCls = "down"; trendTxt = `▼ ${Math.abs(pct)}%`; }
+        else              { trendCls = "flat"; trendTxt = "—"; }
+    }
+
+    const isMe = me && r.name === me;
+    const youTag = isMe ? `<span class="you-tag">You</span>` : "";
+    const safeName = String(r.name).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    return `
+        <div class="lb-row ${isMe ? 'is-me' : ''}">
+            <div class="lb-rank ${rankCls}">${rankLabel}</div>
+            <div class="lb-name">${safeName}${youTag}</div>
+            <div class="lb-count">${r.current}</div>
+            <div class="lb-trend ${trendCls}" title="Last month: ${r.previous}">${trendTxt}</div>
+        </div>
+    `;
+}
+
+function _lbRenderPage(animate) {
+    const rowsEl = document.getElementById("leaderboardRows");
+    const listEl = document.getElementById("leaderboardList");
+    const pagesEl = document.getElementById("leaderboardPages");
+    if (!rowsEl) return;
+
+    const me = (typeof getCurrentExec === "function") ? getCurrentExec() : null;
+    const totalPages = Math.max(1, Math.ceil(_lbAllRows.length / LB_PAGE_SIZE));
+    if (_lbPageIndex >= totalPages) _lbPageIndex = 0;
+
+    const start = _lbPageIndex * LB_PAGE_SIZE;
+    const slice = _lbAllRows.slice(start, start + LB_PAGE_SIZE);
+
+    const paint = () => {
+        rowsEl.innerHTML = slice
+            .map((r, i) => _lbBuildRowHtml(r, start + i + 1, me))
+            .join('');
+
+        if (pagesEl) {
+            if (totalPages <= 1) {
+                pagesEl.innerHTML = '';
+            } else {
+                pagesEl.innerHTML = Array.from({ length: totalPages },
+                    (_, i) => `<span class="${i === _lbPageIndex ? 'active' : ''}"></span>`
+                ).join('');
+            }
+        }
+
+        if (listEl) {
+            // small delay so the browser registers the opacity:0 first
+            requestAnimationFrame(() => listEl.classList.remove("is-fading"));
+        }
+    };
+
+    if (animate && listEl) {
+        listEl.classList.add("is-fading");
+        setTimeout(paint, 320);
+    } else {
+        paint();
+    }
+}
+
+function _lbStopRotation() {
+    if (_lbTimer) {
+        clearInterval(_lbTimer);
+        _lbTimer = null;
+    }
+}
+
+function _lbStartRotation() {
+    _lbStopRotation();
+    const totalPages = Math.max(1, Math.ceil(_lbAllRows.length / LB_PAGE_SIZE));
+    if (totalPages <= 1) return;
+    _lbTimer = setInterval(() => {
+        _lbPageIndex = (_lbPageIndex + 1) % totalPages;
+        _lbRenderPage(true);
+    }, LB_ROTATE_MS);
+}
+
+function renderMonthlyLeaderboard(data) {
+    const sub = document.getElementById("lb-sub");
+    const rowsEl = document.getElementById("leaderboardRows");
+    if (!rowsEl) return;
+
+    const now = new Date();
+    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+
+    const thisMonth = {};
+    const lastMonth = {};
+    data.forEach(e => {
+        if (!e || !e.executive || !(e.count > 0) || !e.timestamp) return;
+        if (e.timestamp >= startOfThisMonth) {
+            thisMonth[e.executive] = (thisMonth[e.executive] || 0) + e.count;
+        } else if (e.timestamp >= startOfLastMonth) {
+            lastMonth[e.executive] = (lastMonth[e.executive] || 0) + e.count;
+        }
+    });
+
+    // Build rows for every known executive (so quiet users still appear).
+    _lbAllRows = (executives || []).map(name => ({
+        name,
+        current: thisMonth[name] || 0,
+        previous: lastMonth[name] || 0
+    }));
+
+    // Sort: highest current month first, then alphabetical for ties
+    _lbAllRows.sort((a, b) => (b.current - a.current) || a.name.localeCompare(b.name));
+
+    if (sub) {
+        const monthName = now.toLocaleString(undefined, { month: "long" });
+        sub.textContent = `${monthName} vs previous month`;
+    }
+
+    if (_lbAllRows.length === 0) {
+        rowsEl.innerHTML = `<div class="lb-empty">No executives yet</div>`;
+        const pagesEl = document.getElementById("leaderboardPages");
+        if (pagesEl) pagesEl.innerHTML = '';
+        _lbStopRotation();
+        return;
+    }
+
+    // Keep the current page if still valid; otherwise reset to top
+    const totalPages = Math.max(1, Math.ceil(_lbAllRows.length / LB_PAGE_SIZE));
+    if (_lbPageIndex >= totalPages) _lbPageIndex = 0;
+
+    _lbRenderPage(false);
+    _lbStartRotation();
+}
+
+// =====================================================================
+//  Shift Heatmap renderer
+//  Builds a 7-day × 24-hour grid from the last 30 days of walk-ins.
+//  Each cell's intensity is bucketed 0–5 against the busiest cell so
+//  the colour scale stays meaningful regardless of overall volume.
+// =====================================================================
+function renderShiftHeatmap(data) {
+    const grid = document.getElementById("heatmapGrid");
+    if (!grid) return;
+
+    const dowHourCounts = Array.from({ length: 7 }, () => Array(24).fill(0));
+    const thirtyDaysAgo = Date.now() - (30 * 86400000);
+    let maxVal = 0;
+
+    data.forEach(e => {
+        if (!(e.timestamp > thirtyDaysAgo) || !(e.count > 0)) return;
+        const dt = new Date(e.timestamp);
+        dowHourCounts[dt.getDay()][dt.getHours()] += e.count;
+        if (dowHourCounts[dt.getDay()][dt.getHours()] > maxVal) {
+            maxVal = dowHourCounts[dt.getDay()][dt.getHours()];
+        }
+    });
+
+    // Bucket a value 0–5 against the max for colour intensity
+    const bucketOf = (v) => {
+        if (v <= 0) return 0;
+        if (maxVal === 0) return 0;
+        const ratio = v / maxVal;
+        if (ratio >= 0.85) return 5;
+        if (ratio >= 0.65) return 4;
+        if (ratio >= 0.45) return 3;
+        if (ratio >= 0.25) return 2;
+        return 1;
+    };
+
+    const dayShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const cells = [];
+
+    // Header row: blank corner + 24 hour labels (only show every 3rd to keep tidy)
+    cells.push(`<div class="hm-corner"></div>`);
+    for (let h = 0; h < 24; h++) {
+        const lbl = (h % 3 === 0) ? (h < 10 ? "0" + h : "" + h) : "";
+        cells.push(`<div class="hm-hour-label">${lbl}</div>`);
+    }
+
+    // 7 day rows
+    for (let d = 0; d < 7; d++) {
+        cells.push(`<div class="hm-day-label">${dayShort[d]}</div>`);
+        for (let h = 0; h < 24; h++) {
+            const v = dowHourCounts[d][h];
+            const i = bucketOf(v);
+            const hh = h < 10 ? "0" + h : "" + h;
+            const tip = v > 0
+                ? `${dayNames[d]} ${hh}:00 · ${v} walk-in${v === 1 ? '' : 's'}`
+                : `${dayNames[d]} ${hh}:00 · no walk-ins`;
+            cells.push(`<div class="hm-cell" data-i="${i}" title="${tip}"></div>`);
+        }
+    }
+
+    grid.innerHTML = cells.join('');
+}
+
+// Render the enhanced peak card from analytics
+function renderPeakCard(analytics) {
+    const winEl = document.getElementById("peak-hour-val");
+    const subEl = document.getElementById("peak-sub");
+    const metaEl = document.getElementById("peak-meta");
+    if (!winEl || !subEl || !metaEl) return;
+
+    if (analytics.primary === "No Data") {
+        winEl.innerText = "No Data Yet";
+        subEl.innerText = "Peak window appears once walk-ins are logged";
+        metaEl.innerHTML = "";
+        return;
+    }
+
+    winEl.innerText = analytics.primary;
+    subEl.innerText = analytics.busiestDay
+        ? `Busiest weekly slot: ${analytics.busiestDay}`
+        : `Based on the last 30 days of walk-ins`;
+
+    const pills = [];
+    pills.push(`<span class="peak-pill">📊 <strong>${analytics.totalAtPeak}</strong> walk-ins in this hour (30D)</span>`);
+    pills.push(`<span class="peak-pill">📈 Avg <strong>${analytics.avgPerDay}</strong> / day at peak</span>`);
+    if (analytics.secondary) {
+        pills.push(`<span class="peak-pill">🥈 Next busiest: <strong>${analytics.secondary}</strong></span>`);
+    }
+    metaEl.innerHTML = pills.join('');
 }
 
 function renderChart() {
@@ -493,32 +2232,120 @@ setInterval(updateDateTime, 1000);
 
 function toggleDark(){ document.body.classList.toggle("dark"); setTimeout(renderChart, 50); }
 function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
-function openAdmin() { if(prompt("PIN:") === "7255") { renderAdmin(); document.getElementById("adminPanel").classList.add("active"); } }
+function openAdmin() {
+    // ============================================================
+    //  Admin access:
+    //   - Managers open the panel directly (no extra PIN)
+    //   - Executives are blocked
+    //   - Bootstrap fallback PIN "7255" still works for the very
+    //     first setup before any manager has been added.
+    // ============================================================
+    if (isManager()) {
+        renderAdmin();
+        document.getElementById("adminPanel").classList.add("active");
+        return;
+    }
+    if (managers.length === 0) {
+        // First-time setup — allow legacy PIN so a manager can be created.
+        if (prompt("Setup PIN (first manager not yet created):") === "7255") {
+            renderAdmin();
+            document.getElementById("adminPanel").classList.add("active");
+        }
+        return;
+    }
+    alert("Only managers can open the admin panel. Please log in as a manager.");
+}
 function closeAdmin() { document.getElementById("adminPanel").classList.remove("active"); }
 
 function renderAdmin() {
+    // ============================================================
+    //  ENHANCED: Admin panel is now strictly for ADD / REMOVE users.
+    //  The Active / Off-Duty toggle has been moved to each executive's
+    //  card in the main view (managers can switch it from there).
+    // ============================================================
     const list = document.getElementById("unifiedExecList");
     list.innerHTML = executives.map(name => {
         const locked = lockedUsers[name] || false;
+        const statusBadge = locked
+            ? `<span style="font-size:0.65rem; font-weight:800; color:#ff4757; background:rgba(255,71,87,0.1); padding:3px 9px; border-radius:999px; letter-spacing:0.5px;">OFF DUTY</span>`
+            : `<span style="font-size:0.65rem; font-weight:800; color:#00c46a; background:rgba(0,196,106,0.12); padding:3px 9px; border-radius:999px; letter-spacing:0.5px;">ACTIVE</span>`;
         return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; background:rgba(0,102,102,0.05); padding:12px; border-radius:15px;">
-            <span style="font-weight:600;">${name}</span>
-            <div style="display:flex; gap:8px;">
-                <button onclick="toggleLock('${name}')" style="background:${locked ? '#ff4757' : '#006666'}; color:white; border:none; padding:6px 12px; border-radius:8px;">${locked ? 'LOCKED' : 'ACTIVE'}</button>
-                <button onclick="deleteExecutive('${name}')" style="background:rgba(255,71,87,0.1); color:#ff4757; border:none; padding:6px 12px; border-radius:8px;">Remove</button>
-            </div>
+            <span style="font-weight:600; display:flex; align-items:center; gap:10px;">${name} ${statusBadge}</span>
+            <button onclick="deleteExecutive('${name.replace(/'/g, "\\'")}')" style="background:rgba(255,71,87,0.1); color:#ff4757; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-family:inherit; font-weight:700;">Remove</button>
         </div>`;
     }).join('');
+
+    // NEW: managers list
+    const mList = document.getElementById("managerList");
+    if (managers.length === 0) {
+        mList.innerHTML = `<div style="opacity:0.6; font-size:0.85rem; padding:8px;">No managers yet. Add one above.</div>`;
+    } else {
+        mList.innerHTML = managers.map(name => `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; background:rgba(0,102,102,0.05); padding:12px; border-radius:15px;">
+                <span style="font-weight:600;">${name} <span style="font-size:0.7rem; background:rgba(0,102,102,0.15); color:var(--primary); padding:2px 8px; border-radius:999px; font-weight:700; margin-left:6px;">MANAGER</span></span>
+                <button onclick="deleteManager('${name.replace(/'/g, "\\'")}')" style="background:rgba(255,71,87,0.1); color:#ff4757; border:none; padding:6px 12px; border-radius:8px;">Remove</button>
+            </div>`).join('');
+    }
 }
 
-function addExecutive() { 
+// ============================================================
+//  NEW: Manager management (separate from executives so they
+//  do not appear as walk-in cards).
+// ============================================================
+async function addManager() {
+    const input = document.getElementById("newManagerName");
+    const name = input.value.trim();
+    if (!name) return;
+    if (managers.includes(name)) { alert("A manager with that name already exists."); return; }
+    if (executives.includes(name)) { alert("That name is already used by an executive."); return; }
+    const base = window.basePath;
+    await window.dbSet(window.dbRef(window.db, base + "managers/" + name + "/pin"), DEFAULT_PIN);
+    await window.dbSet(window.dbRef(window.db, base + "validPins/" + DEFAULT_PIN), true);
+    input.value = "";
+    // managers list will refresh via the onValue listener
+}
+
+async function deleteManager(name) {
+    if (!confirm(`Remove manager "${name}"?`)) return;
+    const base = window.basePath;
+    try {
+        const pinSnap = await window.dbGet(window.dbRef(window.db, base + "managers/" + name + "/pin"));
+        const removedPin = pinSnap.exists() ? pinSnap.val() : null;
+        await window.dbRemove(window.dbRef(window.db, base + "managers/" + name));
+
+        // Clean up validPins only if no executive AND no other manager uses it,
+        // and only if it's not the default 1234 (which we always keep).
+        if (removedPin && removedPin !== DEFAULT_PIN) {
+            let stillUsed = false;
+            const allExecs = await window.dbGet(window.dbRef(window.db, base + "executives"));
+            if (allExecs.exists()) allExecs.forEach(c => { if (c.val() && c.val().pin === removedPin) stillUsed = true; });
+            if (!stillUsed) {
+                const allMgrs = await window.dbGet(window.dbRef(window.db, base + "managers"));
+                if (allMgrs.exists()) allMgrs.forEach(c => { if (c.val() && c.val().pin === removedPin) stillUsed = true; });
+            }
+            if (!stillUsed) {
+                await window.dbRemove(window.dbRef(window.db, base + "validPins/" + removedPin));
+            }
+        }
+    } catch (e) { /* non-fatal */ }
+}
+
+async function addExecutive() { 
     const input = document.getElementById("newExecName"); 
     const name = input.value.trim(); 
     if(name && !executives.includes(name)) {
         // UPDATE: Pointing to stores/zahia/executiveList
-        window.dbPush(window.dbRef(window.db, window.basePath + "executiveList"), name).then(() => { 
-            input.value = ""; 
-            renderAdmin(); 
-        }); 
+        await window.dbPush(window.dbRef(window.db, window.basePath + "executiveList"), name);
+
+        // ============================================================
+        //  NEW: also seed the executive's PIN record so they can log in
+        //  with the default PIN immediately.
+        // ============================================================
+        await window.dbSet(window.dbRef(window.db, window.basePath + "executives/" + name + "/pin"), DEFAULT_PIN);
+        await window.dbSet(window.dbRef(window.db, window.basePath + "validPins/" + DEFAULT_PIN), true);
+
+        input.value = "";
+        renderAdmin();
     }
 }
 
@@ -531,6 +2358,26 @@ async function deleteExecutive(name) {
         }); 
         // UPDATE: Removing from stores/zahia/locks
         window.dbRemove(window.dbRef(window.db, window.basePath + "locks/" + name));
+
+        // ============================================================
+        //  NEW: also remove their PIN entry. Clean up validPins entry
+        //  only if no other executive shares that PIN.
+        // ============================================================
+        try {
+            const pinSnap = await window.dbGet(window.dbRef(window.db, window.basePath + "executives/" + name + "/pin"));
+            const removedPin = pinSnap.exists() ? pinSnap.val() : null;
+            await window.dbRemove(window.dbRef(window.db, window.basePath + "executives/" + name));
+            if (removedPin && removedPin !== DEFAULT_PIN) {
+                const allSnap = await window.dbGet(window.dbRef(window.db, window.basePath + "executives"));
+                let stillUsed = false;
+                if (allSnap.exists()) {
+                    allSnap.forEach(c => { if (c.val() && c.val().pin === removedPin) stillUsed = true; });
+                }
+                if (!stillUsed) {
+                    await window.dbRemove(window.dbRef(window.db, window.basePath + "validPins/" + removedPin));
+                }
+            }
+        } catch (e) { /* non-fatal */ }
     } 
 }
 
@@ -545,7 +2392,7 @@ function exportData() {
     const e = document.getElementById("endDate").value;
     if(!s || !e) return alert("Please select both Start and End dates");
 
-    const rows = [["Executive", "Count", "Date", "Time"]];
+    const rows = [["Executive", "Count", "Date", "Time", "Submitted By"]];
     const filteredRecords = historyData.filter(d => {
         const dt = new Date(d.timestamp);
         const year = dt.getFullYear();
@@ -559,18 +2406,46 @@ function exportData() {
 
     filteredRecords.forEach(d => {
         const dt = new Date(d.timestamp);
-        rows.push([d.executive, d.count, dt.toLocaleDateString('en-GB'), dt.toLocaleTimeString([], { hour12: false })]);
+        rows.push([
+            d.executive,
+            d.count,
+            dt.toLocaleDateString('en-GB'),
+            dt.toLocaleTimeString([], { hour12: false }),
+            d.submittedBy || ""
+        ]);
     });
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Walkins");
-    XLSX.writeFile(wb, `Alain_Report_${s}_to_${e}.xlsx`);
+    XLSX.writeFile(wb, `Zahia_Report_${s}_to_${e}.xlsx`);
 }
+
+// Expose handlers used from inline onclick attributes
+window.submitPin = submitPin;
+window.cancelExecPicker = cancelExecPicker;
+window.loginAs = loginAs;
+window.logout = logout;
+window.openChangePin = openChangePin;
+window.closeChangePin = closeChangePin;
+window.submitChangePin = submitChangePin;
+window.toggleFullScreen = toggleFullScreen;
+window.toggleDark = toggleDark;
+window.openAdmin = openAdmin;
+window.closeAdmin = closeAdmin;
+window.addExecutive = addExecutive;
+window.deleteExecutive = deleteExecutive;
+window.addManager = addManager;
+window.deleteManager = deleteManager;
+window.toggleLock = toggleLock;
+window.update = update;
+window.renderChart = renderChart;
+window.exportData = exportData;
+window.setActivityFilter = setActivityFilter;
 </script>
 
 <footer style="text-align:center; padding:20px; color:#888; font-size:13px; background: var(--card-bg); border-radius: 0 0 35px 35px;"> 
-      © 2026 Hesper. All rights reserved.
+      © 2026 NK. All rights reserved.
 </footer>
 </body>
 </html>
