@@ -1124,6 +1124,11 @@
             text-align: center; padding: 28px 10px;
             opacity: 0.5; font-style: italic; font-size: 0.9rem;
         }
+        #adminPanel {
+            position: fixed; right: -100%; top: 0; width: 100%; max-width: 400px; 
+            height: 100vh; background: var(--card-bg); box-shadow: -20px 0 50px rgba(0,0,0,0.15);
+            transition: 0.5s ease; z-index: 1000; padding: 25px; box-sizing: border-box;
+        }
         #adminPanel.active { right: 0; }
         /* When a card is locked (Off Duty), dim it but keep the manager's
            ACTIVE/OFF-DUTY toggle clickable so they can re-activate from the
