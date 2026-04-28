@@ -1,10 +1,11 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Zahia Showroom Tracker</title>
+    <title>AlZahia Showroom Tracker</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#006666">
     <link rel="apple-touch-icon" href="rakwalkin.png">
@@ -58,17 +59,17 @@
             --bg: #f2f7f7;
             --card-bg: #ffffff;
             --text-main: #1a2a2a;
-            --rak-text: #1a2a2a;
-            --Zahia-color: #1a2a2a; 
+            --zahia-text: #1a2a2a;
+            --zahia-color: #1a2a2a; 
             --shadow-soft: 0 10px 30px rgba(0, 102, 102, 0.08);
         }
         body.dark {
             --bg: #050a0a;
             --card-bg: #0f1a1a;
             --text-main: #e0f2f2;
-            --rak-text: #ffffff;
+            --zahia-text: #ffffff;
             --primary: #00a8a8;
-            --Zahia-color: #ffffff; 
+            --zahia-color: #ffffff; 
         }
         body { 
             font-family: 'Poppins', sans-serif;
@@ -88,12 +89,12 @@
             flex-direction: column;
             align-items: center;
         }
-        .rak-left {
+        .zahia-left {
             position: absolute;
             left: 0; top: 10px;
             font-size: 2.4rem;
             font-weight: 800;
-            color: var(--rak-text);
+            color: var(--zahia-text);
             letter-spacing: -1.5px;
         }
         .top-controls { position: absolute; right: 0; top: 10px; display: flex; gap: 8px; }
@@ -101,7 +102,7 @@
             font-size: 2.4rem; 
             font-weight: 800;
             margin: 10px 0;
-            color: var(--Zahia-color); 
+            color: var(--zahia-color); 
             letter-spacing: -1.5px;
         }
         .bulletin-board {
@@ -203,8 +204,215 @@
             background: var(--card-bg); cursor: pointer; display: flex; align-items: center; justify-content: center;
             box-shadow: var(--shadow-soft); color: var(--primary); font-size: 1.2rem;
         }
-        #time { font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 800; color: var(--primary); margin: 0; letter-spacing: -1px; }
-        #date-info { font-size: 1.1rem; opacity: 0.8; font-weight: 500; margin-bottom: 15px; }
+        /* ============================================================
+           ENHANCED: Clock & date strip — wide horizontal panel with
+           DAY · TIME · DATE columns. Editorial typography, ultra-clean,
+           kiosk-ready. Designed to feel like a flagship store display.
+           ============================================================ */
+        #datetime {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 28px;
+            width: 100%;
+            max-width: 1325px;
+            margin: 14px auto 22px;
+            padding: 22px 36px;
+            border-radius: 26px;
+            background:
+                radial-gradient(ellipse at 0% 0%, rgba(0,210,210,0.10), transparent 55%),
+                radial-gradient(ellipse at 100% 100%, rgba(0,184,148,0.10), transparent 55%),
+                linear-gradient(135deg, var(--card-bg) 0%, var(--card-bg) 100%);
+            border: 1px solid rgba(0,168,168,0.14);
+            box-shadow:
+                0 18px 40px rgba(0,102,102,0.10),
+                0 2px 6px rgba(0,102,102,0.06),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+            overflow: hidden;
+        }
+        body.dark #datetime {
+            background:
+                radial-gradient(ellipse at 0% 0%, rgba(0,210,210,0.18), transparent 55%),
+                radial-gradient(ellipse at 100% 100%, rgba(0,184,148,0.14), transparent 55%),
+                linear-gradient(135deg, var(--card-bg) 0%, var(--card-bg) 100%);
+            border-color: rgba(0,210,210,0.18);
+            box-shadow:
+                0 18px 40px rgba(0,0,0,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        /* Vertical hairline separators between the three columns. */
+        #datetime::before,
+        #datetime::after {
+            content: '';
+            position: absolute;
+            top: 22%;
+            bottom: 22%;
+            width: 1px;
+            background: linear-gradient(180deg,
+                transparent, rgba(0,168,168,0.32), transparent);
+        }
+        #datetime::before { left: calc(33.333% - 4px); }
+        #datetime::after  { right: calc(33.333% - 4px); }
+        body.dark #datetime::before,
+        body.dark #datetime::after {
+            background: linear-gradient(180deg,
+                transparent, rgba(0,210,210,0.32), transparent);
+        }
+
+        /* ===== Left column: DAY ===== */
+        .clk-day {
+            text-align: left;
+        }
+        .clk-day .clk-eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.62rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: var(--primary); opacity: 0.7;
+            margin-bottom: 4px;
+        }
+        .clk-day .clk-eyebrow .clk-live-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #00d68f;
+            box-shadow: 0 0 0 0 rgba(0,214,143,0.55);
+            animation: clk-pulse 1.6s ease-out infinite;
+        }
+        @keyframes clk-pulse {
+            0%   { box-shadow: 0 0 0 0   rgba(0,214,143,0.55); }
+            70%  { box-shadow: 0 0 0 9px rgba(0,214,143,0);    }
+            100% { box-shadow: 0 0 0 0   rgba(0,214,143,0);    }
+        }
+        #day {
+            display: block;
+            font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.4px;
+            line-height: 1.1;
+        }
+
+        /* ===== Center column: TIME ===== */
+        #time {
+            margin: 0;
+            font-size: clamp(2.6rem, 7vw, 3.6rem);
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            letter-spacing: -1px;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum" 1;
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0;
+            white-space: nowrap;
+        }
+        #time .clk-sep {
+            color: var(--accent);
+            opacity: 0.5;
+            margin: 0 6px;
+            font-weight: 600;
+            transform: translateY(-4px);
+        }
+        #time .clk-sec {
+            font-size: 0.42em;
+            font-weight: 800;
+            color: var(--primary);
+            opacity: 0.55;
+            margin-left: 10px;
+            letter-spacing: 1px;
+            align-self: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ===== Right column: DATE ===== */
+        .clk-date {
+            text-align: right;
+        }
+        .clk-date .clk-eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.62rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: var(--primary); opacity: 0.7;
+            margin-bottom: 4px;
+            justify-content: flex-end;
+        }
+        #date {
+            display: block;
+            font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.4px;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+        }
+        #date-info {
+            margin: 0;
+            font-size: 0;
+        }
+        /* Live seconds progress bar at the bottom of the clock card. */
+        .clk-progress {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 3px;
+            background: rgba(0,168,168,0.10);
+            overflow: hidden;
+        }
+        .clk-progress-fill {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent), #00b894);
+            background-size: 200% 100%;
+            animation: clk-shine 4s linear infinite;
+            transition: width 0.45s cubic-bezier(.4,0,.2,1);
+            border-radius: 0 3px 3px 0;
+        }
+        @keyframes clk-shine {
+            0%   { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        @media (max-width: 900px) {
+            #datetime {
+                gap: 18px;
+                padding: 18px 22px;
+            }
+            #datetime::before { left: calc(33.333% - 6px); }
+            #datetime::after  { right: calc(33.333% - 6px); }
+        }
+        @media (max-width: 720px) {
+            #datetime {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 18px 18px 22px;
+                text-align: center;
+                border-radius: 22px;
+            }
+            #datetime::before, #datetime::after { display: none; }
+            .clk-day, .clk-date { text-align: center; }
+            .clk-day .clk-eyebrow, .clk-date .clk-eyebrow { justify-content: center; }
+            #time {
+                font-size: clamp(2.4rem, 11vw, 3.4rem);
+                justify-content: center;
+                width: 100%;
+            }
+            #time .clk-sep { margin: 0 4px; }
+            #time .clk-sec {
+                font-size: 0.36em;
+                margin-left: 8px;
+                padding: 4px 8px;
+                border-radius: 8px;
+                background: rgba(0,168,168,0.12);
+            }
+            #day, #date { font-size: clamp(0.95rem, 3.6vw, 1.2rem); }
+            .clk-day .clk-eyebrow, .clk-date .clk-eyebrow {
+                font-size: 0.58rem; letter-spacing: 1.6px;
+            }
+        }
+        @media (max-width: 420px) {
+            #datetime { padding: 16px 14px 20px; gap: 8px; border-radius: 18px; }
+            #time { font-size: clamp(2rem, 12vw, 2.8rem); letter-spacing: -0.5px; }
+            #time .clk-sec { display: none; }
+        }
         /* ============================================================
            ENHANCED: Peak Activity card — gradient hero look with
            primary window, sub-metrics, and a busiest day-of-week badge.
@@ -431,7 +639,111 @@
            ENHANCED: Daily / Weekly / Monthly stat cards.
            Each gets its own accent color, icon, and animated number.
            ============================================================ */
-        .totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+        .totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+        /* ============================================================
+           NEW: Compact Walk-in Comparison strip (Last Week / Last Month)
+           ============================================================ */
+        .compare-card {
+            background: var(--card-bg);
+            border-radius: 22px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(0,102,102,0.08);
+            padding: 14px 18px 12px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        body.dark .compare-card { border-color: rgba(255,255,255,0.06); }
+        .compare-card::before {
+            content: '';
+            position: absolute; left: 0; right: 0; top: 0; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), #00b894, var(--primary));
+            background-size: 200% 100%;
+            animation: chart-bar-shine 8s linear infinite;
+            opacity: 0.85;
+        }
+        .compare-head {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+        }
+        .compare-title {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.82rem; font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .compare-title .cmp-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), #00b894);
+            color: #fff; font-size: 0.78rem;
+            box-shadow: 0 4px 10px rgba(0,102,102,0.25);
+        }
+        .compare-toggle {
+            display: inline-flex; gap: 4px;
+            background: rgba(0,102,102,0.06);
+            border: 1px solid rgba(0,168,168,0.18);
+            border-radius: 999px;
+            padding: 3px;
+        }
+        body.dark .compare-toggle {
+            background: rgba(0,210,210,0.08);
+            border-color: rgba(0,210,210,0.20);
+        }
+        .compare-toggle button {
+            background: transparent; border: none;
+            color: var(--text-main); opacity: 0.65;
+            font-family: inherit; font-weight: 800;
+            font-size: 0.7rem; letter-spacing: 0.6px;
+            text-transform: uppercase;
+            padding: 6px 14px; border-radius: 999px; cursor: pointer;
+            transition: background 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+        }
+        .compare-toggle button:hover { opacity: 1; }
+        .compare-toggle button.active {
+            background: linear-gradient(135deg, var(--primary), #00b894);
+            color: #fff;
+            opacity: 1;
+            box-shadow: 0 4px 12px rgba(0,102,102,0.28);
+        }
+        .compare-summary {
+            display: flex; flex-wrap: wrap; align-items: center;
+            gap: 14px;
+            margin: 4px 0 8px;
+            font-size: 0.82rem;
+        }
+        .compare-summary .cmp-stat {
+            display: inline-flex; align-items: baseline; gap: 6px;
+        }
+        .compare-summary .cmp-dot {
+            display: inline-block; width: 10px; height: 10px;
+            border-radius: 50%; margin-right: 4px;
+            transform: translateY(1px);
+        }
+        .compare-summary .cmp-dot.curr { background: var(--primary); }
+        .compare-summary .cmp-dot.prev { background: rgba(120,120,120,0.55); }
+        .compare-summary .cmp-label { opacity: 0.7; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .compare-summary .cmp-val { font-weight: 800; color: var(--primary); font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+        .compare-summary .cmp-delta {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 9px; border-radius: 999px;
+            font-size: 0.72rem; font-weight: 800;
+            margin-left: auto;
+        }
+        .compare-summary .cmp-delta.up   { background: rgba(0,184,148,0.16); color: #00925a; }
+        .compare-summary .cmp-delta.down { background: rgba(255,71,87,0.14);  color: #d8344a; }
+        .compare-summary .cmp-delta.flat { background: rgba(120,120,120,0.14); color: #6b7280; }
+        .compare-canvas-wrap {
+            position: relative;
+            height: 110px;
+            width: 100%;
+        }
+        @media (max-width: 480px) {
+            .compare-card { padding: 12px 14px 10px; }
+            .compare-summary { gap: 10px; font-size: 0.78rem; }
+            .compare-summary .cmp-delta { margin-left: 0; }
+            .compare-canvas-wrap { height: 96px; }
+        }
         .stat-card { 
             position: relative;
             overflow: hidden;
@@ -617,7 +929,98 @@
             text-align: center; padding: 30px 10px;
             opacity: 0.5; font-style: italic; font-size: 0.9rem;
         }
-        .chart-wrapper { background: var(--card-bg); padding: 20px; border-radius: 35px; box-shadow: var(--shadow-soft); margin-bottom: 30px; height: 400px; }
+        /* ============================================================
+           ENHANCED: Traffic Trends chart card — gradient header bar,
+           accent border, KPI strip above the canvas, polished select.
+           ============================================================ */
+        .chart-wrapper {
+            position: relative;
+            background: var(--card-bg);
+            padding: 22px 24px 18px;
+            border-radius: 28px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary);
+            overflow: hidden;
+        }
+        .chart-wrapper::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg,
+                var(--primary), var(--accent), #00b894, var(--primary));
+            background-size: 200% 100%;
+            animation: chart-bar-shine 8s linear infinite;
+            opacity: 0.85;
+        }
+        @keyframes chart-bar-shine {
+            0%   { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        .chart-head {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px; margin-bottom: 14px;
+        }
+        .chart-title {
+            display: inline-flex; align-items: center; gap: 10px;
+            font-size: 1rem; font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin: 0;
+        }
+        .chart-title .ct-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), #00b894);
+            color: #fff; font-size: 0.95rem;
+            box-shadow: 0 4px 14px rgba(0,102,102,0.28);
+        }
+        .chart-kpis {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            margin-bottom: 14px;
+        }
+        .chart-kpi {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: linear-gradient(135deg,
+                rgba(0,102,102,0.06), rgba(0,184,148,0.10));
+            border: 1px solid rgba(0,168,168,0.18);
+            font-size: 0.78rem; font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.2px;
+        }
+        body.dark .chart-kpi {
+            background: linear-gradient(135deg,
+                rgba(0,168,168,0.10), rgba(0,184,148,0.06));
+            border-color: rgba(0,210,210,0.22);
+        }
+        .chart-kpi .ck-label { opacity: 0.65; font-weight: 600; }
+        .chart-kpi .ck-val   { color: var(--primary); font-weight: 800; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+        .chart-kpi .ck-delta { font-weight: 800; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; }
+        .chart-kpi .ck-delta.up   { background: rgba(0,184,148,0.15); color: #00a86b; }
+        .chart-kpi .ck-delta.down { background: rgba(238,9,121,0.12);  color: #e84393; }
+        .chart-kpi .ck-delta.flat { background: rgba(120,120,120,0.15); color: #777; }
+        #viewSelector {
+            padding: 8px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,168,168,0.25);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,102,102,0.08);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #viewSelector:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px rgba(0,102,102,0.14);
+        }
+        .chart-canvas-wrap {
+            position: relative;
+            height: 340px;
+        }
 
         /* ============================================================
            Shift Heatmap — day-of-week × hour grid showing walk-in
@@ -654,9 +1057,10 @@
         .heatmap-scroll::-webkit-scrollbar-thumb { background: rgba(0,102,102,0.3); border-radius: 6px; }
         .heatmap-grid {
             display: grid;
-            grid-template-columns: 56px repeat(24, minmax(22px, 1fr));
-            gap: 3px;
-            min-width: 640px;
+            grid-template-columns: 56px repeat(17, minmax(0, 1fr));
+            gap: 4px;
+            width: 100%;
+            min-width: 100%;
         }
         .heatmap-grid .hm-corner { }
         .heatmap-grid .hm-hour-label,
@@ -671,9 +1075,8 @@
         }
         .heatmap-grid .hm-cell {
             position: relative;
-            aspect-ratio: 1 / 1;
-            min-height: 22px;
-            border-radius: 6px;
+            height: 36px;
+            border-radius: 7px;
             background: rgba(0,102,102,0.06);
             transition: transform 0.12s ease, box-shadow 0.12s ease;
             cursor: default;
@@ -691,6 +1094,22 @@
             transform: scale(1.18);
             box-shadow: 0 4px 14px rgba(0,102,102,0.35);
             z-index: 2;
+        }
+        /* Closing-hour cell (00:00) — kept as a real data cell but visually
+           bookended with a left divider so the day clearly ends at midnight. */
+        .heatmap-grid .hm-cell-close {
+            position: relative;
+        }
+        .heatmap-grid .hm-cell-close::before {
+            content: '';
+            position: absolute;
+            left: -3px; top: 10%; bottom: 10%;
+            width: 1px;
+            background: rgba(0,102,102,0.30);
+            border-radius: 2px;
+        }
+        body.dark .heatmap-grid .hm-cell-close::before {
+            background: rgba(255,255,255,0.22);
         }
         .heatmap-legend {
             display: flex; align-items: center; justify-content: flex-end;
@@ -719,26 +1138,228 @@
         .locked { opacity: 0.7; filter: grayscale(0.5); }
         .locked .controls { opacity: 0.4; pointer-events: none; }
         .locked-tag { color: #ff4757; font-size: 0.7rem; font-weight: 800; display: block; }
-        .footer-export { 
-            text-align: center; padding: 30px 15px; background: var(--card-bg); border-radius: 35px; 
-            box-shadow: var(--shadow-soft); margin-bottom: 40px; 
+        /* ============================================================
+           ENHANCED: Export panel — page-width hero card. Range fields
+           are centered, the EXPORT button stretches the full width of
+           the panel for a clear, kiosk-friendly tap target.
+           ============================================================ */
+       /* Updated Export Container — Full width & Responsive */
+        .footer-export {
+            text-align: center; 
+            padding: 16px; /* Reduced vertical padding for a smaller height */
+            background: var(--card-bg); 
+            border-radius: 22px;
+            box-shadow: var(--shadow-soft); 
+            margin: 0 auto 40px;
+            border-left: 5px solid var(--primary);
+            position: relative; 
+            overflow: hidden;
+            max-width: 100%; /* Matches the page width */
+            box-sizing: border-box; /* Ensures padding doesn't push it off-screen */
         }
-        .footer-export h3 { margin-top: 0; }
-        .footer-export input { margin-bottom: 10px; width: 130px; }
+
+        .footer-export::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), #00b894, var(--primary));
+            background-size: 200% 100%;
+            animation: chart-bar-shine 8s linear infinite;
+            opacity: 0.85;
+        }
+
+        .footer-export .fe-title {
+            margin: 0; font-size: 0.95rem; font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+
+        .footer-export .fe-title .fe-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 8px; /* Slightly smaller icon */
+            background: linear-gradient(135deg, var(--primary), #00b894);
+            color: #fff; font-size: 0.9rem;
+            box-shadow: 0 4px 14px rgba(0,102,102,0.28);
+        }
+
+        .footer-export .fe-sub {
+            margin: 4px 0 14px; font-size: 0.8rem;
+            opacity: 0.65; font-weight: 600;
+        }
+
+        /* Responsive Range Container */
+        .footer-export .fe-range {
+            display: flex; /* Changed from inline-flex to flex */
+            align-items: center; 
+            justify-content: center;
+            flex-wrap: wrap; /* Allows wrapping on mobile */
+            gap: 12px; 
+            margin-bottom: 16px;
+            padding: 10px 14px; 
+            border-radius: 16px;
+            background: rgba(0,168,168,0.06);
+            border: 1px solid rgba(0,168,168,0.18);
+        }
+
+        body.dark .footer-export .fe-range {
+            background: rgba(0,210,210,0.08);
+            border-color: rgba(0,210,210,0.20);
+        }
+
+        .footer-export .fe-field {
+            display: inline-flex; flex-direction: column; align-items: flex-start; gap: 4px;
+            font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--primary); opacity: 0.75;
+            flex: 1; /* Allows inputs to grow equally */
+            min-width: 140px; /* Prevents inputs from getting too squished */
+        }
+
+        .footer-export .fe-field input {
+            width: 100%; /* Fixes input to field width */
+            padding: 8px 12px; /* Smaller height */
+            border-radius: 10px;
+            border: 1px solid rgba(0,168,168,0.25);
+            background: var(--card-bg); color: var(--text-main);
+            font-family: inherit; font-weight: 700; font-size: 0.85rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .footer-export .fe-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,168,168,0.18);
+        }
+
+        .footer-export .fe-arrow {
+            font-size: 1rem; font-weight: 800;
+            color: var(--primary); opacity: 0.55;
+        }
+
+        /* Full-Width Responsive Button */
+        .footer-export .fe-export-btn {
+            display: flex; /* Full width behavior */
+            align-items: center; 
+            justify-content: center;
+            gap: 10px;
+            width: 100%; /* Matches parent width */
+            max-width: 100%; /* Removed the 360px cap */
+            padding: 12px 20px; /* Reduced height */
+            background: linear-gradient(135deg, var(--primary) 0%, #00897b 50%, #00b894 100%);
+            background-size: 200% 200%;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 20px rgba(0,102,102,0.2),
+                        inset 0 1px 0 rgba(255,255,255,0.18);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background-position 0.4s ease;
+        }
+
+        /* Mobile specific adjustment for the arrow */
+        @media (max-width: 480px) {
+            .footer-export .fe-arrow {
+                display: none; /* Hide arrow on very small screens to save space */
+            }
+            .footer-export .fe-field {
+                width: 100%;
+            }
+        }
+
+        .footer-export .fe-export-btn:hover {
+            transform: translateY(-2px);
+            background-position: 100% 100%;
+            box-shadow: 0 12px 24px rgba(0,102,102,0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .footer-export .fe-export-btn:active {
+            transform: translateY(0);
+        }
+
+        .footer-export .fe-export-btn .fe-export-ic {
+            font-size: 1rem;
+        }
+        @media (max-width: 1024px) {
+            .container { max-width: 100%; }
+            .executives { grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); }
+            .chart-canvas-wrap { height: 300px; }
+        }
         @media (max-width: 768px) {
-            .rak-left { position: static; font-size: 2rem; margin-bottom: -10px; }
-            .top-controls { position: static; margin-bottom: 15px; }
-            .showroom-title { font-size: 1.8rem; }
-            .totals { grid-template-columns: 1fr; }
-            .stat-card { padding: 15px; }
-            .executives { grid-template-columns: 1fr 1fr; }
+            body { padding: 12px; }
+            header { display: flex; flex-direction: column; align-items: center; padding-top: 0; }
+            .zahia-left { position: static; font-size: 1.8rem; margin: 0 0 4px; align-self: flex-start; }
+            .top-controls { position: static; margin: 0 0 12px; align-self: flex-end; }
+            .showroom-title { font-size: 1.6rem; margin: 4px 0 8px; }
+            .bulletin-board { padding: 10px 12px; border-radius: 14px; }
+            .bulletin-label { font-size: 0.62rem; padding: 5px 10px; margin-right: 8px; }
+            #smart-insight { font-size: 0.92rem; }
+            .totals { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .stat-card { padding: 14px 8px 12px; border-radius: 18px; }
+            .stat-card .stat-icon-wrap { width: 36px; height: 36px; font-size: 1rem; margin-bottom: 6px; }
+            .stat-card h3 { font-size: 0.62rem; letter-spacing: 1px; }
+            .stat-card .stat-num { font-size: clamp(1.4rem, 5vw, 2rem); }
+            .stat-card .stat-foot { font-size: 0.58rem; letter-spacing: 0.4px; }
+            .executives { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .card { padding: 14px 10px 10px; border-radius: 20px; min-height: 150px; }
+            .card h3 { font-size: 0.92rem; height: 2.2em; }
+            .controls { padding: 6px; }
+            .controls button { width: 36px; height: 36px; font-size: 1.2rem; }
+            .controls .count { font-size: 1.2rem; }
+            .chart-wrapper { padding: 16px 14px 14px; border-radius: 20px; }
+            .chart-canvas-wrap { height: 260px; }
+            .chart-head { gap: 8px; margin-bottom: 10px; }
+            .chart-title { font-size: 0.85rem; }
+            .chart-title .ct-icon { width: 28px; height: 28px; font-size: 0.85rem; }
+            .heatmap-card { padding: 16px 14px 14px; border-radius: 20px; }
+            .heatmap-grid { grid-template-columns: 44px repeat(17, minmax(28px, 1fr)); gap: 3px; min-width: 560px; }
+            .heatmap-grid .hm-cell { height: 28px; border-radius: 6px; }
+            .footer-export { padding: 18px 16px; border-radius: 18px; }
+            .footer-export .fe-title { font-size: 0.88rem; }
+            .footer-export .fe-sub { font-size: 0.78rem; margin-bottom: 14px; }
+            .footer-export .fe-range { padding: 10px 12px; gap: 10px; width: 100%; box-sizing: border-box; }
+            .footer-export .fe-field { flex: 1; min-width: 0; }
+            .footer-export .fe-field input { min-width: 0; width: 100%; box-sizing: border-box; font-size: 0.85rem; padding: 9px 10px; }
+            .footer-export .fe-arrow { display: none; }
+            .session-bar { flex-wrap: wrap; gap: 8px; padding: 14px; }
+            .session-bar .who { flex: 1 1 100%; text-align: center; font-size: 0.82rem; }
+            .session-bar button { padding: 9px 14px; font-size: 0.78rem; flex: 1; }
+            .peak-and-board { gap: 12px; margin-bottom: 16px; }
+            .leaderboard-card { padding: 12px 14px 10px; border-radius: 18px; }
+            .lb-row { padding: 6px 8px; gap: 8px; grid-template-columns: 26px minmax(0, 1fr) auto auto; }
+            .lb-rank { width: 24px; height: 24px; font-size: 0.75rem; }
+            .lb-name { font-size: 0.85rem; }
+            .lb-count { font-size: 0.95rem; min-width: 28px; }
+            .lb-trend { font-size: 0.62rem; padding: 3px 7px; min-width: 48px; }
+            .compare-card { padding: 12px 14px 10px; border-radius: 18px; }
+            .compare-canvas-wrap { height: 100px; }
         }
         @media (max-width: 480px) {
             body { padding: 10px; }
+            .executives { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .totals { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .stat-card { padding: 12px 6px 10px; border-radius: 16px; }
+            .stat-card .stat-icon-wrap { width: 30px; height: 30px; font-size: 0.85rem; margin-bottom: 4px; }
+            .stat-card h3 { font-size: 0.55rem; }
+            .stat-card .stat-num { font-size: 1.3rem; }
+            .stat-card .stat-foot { display: none; }
+            .footer-export .fe-export-btn { width: 100%; min-width: 0; max-width: 100%; margin: 10px 0 0 0; }
+            .footer-export .fe-field input { width: 100%; min-width: 0; }
+            .footer-export .fe-field { width: 100%; }
+            .footer-export .fe-range { width: 100%; box-sizing: border-box; flex-direction: column; align-items: stretch; }
+            .compare-summary { font-size: 0.75rem; }
+            .compare-summary .cmp-val { font-size: 0.95rem; }
+            .compare-toggle button { font-size: 0.62rem; padding: 5px 10px; letter-spacing: 0.4px; }
+        }
+        @media (max-width: 360px) {
             .executives { grid-template-columns: 1fr; }
-            .footer-export button { width: 100%; margin: 10px 0 0 0; }
-            .footer-export input { width: 40%; }
-            #time { font-size: 3rem; }
+            .totals { grid-template-columns: 1fr 1fr; }
+            .totals .stat-card.monthly { grid-column: span 2; }
         }
 
         /* ============================================================
@@ -883,7 +1504,7 @@
      ============================================================ -->
 <div id="pinOverlay" class="pin-overlay">
     <div class="pin-card">
-        <span class="pin-store-tag" id="pinStoreTag">Al Zahia Showroom</span>
+        <span class="pin-store-tag" id="pinStoreTag">AlZahia Showroom</span>
         <h2>Login</h2>
         <p class="sub">Enter your 4-digit PIN to access the showroom tracker.<br></p>
         <input id="pinInput" class="pin-input" type="password" inputmode="numeric"
@@ -930,13 +1551,13 @@
 
 <div class="container">
     <header>
-        <div class="rak-left">RAK</div>
+        <div class="zahia-left">RAK</div>
         <div class="top-controls">
             <button class="btn-tool" onclick="toggleFullScreen()">⛶</button>
             <button class="btn-tool" onclick="toggleDark()">🌓</button>
             <button class="btn-tool" onclick="openAdmin()">⚙️</button>
         </div>
-        <h2 class="showroom-title">Al Zahia Showroom</h2>
+        <h2 class="showroom-title">AlZahia Showroom</h2>
 
         <!-- NEW: current user chip -->
         <div class="current-user-chip" id="currentUserChip" style="display:none;">
@@ -952,8 +1573,18 @@
         </div>
 
         <div id="datetime">
-            <h1 id="time">00:00:00</h1>
-            <div id="date-info"><span id="day"></span>, <span id="date"></span></div>
+            <div class="clk-day">
+                <span class="clk-eyebrow"><span class="clk-live-dot"></span>Today</span>
+                <span id="day"></span>
+            </div>
+            <h1 id="time">
+                <span id="time-h">00</span><span class="clk-sep">:</span><span id="time-m">00</span><span class="clk-sec" id="time-s">00</span>
+            </h1>
+            <div class="clk-date">
+                <span class="clk-eyebrow">Date</span>
+                <div id="date-info"><span id="date"></span></div>
+            </div>
+            <div class="clk-progress"><span class="clk-progress-fill" id="clk-progress-fill"></span></div>
         </div>
     </header>
 
@@ -1009,18 +1640,39 @@
         </div>
     </div>
 
+    <!-- NEW: Walk-in comparison strip — Last 7 days vs prior 7 days, or Last 30 vs prior 30. -->
+    <div class="compare-card">
+        <div class="compare-head">
+            <div class="compare-title">
+                <span class="cmp-icon">↺</span>
+                <span>Walk-ins Comparison</span>
+            </div>
+            <div class="compare-toggle" id="compareToggle">
+                <button type="button" class="active" data-range="week" onclick="setCompareRange('week')">Last Week</button>
+                <button type="button" data-range="month" onclick="setCompareRange('month')">Last Month</button>
+            </div>
+        </div>
+        <div class="compare-summary" id="compareSummary"></div>
+        <div class="compare-canvas-wrap">
+            <canvas id="compareChart"></canvas>
+        </div>
+    </div>
+
     <div class="executives" id="grid"></div>
 
     <!-- Charts now appear directly under the executive grid (more important than the log) -->
     <div class="chart-wrapper">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="margin:0; font-weight: 700;">Traffic Trends</h3>
-            <select id="viewSelector" onchange="renderChart()" style="padding:8px; border-radius:10px; border:1px solid #ddd; font-family:inherit;">
+        <div class="chart-head">
+            <h3 class="chart-title"><span class="ct-icon">📈</span> Traffic Trends</h3>
+            <select id="viewSelector" onchange="renderChart()">
                 <option value="line">Daily Trend (Line)</option>
                 <option value="bar">Day of Week Analysis (Bar)</option>
             </select>
         </div>
-        <canvas id="walkinChart"></canvas>
+        <div class="chart-kpis" id="chartKpis"></div>
+        <div class="chart-canvas-wrap">
+            <canvas id="walkinChart"></canvas>
+        </div>
     </div>
 
     <!-- ENHANCED: Shift Heatmap — day-of-week × hour intensity grid.
@@ -1031,7 +1683,7 @@
                 <span class="hm-icon">⚡</span>
                 Shift Heatmap
             </div>
-            <div class="heatmap-sub">Walk-in intensity by day &amp; hour · last 30 days</div>
+            <div class="heatmap-sub">Walk-in intensity · 08:00 → 00:00 · last 30 days</div>
         </div>
         <div class="heatmap-scroll">
             <div class="heatmap-grid" id="heatmapGrid"></div>
@@ -1068,11 +1720,23 @@
     </div>
 
     <div class="footer-export">
-        <h3>Export Records</h3>
-        <input type="date" id="startDate" style="padding:10px; border-radius:10px; border:1px solid #ddd;"> 
-        <span style="font-weight:bold; margin:0 10px;">TO</span>
-        <input type="date" id="endDate" style="padding:10px; border-radius:10px; border:1px solid #ddd;">
-        <button onclick="exportData()" style="padding:12px 24px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:700; margin-left:10px;">EXPORT EXCEL</button>
+        <h3 class="fe-title"><span class="fe-icon">⬇</span> Export Records</h3>
+        <p class="fe-sub">Pick a date range, then download an Excel report</p>
+        <div class="fe-range">
+            <label class="fe-field">
+                <span>From</span>
+                <input type="date" id="startDate">
+            </label>
+            <span class="fe-arrow">→</span>
+            <label class="fe-field">
+                <span>To</span>
+                <input type="date" id="endDate">
+            </label>
+        </div>
+        <button class="fe-export-btn" onclick="exportData()">
+            <span class="fe-export-ic">📊</span>
+            EXPORT TO EXCEL
+        </button>
     </div>
 
     <!-- NEW: Session bar (Change PIN + Logout) moved here from header -->
@@ -1110,6 +1774,8 @@ let executives = [];
 let managers = []; // NEW: list of manager names
 let lockedUsers = {};
 let walkinChart;
+let compareChart;
+let compareRange = "week"; // "week" or "month"
 let historyData = [];
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const showroomLat = 24.494089, showroomLon = 54.375722, allowedRadiusKM = 1.0;
@@ -1250,7 +1916,7 @@ async function submitPin() {
     errEl.innerText = "";
 
     if (!/^\d{4}$/.test(pin)) {
-        errEl.innerText = "PIN must be exactly 4 digits.";
+        errEl.innerText = "PIN zahiat be exactly 4 digits.";
         return;
     }
 
@@ -1350,7 +2016,7 @@ function logout() {
 
 function openChangePin() {
     if (!getCurrentExec()) {
-        alert("You must be logged in to change your PIN.");
+        alert("You zahiat be logged in to change your PIN.");
         return;
     }
     document.getElementById("changePinExecName").innerText = getCurrentExec();
@@ -1378,7 +2044,7 @@ async function submitChangePin() {
     const confirmPin = (document.getElementById("confirmPinInput").value || "").trim();
 
     if (!/^\d{4}$/.test(current) || !/^\d{4}$/.test(next) || !/^\d{4}$/.test(confirmPin)) {
-        errEl.innerText = "All PINs must be exactly 4 digits.";
+        errEl.innerText = "All PINs zahiat be exactly 4 digits.";
         return;
     }
     if (next !== confirmPin) {
@@ -1386,7 +2052,7 @@ async function submitChangePin() {
         return;
     }
     if (next === current) {
-        errEl.innerText = "New PIN must be different from current PIN.";
+        errEl.innerText = "New PIN zahiat be different from current PIN.";
         return;
     }
 
@@ -1563,6 +2229,7 @@ function syncWalkins() {
 
         updateInsights(counts, d);
         renderChart();
+        renderCompareChart();
         renderShiftHeatmap(historyData);
         renderMonthlyLeaderboard(historyData);
         renderActivityLog();
@@ -1713,7 +2380,7 @@ function update(name, val) {
                     pin: loggedInPin
                 });
             } else {
-                alert(`Access Denied: You are ${dist.toFixed(2)}km away. You must be at Al Zahia Showroom.`);
+                alert(`Access Denied: You are ${dist.toFixed(2)}km away. You zahiat be at AlZahia Showroom.`);
             }
         }, 
         (err) => alert("Location Error: Please ensure GPS is ON and permission is granted."), 
@@ -1739,7 +2406,7 @@ function updateInsights(monthlyCounts, dailyTotal) {
     if (hour >= 12 && hour < 17) { greetIcon = "☀️"; greetWord = "Good afternoon"; }
     else if (hour >= 17 && hour < 22) { greetIcon = "🌇"; greetWord = "Good evening"; }
     else if (hour >= 22 || hour < 5) { greetIcon = "🌙"; greetWord = "Late shift, legends"; }
-    messages.push(`${greetIcon} <span class="feed-pill blue">TEAM ALZAHIA</span> ${greetWord}, Al Zahia Showroom — let's make today legendary!`);
+    messages.push(`${greetIcon} <span class="feed-pill blue">TEAM ALZAHIA</span> ${greetWord}, AlZahia Showroom — let's make today legendary!`);
 
     // ---------- Headline stats ----------
     if (dailyTotal > 0) {
@@ -1811,7 +2478,7 @@ function updateInsights(monthlyCounts, dailyTotal) {
         `💬 "People don't buy for logical reasons. They buy for emotional reasons." — Zig Ziglar`,
         `💬 "Begin by always expecting good things to happen." — Tom Hopkins`,
         `💬 "Treat objections as requests for further information." — Brian Tracy`,
-        `💬 "Today's walk-in is tomorrow's repeat customer." — Al Zahia Floor Wisdom`,
+        `💬 "Today's walk-in is tomorrow's repeat customer." — AlZahia Showroom Floor Wisdom`,
         `💬 "A satisfied customer is the best business strategy of all." — Michael LeBoeuf`,
         `💬 "Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time." — Thomas Edison`
     ];
@@ -1832,12 +2499,12 @@ function updateInsights(monthlyCounts, dailyTotal) {
 
     // ---------- Milestones ----------
     const monthlyTotal = Object.values(monthlyCounts).reduce((a, b) => a + b, 0);
-    if (monthlyTotal >= 1000) messages.push(`🎉 <span class="feed-pill gold">LEGENDARY</span> Team Al Zahia has crossed ${monthlyTotal} walk-ins this month! 🏅`);
+    if (monthlyTotal >= 1000) messages.push(`🎉 <span class="feed-pill gold">LEGENDARY</span> Team AlZahia has crossed ${monthlyTotal} walk-ins this month! 🏅`);
     else if (monthlyTotal >= 500) messages.push(`🎊 <span class="feed-pill green">MILESTONE</span> ${monthlyTotal} walk-ins this month — halfway to 1000! Push! 💥`);
     else if (monthlyTotal >= 100) messages.push(`🎈 <span class="feed-pill blue">CENTURY+</span> ${monthlyTotal} walk-ins logged this month. Onwards! 🚀`);
 
     // ---------- Closing flourish ----------
-    messages.push(`👩‍💻  <span class="feed-pill green">Team Al Zahia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`);
+    messages.push(`👩‍💻  <span class="feed-pill green">Team AlZahia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`);
 
     // Shuffle middle messages for variety, but keep greeting first and closing last
     const head = messages.slice(0, 1);
@@ -2119,24 +2786,37 @@ function renderShiftHeatmap(data) {
     const dayShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const cells = [];
 
-    // Header row: blank corner + 24 hour labels (only show every 3rd to keep tidy)
+    // Header row: blank corner + hour labels for 08:00 → 00:00 (closing hour).
+    // Showroom opens at 08:00 and closes at 00:00, so we render 17 real cells:
+    //   08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 00
+    // The trailing "00" cell is the closing-hour bucket (any walk-ins logged
+    // between 00:00 and 00:59, e.g. last-minute customers right at close).
+    const HOUR_START = 8;   // inclusive
+    const HOUR_END   = 25;  // exclusive (so h iterates 8..24; h=24 → hour 0)
+    const N_HOURS    = HOUR_END - HOUR_START; // 17
     cells.push(`<div class="hm-corner"></div>`);
-    for (let h = 0; h < 24; h++) {
-        const lbl = (h % 3 === 0) ? (h < 10 ? "0" + h : "" + h) : "";
+    for (let h = HOUR_START; h < HOUR_END; h++) {
+        const realH = h % 24;
+        // Show every 2nd label + always show the final closing hour (00).
+        const show = ((h - HOUR_START) % 2 === 0) || h === (HOUR_END - 1);
+        const lbl = show ? (realH < 10 ? "0" + realH : "" + realH) : "";
         cells.push(`<div class="hm-hour-label">${lbl}</div>`);
     }
 
-    // 7 day rows
+    // 7 day rows  — 17 real cells per row (8..23 + closing hour 00)
     for (let d = 0; d < 7; d++) {
         cells.push(`<div class="hm-day-label">${dayShort[d]}</div>`);
-        for (let h = 0; h < 24; h++) {
-            const v = dowHourCounts[d][h];
+        for (let h = HOUR_START; h < HOUR_END; h++) {
+            const realH = h % 24;
+            const v = dowHourCounts[d][realH];
             const i = bucketOf(v);
-            const hh = h < 10 ? "0" + h : "" + h;
+            const hh = realH < 10 ? "0" + realH : "" + realH;
+            const closeTag = (h === HOUR_END - 1) ? ' (closing)' : '';
             const tip = v > 0
-                ? `${dayNames[d]} ${hh}:00 · ${v} walk-in${v === 1 ? '' : 's'}`
-                : `${dayNames[d]} ${hh}:00 · no walk-ins`;
-            cells.push(`<div class="hm-cell" data-i="${i}" title="${tip}"></div>`);
+                ? `${dayNames[d]} ${hh}:00${closeTag} · ${v} walk-in${v === 1 ? '' : 's'}`
+                : `${dayNames[d]} ${hh}:00${closeTag} · no walk-ins`;
+            const closeClass = (h === HOUR_END - 1) ? ' hm-cell-close' : '';
+            cells.push(`<div class="hm-cell${closeClass}" data-i="${i}" title="${tip}"></div>`);
         }
     }
 
@@ -2173,7 +2853,8 @@ function renderPeakCard(analytics) {
 
 function renderChart() {
     const type = document.getElementById("viewSelector").value;
-    const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+    const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#006666';
+    const accent  = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()  || '#00d2d2';
     const isDark = document.body.classList.contains('dark');
     const now = new Date();
     let labels = [], data = [];
@@ -2190,7 +2871,7 @@ function renderChart() {
         data = labels.map(day => dailyMap[day] || 0);
     } else {
         labels = dayNames;
-        const weekMap = [0,0,0,0,0,0,0]; 
+        const weekMap = [0,0,0,0,0,0,0];
         historyData.forEach(h => {
             const dt = new Date(h.timestamp);
             if(dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear()) {
@@ -2200,40 +2881,178 @@ function renderChart() {
         data = weekMap;
     }
 
+    // Build a vertical gradient fill for the line chart (and a soft tint for bars).
+    const canvas = document.getElementById('walkinChart');
+    const ctx = canvas.getContext('2d');
+    const lineGrad = ctx.createLinearGradient(0, 0, 0, 340);
+    lineGrad.addColorStop(0, 'rgba(0,168,168,0.45)');
+    lineGrad.addColorStop(0.5, 'rgba(0,168,168,0.18)');
+    lineGrad.addColorStop(1, 'rgba(0,168,168,0.02)');
+
+    const barGrad = ctx.createLinearGradient(0, 0, 0, 340);
+    barGrad.addColorStop(0, accent);
+    barGrad.addColorStop(1, primary);
+
+    // Highlight the busiest column / point in a warm accent for instant scanning.
+    const maxVal = Math.max(...data, 0);
+    const pointColors = data.map(v => (v === maxVal && maxVal > 0) ? '#f7971e' : primary);
+    const pointRadii  = data.map(v => (v === maxVal && maxVal > 0) ? 6 : 3);
+    const barColors   = data.map(v => (v === maxVal && maxVal > 0)
+        ? 'rgba(247,151,30,0.95)' : barGrad);
+
     if (walkinChart) walkinChart.destroy();
-    walkinChart = new Chart(document.getElementById('walkinChart'), {
+    walkinChart = new Chart(canvas, {
         type: type === 'line' ? 'line' : 'bar',
-        data: { 
-            labels: labels, 
-            datasets: [{ 
-                label: 'Visitors', 
-                data: data, 
-                borderColor: primary, 
-                backgroundColor: type === 'line' ? 'rgba(0,168,168,0.1)' : primary, 
-                fill: true, tension: 0.4, borderRadius: type === 'bar' ? 8 : 0,
-                pointBackgroundColor: primary, pointRadius: 4
-            }] 
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Visitors',
+                data: data,
+                borderColor: primary,
+                borderWidth: type === 'line' ? 3 : 0,
+                backgroundColor: type === 'line' ? lineGrad : barColors,
+                fill: type === 'line',
+                tension: 0.45,
+                borderRadius: type === 'bar' ? 10 : 0,
+                pointBackgroundColor: pointColors,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: pointRadii,
+                pointHoverRadius: 8,
+                pointHoverBorderWidth: 3,
+                hoverBackgroundColor: type === 'bar' ? '#f7971e' : undefined
+            }]
         },
-        options: { 
-            responsive: true, maintainAspectRatio: false, 
-            plugins: { legend: { display: false } }, 
-            scales: { 
-                y: { beginAtZero: true, grid: { color: isDark ? '#1a2b2b' : '#f0f0f0' }, ticks: { stepSize: 1 } }, 
-                x: { grid: { display: false } } 
-            } 
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 700, easing: 'easeOutQuart' },
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isDark ? 'rgba(15,26,26,0.96)' : 'rgba(26,42,42,0.96)',
+                    titleColor: '#fff',
+                    bodyColor: '#e0f2f2',
+                    borderColor: accent,
+                    borderWidth: 1,
+                    padding: 12,
+                    cornerRadius: 12,
+                    titleFont: { weight: '800', size: 13 },
+                    bodyFont: { weight: '700', size: 13 },
+                    displayColors: false,
+                    callbacks: {
+                        title: items => {
+                            const lbl = items[0].label;
+                            return type === 'line'
+                                ? `Day ${lbl} of ${now.toLocaleDateString('en-US', { month: 'long' })}`
+                                : `${lbl}`;
+                        },
+                        label: ctx => `  ${ctx.parsed.y} visitor${ctx.parsed.y === 1 ? '' : 's'}`
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,102,102,0.08)',
+                        drawBorder: false
+                    },
+                    border: { display: false },
+                    ticks: {
+                        stepSize: Math.max(1, Math.ceil(maxVal / 5)),
+                        color: isDark ? '#7fb8b8' : '#557575',
+                        font: { weight: '600', size: 11 },
+                        padding: 8
+                    }
+                },
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    border: { display: false },
+                    ticks: {
+                        color: isDark ? '#7fb8b8' : '#557575',
+                        font: { weight: '700', size: 11 }
+                    }
+                }
+            }
         }
     });
+
+    renderChartKpis(data, type);
+}
+
+// Small KPI strip above the chart — total, average, peak and trend vs prior period.
+function renderChartKpis(data, type) {
+    const kp = document.getElementById('chartKpis');
+    if (!kp) return;
+    if (!data || data.length === 0) { kp.innerHTML = ''; return; }
+
+    const total = data.reduce((a,b) => a + b, 0);
+    const nonZero = data.filter(v => v > 0).length || 1;
+    const avg = (total / nonZero).toFixed(1);
+    const peak = Math.max(...data, 0);
+    const peakIdx = data.indexOf(peak);
+
+    let peakLabel;
+    if (type === 'line') {
+        peakLabel = peak > 0 ? `Day ${peakIdx + 1}` : '—';
+    } else {
+        peakLabel = peak > 0 ? (dayNames[peakIdx] || '—') : '—';
+    }
+
+    // Trend: compare last third vs first third of the series (only meaningful for line view)
+    let deltaHtml = '';
+    if (type === 'line' && data.length >= 6) {
+        const slice = Math.floor(data.length / 3);
+        const first = data.slice(0, slice).reduce((a,b)=>a+b,0) / slice;
+        const last  = data.slice(-slice).reduce((a,b)=>a+b,0) / slice;
+        if (first > 0 || last > 0) {
+            const pct = first === 0 ? 100 : Math.round(((last - first) / first) * 100);
+            const cls = pct > 3 ? 'up' : pct < -3 ? 'down' : 'flat';
+            const arrow = pct > 3 ? '▲' : pct < -3 ? '▼' : '▬';
+            deltaHtml = `<span class="chart-kpi"><span class="ck-label">Trend</span>
+                <span class="ck-delta ${cls}">${arrow} ${Math.abs(pct)}%</span></span>`;
+        }
+    }
+
+    kp.innerHTML = `
+        <span class="chart-kpi"><span class="ck-label">Total</span><span class="ck-val">${total}</span></span>
+        <span class="chart-kpi"><span class="ck-label">Avg / active ${type === 'line' ? 'day' : 'weekday'}</span><span class="ck-val">${avg}</span></span>
+        <span class="chart-kpi"><span class="ck-label">Peak</span><span class="ck-val">${peak}</span><span class="ck-label">· ${peakLabel}</span></span>
+        ${deltaHtml}
+    `;
 }
 
 function updateDateTime(){
     const now = new Date();
     document.getElementById('day').innerText = now.toLocaleDateString('en-US', { weekday: 'long' });
     document.getElementById('date').innerText = now.toLocaleDateString('en-GB');
-    document.getElementById('time').innerText = now.toLocaleTimeString([], { hour12: false });
+
+    // Split-digit clock: HH : MM with seconds shown as a small accent chip.
+    // Falls back gracefully if the new split spans don't exist (older markup).
+    const pad = n => (n < 10 ? "0" + n : "" + n);
+    const hEl = document.getElementById('time-h');
+    const mEl = document.getElementById('time-m');
+    const sEl = document.getElementById('time-s');
+    if (hEl && mEl && sEl) {
+        hEl.innerText = pad(now.getHours());
+        mEl.innerText = pad(now.getMinutes());
+        sEl.innerText = pad(now.getSeconds());
+    } else {
+        document.getElementById('time').innerText =
+            now.toLocaleTimeString([], { hour12: false });
+    }
+
+    // Live seconds progress bar — fills 0 → 100% across each minute.
+    const fill = document.getElementById('clk-progress-fill');
+    if (fill) {
+        const pct = ((now.getSeconds() + now.getMilliseconds() / 1000) / 60) * 100;
+        fill.style.width = pct.toFixed(1) + '%';
+    }
 }
 setInterval(updateDateTime, 1000);
 
-function toggleDark(){ document.body.classList.toggle("dark"); setTimeout(renderChart, 50); }
+function toggleDark(){ document.body.classList.toggle("dark"); setTimeout(() => { renderChart(); renderCompareChart(); }, 50); }
 function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 function openAdmin() {
     // ============================================================
@@ -2421,7 +3240,7 @@ function exportData() {
     const ws = XLSX.utils.aoa_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Walkins");
-    XLSX.writeFile(wb, `Zahia_Report_${s}_to_${e}.xlsx`);
+    XLSX.writeFile(wb, `AlZahia_Report_${s}_to_${e}.xlsx`);
 }
 
 // Expose handlers used from inline onclick attributes
@@ -2442,6 +3261,175 @@ window.addManager = addManager;
 window.deleteManager = deleteManager;
 window.toggleLock = toggleLock;
 window.update = update;
+// ================================================================
+//  NEW: Walk-in comparison chart — current period vs prior period.
+//  range = "week"  → last 7 days vs prior 7 days (daily totals)
+//  range = "month" → last 30 days vs prior 30 days (daily totals)
+// ================================================================
+function setCompareRange(range) {
+    if (range !== "week" && range !== "month") return;
+    compareRange = range;
+    document.querySelectorAll("#compareToggle button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.range === range);
+    });
+    renderCompareChart();
+}
+window.setCompareRange = setCompareRange;
+
+function buildComparisonSeries(range) {
+    const days = range === "month" ? 30 : 7;
+    // Anchor at end of today (local).
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    const msDay = 86400000;
+
+    const currStart = new Date(end.getTime() - days * msDay + 1);
+    currStart.setHours(0, 0, 0, 0);
+    const prevEnd = new Date(currStart.getTime() - 1);
+    const prevStart = new Date(prevEnd.getTime() - days * msDay + 1);
+    prevStart.setHours(0, 0, 0, 0);
+
+    const curr = new Array(days).fill(0);
+    const prev = new Array(days).fill(0);
+
+    historyData.forEach(h => {
+        const ts = h && h.timestamp;
+        if (!ts) return;
+        const c = +h.count || 0;
+        if (ts >= currStart.getTime() && ts <= end.getTime()) {
+            const idx = Math.floor((ts - currStart.getTime()) / msDay);
+            if (idx >= 0 && idx < days) curr[idx] += c;
+        } else if (ts >= prevStart.getTime() && ts <= prevEnd.getTime()) {
+            const idx = Math.floor((ts - prevStart.getTime()) / msDay);
+            if (idx >= 0 && idx < days) prev[idx] += c;
+        }
+    });
+
+    // X-axis labels: short date for week view, day index for month view.
+    const labels = [];
+    for (let i = 0; i < days; i++) {
+        const d = new Date(currStart.getTime() + i * msDay);
+        if (range === "week") {
+            labels.push(d.toLocaleDateString("en-US", { weekday: "short" }));
+        } else {
+            labels.push(d.toLocaleDateString("en-US", { day: "numeric", month: "short" }));
+        }
+    }
+
+    return { curr, prev, labels, days, currStart, prevStart, prevEnd, end };
+}
+
+function renderCompareChart() {
+    const canvas = document.getElementById("compareChart");
+    const sumEl = document.getElementById("compareSummary");
+    if (!canvas || !sumEl || typeof Chart === "undefined") return;
+
+    const { curr, prev, labels, days } = buildComparisonSeries(compareRange);
+    const sumCurr = curr.reduce((a, b) => a + b, 0);
+    const sumPrev = prev.reduce((a, b) => a + b, 0);
+
+    let pct = 0, cls = "flat", arrow = "▬";
+    if (sumPrev === 0 && sumCurr > 0) { pct = 100; cls = "up"; arrow = "▲"; }
+    else if (sumPrev > 0) {
+        pct = Math.round(((sumCurr - sumPrev) / sumPrev) * 100);
+        if (pct > 3) { cls = "up"; arrow = "▲"; }
+        else if (pct < -3) { cls = "down"; arrow = "▼"; }
+    }
+
+    const currLabel = compareRange === "week" ? "Last 7 days" : "Last 30 days";
+    const prevLabel = compareRange === "week" ? "Prior 7 days" : "Prior 30 days";
+    sumEl.innerHTML = `
+        <span class="cmp-stat"><span class="cmp-dot curr"></span><span class="cmp-label">${currLabel}</span><span class="cmp-val">${sumCurr}</span></span>
+        <span class="cmp-stat"><span class="cmp-dot prev"></span><span class="cmp-label">${prevLabel}</span><span class="cmp-val" style="color:#6b7280;">${sumPrev}</span></span>
+        <span class="cmp-delta ${cls}">${arrow} ${Math.abs(pct)}%</span>
+    `;
+
+    const primary = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim() || "#006666";
+    const accent  = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()  || "#00d2d2";
+    const isDark = document.body.classList.contains("dark");
+    const ctx = canvas.getContext("2d");
+    const grad = ctx.createLinearGradient(0, 0, 0, 120);
+    grad.addColorStop(0, "rgba(0,168,168,0.32)");
+    grad.addColorStop(1, "rgba(0,168,168,0.02)");
+
+    if (compareChart) compareChart.destroy();
+    compareChart = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: prevLabel,
+                    data: prev,
+                    borderColor: isDark ? "rgba(200,200,200,0.55)" : "rgba(120,120,120,0.55)",
+                    backgroundColor: "transparent",
+                    borderWidth: 2,
+                    borderDash: [5, 4],
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: isDark ? "#cfcfcf" : "#666",
+                    fill: false
+                },
+                {
+                    label: currLabel,
+                    data: curr,
+                    borderColor: primary,
+                    backgroundColor: grad,
+                    borderWidth: 2.5,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: accent,
+                    pointHoverBorderColor: "#fff",
+                    pointHoverBorderWidth: 2,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 500, easing: "easeOutQuart" },
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isDark ? "rgba(15,26,26,0.96)" : "rgba(26,42,42,0.96)",
+                    titleColor: "#fff",
+                    bodyColor: "#e0f2f2",
+                    borderColor: accent,
+                    borderWidth: 1,
+                    padding: 10,
+                    cornerRadius: 10,
+                    titleFont: { weight: "800", size: 12 },
+                    bodyFont: { weight: "700", size: 12 },
+                    displayColors: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,102,102,0.06)", drawBorder: false },
+                    border: { display: false },
+                    ticks: { display: false }
+                },
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    border: { display: false },
+                    ticks: {
+                        color: isDark ? "#7fb8b8" : "#557575",
+                        font: { weight: "700", size: 10 },
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: compareRange === "month" ? 6 : 7
+                    }
+                }
+            }
+        }
+    });
+}
+window.renderCompareChart = renderCompareChart;
+
 window.renderChart = renderChart;
 window.exportData = exportData;
 window.setActivityFilter = setActivityFilter;
