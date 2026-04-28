@@ -1079,7 +1079,7 @@
             transition: transform 0.12s ease, box-shadow 0.12s ease;
             cursor: default;
         }
-        body.dark .heatmap-grid .hm-cell { background: rgba(255,255,255,0.04); }
+        body.dark .heatmap-grid .hm-cell[data-i="0"] { background: rgba(255,255,255,0.04); }
         .heatmap-grid .hm-cell[data-i="1"] { background: rgba(0,168,168,0.18); }
         .heatmap-grid .hm-cell[data-i="2"] { background: rgba(0,168,168,0.32); }
         .heatmap-grid .hm-cell[data-i="3"] { background: rgba(0,150,150,0.50); }
@@ -1087,6 +1087,14 @@
         .heatmap-grid .hm-cell[data-i="5"] {
             background: linear-gradient(135deg, #006666, #f7971e);
             box-shadow: 0 2px 8px rgba(247,151,30,0.35);
+        }
+        body.dark .heatmap-grid .hm-cell[data-i="1"] { background: rgba(0,210,210,0.22); }
+        body.dark .heatmap-grid .hm-cell[data-i="2"] { background: rgba(0,210,210,0.40); }
+        body.dark .heatmap-grid .hm-cell[data-i="3"] { background: rgba(0,190,190,0.60); }
+        body.dark .heatmap-grid .hm-cell[data-i="4"] { background: rgba(0,168,168,0.82); }
+        body.dark .heatmap-grid .hm-cell[data-i="5"] {
+            background: linear-gradient(135deg, #00a8a8, #f7971e);
+            box-shadow: 0 2px 10px rgba(247,151,30,0.45);
         }
         .heatmap-grid .hm-cell:hover {
             transform: scale(1.18);
@@ -1914,7 +1922,7 @@ async function submitPin() {
     errEl.innerText = "";
 
     if (!/^\d{4}$/.test(pin)) {
-        errEl.innerText = "PIN zahiat be exactly 4 digits.";
+        errEl.innerText = "PIN must be exactly 4 digits.";
         return;
     }
 
@@ -2014,7 +2022,7 @@ function logout() {
 
 function openChangePin() {
     if (!getCurrentExec()) {
-        alert("You zahiat be logged in to change your PIN.");
+        alert("You must be logged in to change your PIN.");
         return;
     }
     document.getElementById("changePinExecName").innerText = getCurrentExec();
@@ -2042,7 +2050,7 @@ async function submitChangePin() {
     const confirmPin = (document.getElementById("confirmPinInput").value || "").trim();
 
     if (!/^\d{4}$/.test(current) || !/^\d{4}$/.test(next) || !/^\d{4}$/.test(confirmPin)) {
-        errEl.innerText = "All PINs zahiat be exactly 4 digits.";
+        errEl.innerText = "All PINs must be exactly 4 digits.";
         return;
     }
     if (next !== confirmPin) {
@@ -2050,7 +2058,7 @@ async function submitChangePin() {
         return;
     }
     if (next === current) {
-        errEl.innerText = "New PIN zahiat be different from current PIN.";
+        errEl.innerText = "New PIN must be different from current PIN.";
         return;
     }
 
@@ -2378,7 +2386,7 @@ function update(name, val) {
                     pin: loggedInPin
                 });
             } else {
-                alert(`Access Denied: You are ${dist.toFixed(2)}km away. You zahiat be at AlZahia Showroom.`);
+                alert(`Access Denied: You are ${dist.toFixed(2)}km away. You must be at AlZahia Showroom.`);
             }
         }, 
         (err) => alert("Location Error: Please ensure GPS is ON and permission is granted."), 
@@ -3024,7 +3032,7 @@ function renderChartKpis(data, type) {
 function updateDateTime(){
     const now = new Date();
     document.getElementById('day').innerText = now.toLocaleDateString('en-US', { weekday: 'long' });
-    document.getElementById('date').innerText = now.toLocaleDateString('en-GB');
+    document.getElementById('date').innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     // Split-digit clock: HH : MM with seconds shown as a small accent chip.
     // Falls back gracefully if the new split spans don't exist (older markup).
