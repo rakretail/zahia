@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1027,134 +1025,104 @@
            intensity over the last 30 days. Helps managers spot every
            busy/quiet pocket at a glance, not just the single peak hour.
            ============================================================ */
-        /* --- Heatmap Container & Cards --- */
-.heatmap-card {
-    background: var(--card-bg);
-    padding: 22px 22px 18px;
-    border-radius: 28px;
-    box-shadow: var(--shadow-soft);
-    margin-bottom: 30px;
-    border-left: 5px solid var(--primary);
-}
-
-.heatmap-head {
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
-}
-
-.heatmap-title {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 1rem; font-weight: 800; color: var(--primary);
-    text-transform: uppercase; letter-spacing: 0.5px;
-}
-
-.heatmap-title .hm-icon {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 28px; height: 28px; border-radius: 9px;
-    background: linear-gradient(135deg, var(--primary), #00b894);
-    color: white; font-size: 0.85rem;
-    box-shadow: 0 4px 12px rgba(0,102,102,0.25);
-}
-
-.heatmap-sub { font-size: 0.78rem; opacity: 0.65; font-weight: 600; }
-
-/* --- Scroll & Grid Setup --- */
-.heatmap-scroll { overflow-x: auto; padding-bottom: 6px; }
-.heatmap-scroll::-webkit-scrollbar { height: 6px; }
-.heatmap-scroll::-webkit-scrollbar-thumb { background: rgba(0,102,102,0.3); border-radius: 6px; }
-
-.heatmap-grid {
-    display: grid;
-    grid-template-columns: 56px repeat(17, minmax(0, 1fr));
-    gap: 4px;
-    width: 100%;
-    min-width: 100%;
-}
-
-.heatmap-grid .hm-hour-label,
-.heatmap-grid .hm-day-label {
-    font-size: 0.65rem; font-weight: 700; opacity: 0.55;
-    display: flex; align-items: center; justify-content: center;
-    text-transform: uppercase; letter-spacing: 0.5px;
-}
-
-.heatmap-grid .hm-day-label {
-    justify-content: flex-start; padding-left: 4px;
-    font-size: 0.72rem; opacity: 0.75;
-}
-
-/* --- The Cells (Fixing the Dark Mode Visibility) --- */
-.heatmap-grid .hm-cell {
-    position: relative;
-    height: 36px;
-    border-radius: 7px;
-    background: rgba(0,102,102,0.06); /* Default empty state Light */
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
-    cursor: default;
-}
-
-/* Base empty state for Dark Mode */
-body.dark .heatmap-grid .hm-cell { 
-    background: rgba(255,255,255,0.08); 
-}
-
-/* Color Intensity Levels - Using !important or higher specificity to ensure they show in Dark Mode */
-.heatmap-grid .hm-cell[data-i="1"] { background: rgba(0,168,168,0.25) !important; }
-.heatmap-grid .hm-cell[data-i="2"] { background: rgba(0,168,168,0.45) !important; }
-.heatmap-grid .hm-cell[data-i="3"] { background: rgba(0,180,180,0.65) !important; }
-.heatmap-grid .hm-cell[data-i="4"] { background: rgba(0,200,200,0.85) !important; }
-.heatmap-grid .hm-cell[data-i="5"] {
-    background: linear-gradient(135deg, #00b4b4, #f7971e) !important;
-    box-shadow: 0 2px 8px rgba(247,151,30,0.45);
-}
-
-/* Hover Effects */
-.heatmap-grid .hm-cell:hover {
-    transform: scale(1.18);
-    box-shadow: 0 4px 14px rgba(0,102,102,0.35);
-    z-index: 2;
-}
-
-/* --- Closing Hour Divider --- */
-.heatmap-grid .hm-cell-close { position: relative; }
-.heatmap-grid .hm-cell-close::before {
-    content: '';
-    position: absolute;
-    left: -3px; top: 10%; bottom: 10%;
-    width: 1px;
-    background: rgba(0,102,102,0.30);
-    border-radius: 2px;
-}
-
-body.dark .heatmap-grid .hm-cell-close::before {
-    background: rgba(255,255,255,0.3);
-}
-
-/* --- Legend & Empty State --- */
-.heatmap-legend {
-    display: flex; align-items: center; justify-content: flex-end;
-    gap: 8px; margin-top: 12px;
-    font-size: 0.7rem; font-weight: 700; opacity: 0.7;
-}
-
-.heatmap-legend .lg-bar { display: inline-flex; gap: 3px; }
-.heatmap-legend .lg-bar span { width: 14px; height: 14px; border-radius: 4px; }
-
-/* Apply legend colors to match the grid */
-.heatmap-legend .lg-bar span:nth-child(1) { background: rgba(0,102,102,0.1); }
-.heatmap-legend .lg-bar span:nth-child(2) { background: rgba(0,168,168,0.3); }
-.heatmap-legend .lg-bar span:nth-child(3) { background: rgba(0,168,168,0.5); }
-.heatmap-legend .lg-bar span:nth-child(4) { background: rgba(0,150,150,0.7); }
-.heatmap-legend .lg-bar span:nth-child(5) { background: #f7971e; }
-
-.heatmap-empty {
-    text-align: center; padding: 28px 10px;
-    opacity: 0.5; font-style: italic; font-size: 0.9rem;
-}
-        #adminPanel {
-            position: fixed; right: -100%; top: 0; width: 100%; max-width: 400px; 
-            height: 100vh; background: var(--card-bg); box-shadow: -20px 0 50px rgba(0,0,0,0.15);
-            transition: 0.5s ease; z-index: 1000; padding: 25px; box-sizing: border-box;
+        .heatmap-card {
+            background: var(--card-bg);
+            padding: 22px 22px 18px;
+            border-radius: 28px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary);
+        }
+        .heatmap-head {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+        }
+        .heatmap-title {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 1rem; font-weight: 800; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .heatmap-title .hm-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 9px;
+            background: linear-gradient(135deg, var(--primary), #00b894);
+            color: white; font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,102,102,0.25);
+        }
+        .heatmap-sub { font-size: 0.78rem; opacity: 0.65; font-weight: 600; }
+        .heatmap-scroll { overflow-x: auto; padding-bottom: 6px; }
+        .heatmap-scroll::-webkit-scrollbar { height: 6px; }
+        .heatmap-scroll::-webkit-scrollbar-thumb { background: rgba(0,102,102,0.3); border-radius: 6px; }
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 56px repeat(17, minmax(0, 1fr));
+            gap: 4px;
+            width: 100%;
+            min-width: 100%;
+        }
+        .heatmap-grid .hm-corner { }
+        .heatmap-grid .hm-hour-label,
+        .heatmap-grid .hm-day-label {
+            font-size: 0.65rem; font-weight: 700; opacity: 0.55;
+            display: flex; align-items: center; justify-content: center;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .heatmap-grid .hm-day-label {
+            justify-content: flex-start; padding-left: 4px;
+            font-size: 0.72rem; opacity: 0.75;
+        }
+        .heatmap-grid .hm-cell {
+            position: relative;
+            height: 36px;
+            border-radius: 7px;
+            background: rgba(0,102,102,0.06);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            cursor: default;
+        }
+        body.dark .heatmap-grid .hm-cell { background: rgba(255,255,255,0.04); }
+        .heatmap-grid .hm-cell[data-i="1"] { background: rgba(0,168,168,0.18); }
+        .heatmap-grid .hm-cell[data-i="2"] { background: rgba(0,168,168,0.32); }
+        .heatmap-grid .hm-cell[data-i="3"] { background: rgba(0,150,150,0.50); }
+        .heatmap-grid .hm-cell[data-i="4"] { background: rgba(0,124,124,0.72); }
+        .heatmap-grid .hm-cell[data-i="5"] {
+            background: linear-gradient(135deg, #006666, #f7971e);
+            box-shadow: 0 2px 8px rgba(247,151,30,0.35);
+        }
+        .heatmap-grid .hm-cell:hover {
+            transform: scale(1.18);
+            box-shadow: 0 4px 14px rgba(0,102,102,0.35);
+            z-index: 2;
+        }
+        /* Closing-hour cell (00:00) — kept as a real data cell but visually
+           bookended with a left divider so the day clearly ends at midnight. */
+        .heatmap-grid .hm-cell-close {
+            position: relative;
+        }
+        .heatmap-grid .hm-cell-close::before {
+            content: '';
+            position: absolute;
+            left: -3px; top: 10%; bottom: 10%;
+            width: 1px;
+            background: rgba(0,102,102,0.30);
+            border-radius: 2px;
+        }
+        body.dark .heatmap-grid .hm-cell-close::before {
+            background: rgba(255,255,255,0.22);
+        }
+        .heatmap-legend {
+            display: flex; align-items: center; justify-content: flex-end;
+            gap: 8px; margin-top: 12px;
+            font-size: 0.7rem; font-weight: 700; opacity: 0.7;
+        }
+        .heatmap-legend .lg-bar {
+            display: inline-flex; gap: 3px;
+        }
+        .heatmap-legend .lg-bar span {
+            width: 14px; height: 14px; border-radius: 4px;
+        }
+        .heatmap-empty {
+            text-align: center; padding: 28px 10px;
+            opacity: 0.5; font-style: italic; font-size: 0.9rem;
         }
         #adminPanel.active { right: 0; }
         /* When a card is locked (Off Duty), dim it but keep the manager's
