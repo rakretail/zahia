@@ -2715,7 +2715,7 @@ function renderMonthlyLeaderboard(data) {
     const thisMonth = {};
     const lastMonth = {};
     data.forEach(e => {
-        if (!e || !e.executive || !(e.count > 0) || !e.timestamp) return;
+        if (!e || !e.executive || !e.timestamp || typeof e.count !== 'number') return;
         if (e.timestamp >= startOfThisMonth) {
             thisMonth[e.executive] = (thisMonth[e.executive] || 0) + e.count;
         } else if (e.timestamp >= startOfLastMonth) {
