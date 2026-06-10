@@ -835,7 +835,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 4px 0 8px;
+            margin: 4px 0 4px;
+        }
+        .today-strip{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            margin:0 0 10px;
+            padding:6px 10px;
+            border-radius:12px;
+            background:rgba(0,102,102,0.06);
+            border:1px solid rgba(0,168,168,0.12);
+            color:var(--primary);
+            font-size:0.72rem;
+            font-weight:800;
+            letter-spacing:0.4px;
+        }
+        .today-strip .today-num{
+            font-size:1rem;
+            font-weight:800;
+            color:var(--primary);
         }
         .controls { display: flex; align-items: center; justify-content: space-around; background: rgba(0, 102, 102, 0.05); padding: 8px; border-radius: 50px; margin-top: auto; }
         .controls button { width: 40px; height: 40px; border: none; border-radius: 50%; background: var(--primary); color: white; cursor: pointer; font-size: 1.4rem; flex-shrink: 0; }
@@ -2189,6 +2209,10 @@ function renderGrid() {
         <div class="card ${locked ? 'locked' : ''}" id="card-${name}">
             <h3 id="label-${name}" title="${name}">${name}</h3>
             <div class="card-status">${statusTag}</div>
+            <div class="today-strip">
+                <span>TODAY</span>
+                <span class="today-num" id="daily-count-${name}">0</span>
+            </div>
             <div class="controls" style="${controlsStyle}">
                 <button onclick="update('${name}', -1)" ${disabledAttr}>−</button>
                 <span class="count" id="count-${name}">0</span>
@@ -2204,6 +2228,7 @@ function syncWalkins() {
         historyData = [];
         let d=0, w=0, m=0;
         const counts = {};
+        const dailyCounts = {};
         const now = new Date();
         const startOfWeek = new Date(now); 
         startOfWeek.setDate(now.getDate() - now.getDay());
@@ -2213,7 +2238,10 @@ function syncWalkins() {
             const val = child.val(); 
             historyData.push(val);
             const recordDate = new Date(val.timestamp);
-            if(recordDate.toDateString() === now.toDateString()) d += val.count;
+            if(recordDate.toDateString() === now.toDateString()) {
+                d += val.count;
+                dailyCounts[val.executive] = (dailyCounts[val.executive] || 0) + val.count;
+            }
             if(recordDate >= startOfWeek) w += val.count;
             if(recordDate >= startOfMonth) {
                 m += val.count;
@@ -2222,9 +2250,18 @@ function syncWalkins() {
         });
 
         executives.forEach(e => {
-            const el = document.getElementById(`count-${e}`);
-            if(el) el.innerText = counts[e] || 0;
+            const monthlyEl = document.getElementById(`count-${e}`);
+            const dailyEl = document.getElementById(`daily-count-${e}`);
+            const safeMonthly = Math.max(0, counts[e] || 0);
+            const safeDaily = Math.max(0, dailyCounts[e] || 0);
+
+            if(monthlyEl) monthlyEl.innerText = safeMonthly;
+            if(dailyEl) dailyEl.innerText = safeDaily;
         });
+
+        d = Math.max(0, d);
+        w = Math.max(0, w);
+        m = Math.max(0, m);
         document.getElementById("daily").innerText = d;
         document.getElementById("weekly").innerText = w;
         document.getElementById("monthly").innerText = m;
@@ -2412,7 +2449,7 @@ function updateInsights(monthlyCounts, dailyTotal) {
     if (hour >= 12 && hour < 17) { greetIcon = "☀️"; greetWord = "Good afternoon"; }
     else if (hour >= 17 && hour < 22) { greetIcon = "🌇"; greetWord = "Good evening"; }
     else if (hour >= 22 || hour < 5) { greetIcon = "🌙"; greetWord = "Late shift, legends"; }
-    messages.push(`${greetIcon} <span class="feed-pill blue">TEAM ALZAHIA</span> ${greetWord}, AlZahia Showroom — let's make today legendary!`);
+    messages.push(`${greetIcon} <span class="feed-pill blue">TEAM AlZahia</span> ${greetWord}, AlZahia Showroom — let's make today legendary!`);
 
     // ---------- Headline stats ----------
     if (dailyTotal > 0) {
@@ -2726,8 +2763,8 @@ function renderMonthlyLeaderboard(data) {
     // Build rows for every known executive (so quiet users still appear).
     _lbAllRows = (executives || []).map(name => ({
         name,
-        current: thisMonth[name] || 0,
-        previous: lastMonth[name] || 0
+        current: Math.max(0, thisMonth[name] || 0),
+        previous: Math.max(0, lastMonth[name] || 0)
     }));
 
     // Sort: highest current month first, then alphabetical for ties
@@ -3232,21 +3269,71 @@ function exportData() {
 
     if(filteredRecords.length === 0) return alert("No records found for the selected range.");
 
+    const dailyExecutiveTotals = {};
+    const executiveTotals = {};
+
     filteredRecords.forEach(d => {
         const dt = new Date(d.timestamp);
+        const exportDate = dt.toLocaleDateString('en-GB');
+
         rows.push([
             d.executive,
             d.count,
-            dt.toLocaleDateString('en-GB'),
+            exportDate,
             dt.toLocaleTimeString([], { hour12: false }),
             d.submittedBy || ""
         ]);
+
+        if (!dailyExecutiveTotals[exportDate]) {
+            dailyExecutiveTotals[exportDate] = {};
+        }
+
+        dailyExecutiveTotals[exportDate][d.executive] =
+            (dailyExecutiveTotals[exportDate][d.executive] || 0) + d.count;
+
+        executiveTotals[d.executive] =
+            (executiveTotals[d.executive] || 0) + d.count;
     });
 
+    const summaryRows = [["Date", "Executive", "Total Walk-ins"]];
+    Object.keys(dailyExecutiveTotals)
+        .sort((a, b) => {
+            const [ad, am, ay] = a.split('/');
+            const [bd, bm, by] = b.split('/');
+            return new Date(`${ay}-${am}-${ad}`) - new Date(`${by}-${bm}-${bd}`);
+        })
+        .forEach(date => {
+            Object.keys(dailyExecutiveTotals[date])
+                .sort((a, b) => a.localeCompare(b))
+                .forEach(executive => {
+                    summaryRows.push([
+                        date,
+                        executive,
+                        Math.max(0, dailyExecutiveTotals[date][executive] || 0)
+                    ]);
+                });
+        });
+
+    const executiveTotalsRows = [["Executive", "Total Walk-ins"]];
+    Object.keys(executiveTotals)
+        .sort((a, b) => a.localeCompare(b))
+        .forEach(executive => {
+            executiveTotalsRows.push([
+                executive,
+                Math.max(0, executiveTotals[executive] || 0)
+            ]);
+        });
+
     const ws = XLSX.utils.aoa_to_sheet(rows);
+    const summaryWs = XLSX.utils.aoa_to_sheet(summaryRows);
+    const executiveTotalsWs = XLSX.utils.aoa_to_sheet(executiveTotalsRows);
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Walkins");
-    XLSX.writeFile(wb, `AlZahia_Report_${s}_to_${e}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, summaryWs, "Daily Totals");
+    XLSX.utils.book_append_sheet(wb, executiveTotalsWs, "Executive Totals");
+
+    XLSX.writeFile(wb, `zahia_Report_${s}_to_${e}.xlsx`);
 }
 
 // Expose handlers used from inline onclick attributes
