@@ -8,7 +8,7 @@
      a new index.html. Every open/logged-in device detects the new
      value and refreshes itself. No cache clearing, no re-login.
      ============================================================ -->
-<meta name="app-version" content="2026.10.08-1">
+<meta name="app-version" content="2026.10.08-2">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>AlZahia Showroom Tracker</title>
 <link rel="manifest" href="manifest.json">
@@ -671,6 +671,7 @@ let managers = [];
 let lockedUsers = {};
 let settings = {};
 let historyData = [];
+let dataReady = { execs: false, walkins: false };   // the live feed waits for both
 let A = null;                 // analytics snapshot, rebuilt by recompute()
 let walkinChart, compareChart, shareChart, detChart;
 let compareRange = "week";
@@ -887,6 +888,7 @@ function initAppLogic() {
 
     window.dbOnValue(R("executiveList"), snap => {
         executives = Object.values(snap.val() || {}).filter(Boolean).sort((a, b) => a.localeCompare(b));
+        dataReady.execs = true;
         renderAll();
         if ($("adminPanel").classList.contains("active")) renderAdmin();
     });
@@ -904,6 +906,7 @@ function initAppLogic() {
         const rows = [];
         snap.forEach(c => { rows.push(c.val()); });
         historyData = rows;
+        dataReady.walkins = true;
         renderAll();
     });
     window.dbOnValue(window.dbRef(window.db, ".info/connected"), snap => {
@@ -1573,41 +1576,69 @@ function renderActivityLog() {
 }
 
 // ---------- Live feed ticker ----------
-let tickerBuiltAt = 0;
-function updateTicker() {
-    // Rebuild at most once per scroll cycle so a new walk-in doesn't restart the ticker mid-sentence.
-    if (Date.now() - tickerBuiltAt < 240000) return;
-    tickerBuiltAt = Date.now();
-    const monthlyCounts = {}; executives.forEach(n => monthlyCounts[n] = Math.max(0, (A.exec[n] || {}).month || 0));
-    const dailyTotal = A.d, messages = [], SEP = `<span class="feed-sep">✦</span>`, pick = arr => arr[Math.floor(Math.random() * arr.length)];
+// The feed is built only after BOTH the team list and the walk-in history have arrived, so it can
+// never show start-up zeros. Numbers then refresh in place on every data change, while the wording
+// and order are re-drawn only when the scroll loops — a new walk-in never restarts it mid-sentence.
+let tickerSeed = 0, tickerStarted = false, tickerHtml = "";
 
-    const hour = new Date().getHours();
+// Stable pseudo-random value in [0,1) per key for the current scroll cycle.
+function tickerRand(key) {
+    let h = (2166136261 ^ tickerSeed) >>> 0;
+    for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619); }
+    h ^= h >>> 15; h = Math.imul(h, 2246822507); h ^= h >>> 13; h = Math.imul(h, 3266489909); h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+}
+
+function buildTicker() {
+    const SEP = `<span class="feed-sep">✦</span>`;
+    const pick = (arr, key) => arr[Math.floor(tickerRand(key) * arr.length)];
+    const s = n => n === 1 ? "" : "s";
+    const monthlyCounts = {};
+    executives.forEach(n => monthlyCounts[n] = Math.max(0, (A.exec[n] || {}).month || 0));
+    const dailyTotal = A.d, messages = [];
+    const add = (key, html) => messages.push({ key, html });
+
+    const hour = A.now.getHours();
     let gi = "🌅", gw = "Good morning";
     if (hour >= 12 && hour < 17) { gi = "☀️"; gw = "Good afternoon"; }
     else if (hour >= 17 && hour < 22) { gi = "🌇"; gw = "Good evening"; }
     else if (hour >= 22 || hour < 5) { gi = "🌙"; gw = "Late shift, legends"; }
-    messages.push(`${gi} <span class="feed-pill blue">TEAM AlZahia</span> ${gw}, AlZahia Showroom — let's make today legendary!`);
+    const greeting = `${gi} <span class="feed-pill blue">TEAM AlZahia</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
 
-    messages.push(dailyTotal > 0
-        ? `🚀 <span class="feed-pill green">TODAY</span> ${dailyTotal} walk-in${dailyTotal === 1 ? "" : "s"} served so far — momentum is building! 📈`
+    add("today", dailyTotal > 0
+        ? `🚀 <span class="feed-pill green">TODAY</span> ${fmt(dailyTotal)} walk-in${s(dailyTotal)} served so far — momentum is building! 📈`
         : `✨ <span class="feed-pill blue">FRESH START</span> Clean slate today. Who's going to log the first walk-in? 🥇`);
-    if (A.forecast > 0) messages.push(`🔮 <span class="feed-pill blue">FORECAST</span> On course for about ${fmt(A.forecast)} walk-ins this month${A.lmTotal > 0 ? ` (last month: ${fmt(A.lmTotal)})` : ""}.`);
-    if (+settings.monthlyTarget > 0) messages.push(`🎯 <span class="feed-pill gold">TARGET</span> ${fmt(A.m)} of ${fmt(+settings.monthlyTarget)} — ${Math.round((A.m / +settings.monthlyTarget) * 100)}% there!`);
+    if (A.forecast > 0) add("forecast", `🔮 <span class="feed-pill blue">FORECAST</span> On course for about ${fmt(A.forecast)} walk-ins this month${A.lmTotal > 0 ? ` (last month: ${fmt(A.lmTotal)})` : ""}.`);
+    const target = +settings.monthlyTarget || 0;
+    if (target > 0) {
+        const p = Math.round((A.m / target) * 100);
+        add("target", A.m >= target
+            ? `🎯 <span class="feed-pill gold">TARGET</span> ${fmt(A.m)} of ${fmt(target)} — target reached (${p}%)! 🏆`
+            : `🎯 <span class="feed-pill gold">TARGET</span> ${fmt(A.m)} of ${fmt(target)} — ${p}% there!`);
+    }
 
-    const ranked = Object.keys(monthlyCounts).filter(n => monthlyCounts[n] > 0).sort((a, b) => monthlyCounts[b] - monthlyCounts[a]);
+    const ranked = Object.keys(monthlyCounts).filter(n => monthlyCounts[n] > 0)
+        .sort((a, b) => (monthlyCounts[b] - monthlyCounts[a]) || a.localeCompare(b));
     if (ranked.length) {
-        const top = ranked[0];
-        messages.push(`👑 <span class="feed-pill gold">TOP GUN</span> ${esc(top)} is leading this month with ${monthlyCounts[top]} walk-ins! 🏆`);
-        if (ranked[1]) { const gap = monthlyCounts[top] - monthlyCounts[ranked[1]]; messages.push(`🥈 <span class="feed-pill purple">CHASING</span> ${esc(ranked[1])} is just ${gap} walk-in${gap === 1 ? "" : "s"} behind ${esc(top)} — game on! ⚔️`); }
-        if (ranked[2]) messages.push(`🥉 <span class="feed-pill purple">PODIUM</span> ${esc(ranked[2])} holds 3rd place with ${monthlyCounts[ranked[2]]}. Climb that ladder! 🪜`);
+        const top = ranked[0], second = ranked[1], tc = monthlyCounts[top];
+        if (second && monthlyCounts[second] === tc) {
+            add("top", `👑 <span class="feed-pill gold">NECK AND NECK</span> ${esc(top)} and ${esc(second)} are tied at the top with ${fmt(tc)} walk-in${s(tc)} each — who breaks the tie? ⚔️`);
+        } else {
+            add("top", `👑 <span class="feed-pill gold">TOP GUN</span> ${esc(top)} is leading this month with ${fmt(tc)} walk-in${s(tc)}! 🏆`);
+            if (second) {
+                const gap = tc - monthlyCounts[second];
+                add("chase", `🥈 <span class="feed-pill purple">CHASING</span> ${esc(second)} is ${gap <= 5 ? "just " : ""}${fmt(gap)} walk-in${s(gap)} behind ${esc(top)} — game on! ⚔️`);
+            }
+        }
+        if (ranked[2]) add("podium", `🥉 <span class="feed-pill purple">PODIUM</span> ${esc(ranked[2])} holds 3rd place with ${fmt(monthlyCounts[ranked[2]])}. Climb that ladder! 🪜`);
     }
 
     const withCount = [
-        (n, c) => `🔥 <span class="feed-pill red">ON FIRE</span> ${n}, you've already logged ${c} this month — keep the streak alive! 💪`,
-        (n, c) => `⭐ <span class="feed-pill gold">RISING STAR</span> ${n}, every walk-in is a future invoice. You've got ${c} so far!`,
-        (n, c) => `🎯 <span class="feed-pill green">FOCUSED</span> ${n}, ${c} customers served. Imagine adding just 2 more before lunch! 🍽️`,
-        (n, c) => `💎 <span class="feed-pill purple">DIAMOND</span> ${n}, your ${c} walk-ins are turning into trust. Keep shining! ✨`,
-        (n, c) => `🚀 <span class="feed-pill blue">ROCKET</span> ${n}, ${c} this month — the next deal could be your biggest yet!`
+        (n, c) => `🔥 <span class="feed-pill red">ON FIRE</span> ${n}, you've already logged ${fmt(c)} this month — keep the streak alive! 💪`,
+        (n, c) => `⭐ <span class="feed-pill gold">RISING STAR</span> ${n}, every walk-in is a future invoice. You've got ${fmt(c)} so far this month!`,
+        (n, c) => `🎯 <span class="feed-pill green">FOCUSED</span> ${n}, ${fmt(c)} customer${s(c)} served this month. Imagine adding just 2 more today! 🍽️`,
+        (n, c) => `💎 <span class="feed-pill purple">DIAMOND</span> ${n}, your ${fmt(c)} walk-in${s(c)} this month ${c === 1 ? "is" : "are"} turning into trust. Keep shining! ✨`,
+        (n, c) => `🚀 <span class="feed-pill blue">ROCKET</span> ${n}, ${fmt(c)} this month — the next deal could be your biggest yet!`
     ];
     const generic = [
         n => `👋 <span class="feed-pill blue">HELLO</span> ${n}, the showroom floor is your stage — own it! 🎤`,
@@ -1615,19 +1646,20 @@ function updateTicker() {
         n => `🧲 <span class="feed-pill green">MAGNETIC</span> ${n}, customers gravitate to confidence. Stand tall! 🦁`
     ];
     const noStart = [
-        n => `🌱 <span class="feed-pill green">FIRST MOVE</span> ${n}, your counter is at 0. The next walk-in has your name on it! ✍️`,
+        n => `🌱 <span class="feed-pill green">FIRST MOVE</span> ${n}, your counter is at 0 this month. The next walk-in has your name on it! ✍️`,
         n => `☕ <span class="feed-pill blue">WAKE UP</span> ${n}, time to greet a customer and break the ice! 🧊`,
         n => `🎬 <span class="feed-pill purple">YOUR SCENE</span> ${n}, every superstar starts with one good take. Action!`
     ];
     executives.filter(n => !lockedUsers[n]).forEach(name => {
         const c = monthlyCounts[name] || 0, n = esc(name);
-        messages.push(c === 0 ? pick(noStart)(n) : pick(Math.random() < 0.7 ? withCount : generic)(n, c));
+        const list = c === 0 ? noStart : (tickerRand("kind:" + name) < 0.7 ? withCount : generic);
+        add("exec:" + name, pick(list, "msg:" + name)(n, c));
     });
 
     const offDuty = executives.filter(n => lockedUsers[n]);
-    if (offDuty.length && offDuty.length < executives.length) messages.push(`💤 <span class="feed-pill purple">OFF DUTY</span> ${offDuty.map(esc).join(" & ")} — recharge well, we'll cover the floor! 🛡️`);
+    if (offDuty.length && offDuty.length < executives.length) add("off", `💤 <span class="feed-pill purple">OFF DUTY</span> ${offDuty.map(esc).join(" & ")} — recharge well, we'll cover the floor! 🛡️`);
 
-    messages.push("✨ " + pick([
+    add("quote", "✨ " + pick([
         `💬 "Sales are contingent upon the attitude of the salesman — not the prospect." — W. Clement Stone`,
         `💬 "The best salespeople know that their expertise can become their enemy. Stay curious." — Jeff Hoffman`,
         `💬 "People don't buy for logical reasons. They buy for emotional reasons." — Zig Ziglar`,
@@ -1636,8 +1668,8 @@ function updateTicker() {
         `💬 "Today's walk-in is tomorrow's repeat customer." — AlZahia Showroom Floor Wisdom`,
         `💬 "A satisfied customer is the best business strategy of all." — Michael LeBoeuf`,
         `💬 "Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time." — Thomas Edison`
-    ]));
-    messages.push(pick([
+    ], "quote"));
+    add("boss", pick([
         `🧠 <span class="feed-pill gold">Mariam'S RULE</span> "If a customer smiles, they've basically bought a bathroom set." 🛁`,
         `☕ <span class="feed-pill gold">Mariam SAYS</span> "The dashboard is green, but my tea is cold. More sales please!"`,
         `🪑 <span class="feed-pill gold">Mariam SAYS</span> "If you have time to sit, you have time to sell."`,
@@ -1646,16 +1678,33 @@ function updateTicker() {
         `💼 <span class="feed-pill gold">Mariam'S RULE</span> "If they ask for a discount, increase your confidence."`,
         `🏠 <span class="feed-pill gold">Mariam SAYS</span> "Don't show tiles… show them their dream home."`,
         `👃 <span class="feed-pill gold">Mariam SENSES</span> "I can smell a big sale from the parking lot. Get ready!" 💰`
-    ]));
+    ], "boss"));
 
-    if (A.m >= 1000) messages.push(`🎉 <span class="feed-pill gold">LEGENDARY</span> Team AlZahia has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
-    else if (A.m >= 500) messages.push(`🎊 <span class="feed-pill green">MILESTONE</span> ${A.m} walk-ins this month — halfway to 1000! Push! 💥`);
-    else if (A.m >= 100) messages.push(`🎈 <span class="feed-pill blue">CENTURY+</span> ${A.m} walk-ins logged this month. Onwards! 🚀`);
+    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> Team AlZahia has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
+    else if (A.m >= 500) add("milestone", `🎊 <span class="feed-pill green">MILESTONE</span> ${fmt(A.m)} walk-ins this month — only ${fmt(1000 - A.m)} more to reach 1,000! Push! 💥`);
+    else if (A.m >= 100) add("milestone", `🎈 <span class="feed-pill blue">CENTURY+</span> ${fmt(A.m)} walk-ins logged this month. Onwards! 🚀`);
 
-    messages.push(`👩‍💻 <span class="feed-pill green">Team AlZahia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`);
-    const middle = messages.slice(1, -1).sort(() => 0.5 - Math.random());
-    $("smart-insight").innerHTML = [messages[0], ...middle, messages[messages.length - 1]].join(SEP) + SEP;
+    const closing = `👩‍💻 <span class="feed-pill green">Team AlZahia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
+    const middle = messages.map(m => ({ html: m.html, o: tickerRand("order:" + m.key) })).sort((a, b) => a.o - b.o).map(m => m.html);
+    return [greeting, ...middle, closing].join(SEP) + SEP;
 }
+
+function updateTicker(newCycle) {
+    if (!A || !dataReady.execs || !dataReady.walkins) return;      // wait for real data
+    const el = $("smart-insight"), first = !tickerStarted;
+    if (first || newCycle) tickerSeed = (Math.random() * 4294967296) >>> 0;
+    const html = buildTicker();
+    if (html !== tickerHtml) { el.innerHTML = html; tickerHtml = html; }
+    if (first) {                                                   // start the first real pass from the beginning
+        tickerStarted = true;
+        el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
+    }
+}
+// Each time the scroll loops: recalculate from the latest data and re-draw wording + order.
+$("smart-insight").addEventListener("animationiteration", () => {
+    if (!tickerStarted) return;
+    recompute(); updateTicker(true);
+});
 
 // ---------- Clock ----------
 function updateDateTime() {
