@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="app-version" content="2026.10.15-3">
+<meta name="app-version" content="2026.10.17-4">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>AlZahia Showroom · Tracker</title>
 <link rel="manifest" href="manifest.json">
@@ -155,6 +155,34 @@ body.dark .topbar{background:rgba(7,17,17,.8)}
 .feed-pill.red{background:linear-gradient(135deg,#ff6b6b,#ee0979)}
 .feed-pill.blue{background:linear-gradient(135deg,#4facfe,#00c6fb)}
 .feed-pill.purple{background:linear-gradient(135deg,#b06ab3,#4568dc)}
+/* ---------- Head-office messages (sent from the retail page) ---------- */
+.feed-pill.boss{background:linear-gradient(135deg,#c8102e,#ff5a5f);border-color:rgba(255,255,255,.45);box-shadow:0 0 0 2px rgba(255,255,255,.18)}
+.feed-boss{font-weight:800}
+/* head-office line: its own red bar under the Live Feed, shown only while a message is live */
+.ticker.hq{background:linear-gradient(90deg,#9e0b23,#d4142f 45%,#9e0b23);border-top:1px solid rgba(255,255,255,.35);overflow:hidden}
+.ticker.hq.flash{animation:hqFlash 1.3s ease-out 1}
+@keyframes hqFlash{0%,30%,60%{background:#fff}15%,45%,100%{background:#d4142f}}
+.ticker.hq .ticker-label{background:#fff;color:#c8102e;letter-spacing:1.6px;font-size:.72rem;box-shadow:0 0 0 3px rgba(255,255,255,.25);animation:hqBlink 1s steps(1) infinite}
+.ticker.hq .ticker-label .live-dot{background:currentColor;box-shadow:0 0 8px currentColor;animation:none}
+@keyframes hqBlink{0%{background:#fff;color:#c8102e;box-shadow:0 0 0 3px rgba(255,255,255,.25)}50%{background:#5c0614;color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.6),0 0 16px rgba(255,255,255,.5)}}
+.ticker.hq .ticker-wrap{-webkit-mask-image:linear-gradient(90deg,transparent,#000 1.5%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 1.5%,#000 97%,transparent)}
+#hq-insight{display:inline-block;white-space:nowrap;padding-left:100%;font-size:1.02rem;font-weight:800;letter-spacing:.2px;text-shadow:0 1px 2px rgba(0,0,0,.25);animation:hqScroll 30s linear infinite;will-change:transform}
+#hq-insight:hover{animation-play-state:paused}
+@keyframes hqScroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+#hq-insight .feed-pill.boss{background:#fff;color:#c8102e;border-color:#fff;box-shadow:none}
+#hq-insight .feed-sep{margin:0 44px;opacity:.8}
+@media (prefers-reduced-motion:reduce){.ticker.hq.flash,.ticker.hq .ticker-label{animation:none}}
+.bc-card{max-width:460px;padding:0;overflow:hidden}
+.bc-top{padding:18px 22px 14px;color:#fff;background:linear-gradient(135deg,#006666,#00a88f);display:flex;gap:12px;align-items:center}
+.bc-top.urgent{background:linear-gradient(135deg,#a50d26,#ee3a4a)}
+.bc-ic{flex:none;width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.bc-top small{display:block;font-size:.66rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;opacity:.85}
+.bc-top b{display:block;font-size:1.15rem;font-weight:800;line-height:1.25}
+.bc-body{padding:18px 22px 6px}
+.bc-text{margin:0;font-size:1.05rem;line-height:1.55;font-weight:500;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}
+.bc-meta{margin:12px 0 0;font-size:.74rem;color:var(--muted);font-weight:600}
+.bc-foot{padding:10px 22px 20px;display:flex;align-items:center;gap:10px}
+.bc-foot .bc-count{font-size:.74rem;color:var(--muted);font-weight:700;margin-right:auto}
 .hero-progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.12)}
 .hero-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5dffb5,#fff);transition:width .45s}
 
@@ -659,6 +687,15 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
     </div>
 </div>
 
+<!-- Head-office message pop-up (messages are posted from the retail page) -->
+<div id="bcModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="bcFrom">
+    <div class="modal-card bc-card">
+        <div class="bc-top" id="bcTop"><span class="bc-ic">📣</span><div><small id="bcKind">Message from head office</small><b id="bcFrom">—</b></div></div>
+        <div class="bc-body"><p class="bc-text" id="bcText"></p><p class="bc-meta" id="bcMeta"></p></div>
+        <div class="bc-foot"><span class="bc-count" id="bcCount"></span><button class="btn" id="bcOk" type="button" onclick="ackBroadcast()">GOT IT</button></div>
+    </div>
+</div>
+
 <!-- Change PIN modal -->
 <div id="changePinModal" class="modal-overlay hidden">
     <div class="modal-card">
@@ -699,7 +736,7 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
     <div class="topbar-in">
         <div class="brand">
             <span class="brand-mark" aria-label="RAK Ceramics"><b>RAK</b><span>CERAMICS</span></span>
-            <div class="brand-txt"><b>AlZahia Showroom</b><small>Inquiry Tracker</small></div>
+            <div class="brand-txt"><b>AlZahia Showroom</b><small>Walk-in Tracker</small></div>
         </div>
         <nav class="catswitch" id="catSeg" aria-label="Inquiry type">
             <button data-cat="all"><span class="cs-ic">∑</span><span><b>All inquiries</b><small id="csAll">—</small></span></button>
@@ -740,6 +777,10 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
         <div class="ticker">
             <div class="ticker-label"><span class="live-dot"></span>Live Feed</div>
             <div class="ticker-wrap"><div id="smart-insight">Syncing performance records...</div></div>
+        </div>
+        <div class="ticker hq" id="hqTicker" hidden role="status" aria-live="polite">
+            <div class="ticker-label"><span class="live-dot"></span><span id="hqLabel">Urgent</span></div>
+            <div class="ticker-wrap"><div id="hq-insight"></div></div>
         </div>
         <span class="hero-progress"><i id="clk-progress-fill"></i></span>
     </section>
@@ -1001,8 +1042,13 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
                 <div class="adm-kv last"><span>Offline support</span><b id="admSw">—</b></div>
                 <button class="btn wide" type="button" onclick="checkForUpdate(true)">Check for updates now</button>
             </div>
-            <div class="adm-help"><b>Check for updates</b>
-               
+            <div class="adm-help"><b>Publishing an update</b>
+                <ol>
+                    <li>Change the <code>app-version</code> number near the top of the file (for example <code>2026.10.20-1</code>).</li>
+                    <li>Upload the file in place of the current one. Keep <code>sw.js</code> in the same folder.</li>
+                    <li>That's all. Open devices refresh themselves within about 2 minutes, or straight away when the app is reopened. Nobody is logged out and nothing needs clearing or reinstalling.</li>
+                </ol>
+                <p>If you forget step 1, devices still notice the file changed and update a few minutes later. A refresh waits while someone has a form or this panel open.</p>
             </div>
         </section>
     </div>
@@ -1460,6 +1506,7 @@ function initAppLogic() {
         if ($("adminPanel").classList.contains("active")) renderAdmin();
     }, () => {});
     window.dbOnValue(R("settings"), snap => { settings = snap.val() || {}; renderAll(); }, () => { settings = {}; });
+    window.dbOnValue(R("broadcasts"), snap => onBroadcasts(snap.val()), () => {});
     window.dbOnValue(R("walkins"), snap => {
         const rows = [];
         snap.forEach(c => { const v = c.val(); if (v && typeof v === "object") rows.push(Object.assign({ _key: c.key }, v)); });
@@ -2783,6 +2830,102 @@ $("smart-insight").addEventListener("animationiteration", () => {
     if (!tickerStarted) return;
     recompute(); updateTicker(true);
 });
+
+// ---------- Head-office messages ----------
+// The retail page writes each message to stores/{store}/broadcasts/{id} = { text, from, ts, until, urgent, seen }.
+// A new message pops up on every logged-in screen and leads the Live Feed until it expires.
+// "Got it" records the acknowledgement under seen/{name}, which the retail page shows back to the bosses.
+let broadcasts = [], bcQueue = [], bcShown = null;
+const LS_BC_SEEN = () => `${window.STORE_ID}_bc_seen`;
+const bcMem = new Set();                         // fallback when this browser blocks localStorage
+function bcSeenSet() {
+    try { return new Set(JSON.parse(localStorage.getItem(LS_BC_SEEN()) || "[]")); } catch (e) { return new Set(bcMem); }
+}
+function bcMarkSeen(id) {
+    bcMem.add(id);
+    try {
+        const s = bcSeenSet(); s.add(id);
+        const live = new Set(broadcasts.map(b => b.id));          // keep the list short: forget messages that were removed
+        localStorage.setItem(LS_BC_SEEN(), JSON.stringify([...s].filter(x => live.has(x) || x === id)));
+    } catch (e) {}
+}
+function activeBroadcasts() {
+    const now = Date.now();
+    return broadcasts.filter(b => !b.until || +b.until > now).sort((a, b) => (+b.ts || 0) - (+a.ts || 0));
+}
+function onBroadcasts(v) {
+    broadcasts = Object.keys(v || {}).map(k => Object.assign({}, v[k], { id: k }))
+        .filter(b => b && typeof b.text === "string" && b.text.trim());
+    renderHqTicker();
+    queueBroadcasts();
+}
+function queueBroadcasts() {
+    const seen = bcSeenSet();
+    bcQueue = activeBroadcasts().filter(b => !seen.has(b.id) && !bcMem.has(b.id)).reverse();   // oldest first
+    if (bcShown && !bcQueue.some(b => b.id === bcShown)) bcShown = null;
+    showNextBroadcast();
+}
+function bcWhen(ts) {
+    const d = new Date(+ts), t = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const day = new Date(d); day.setHours(0, 0, 0, 0);
+    const diff = Math.round((today - day) / 864e5);
+    return diff === 0 ? `Today, ${t}` : diff === 1 ? `Yesterday, ${t}` : `${d.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}, ${t}`;
+}
+function showNextBroadcast() {
+    const m = $("bcModal");
+    if (!m) return;
+    const b = bcQueue[0];
+    if (!b) { m.classList.add("hidden"); bcShown = null; return; }
+    bcShown = b.id;
+    $("bcTop").classList.toggle("urgent", !!b.urgent);
+    $("bcKind").textContent = b.urgent ? "Urgent · message from head office" : "Message from head office";
+    $("bcFrom").textContent = b.from || "Head office";
+    $("bcText").textContent = b.text;
+    $("bcMeta").textContent = `Sent ${bcWhen(b.ts)}` + (b.until ? ` · showing in the Live Feed until ${bcWhen(b.until)}` : "");
+    $("bcCount").textContent = bcQueue.length > 1 ? `1 of ${bcQueue.length} new messages` : "";
+    $("bcOk").textContent = bcQueue.length > 1 ? "GOT IT · NEXT" : "GOT IT";
+    m.classList.remove("hidden");
+}
+function ackBroadcast() {
+    const id = bcShown;
+    if (!id) { showNextBroadcast(); return; }
+    bcMarkSeen(id);
+    const who = (getCurrentExec() || "Screen").replace(/[.#$\[\]\/]/g, "_").slice(0, 60) || "Screen";
+    try { window.dbSet(R(`broadcasts/${id}/seen/${who}`), Date.now()).catch(() => {}); } catch (e) {}
+    bcQueue = bcQueue.filter(b => b.id !== id); bcShown = null;
+    showNextBroadcast();
+}
+// Head-office line: a red "Urgent" bar directly under the Live Feed. It appears the moment a message
+// arrives (with a short flash), scrolls in from the right with a flashing URGENT label, and disappears when it expires.
+const HQ_SPEED = 70;                                            // px per second
+let hqKey = "";
+function renderHqTicker(redraw) {
+    const bar = $("hqTicker"), el = $("hq-insight");
+    if (!bar || !el) return;
+    const act = activeBroadcasts();
+    const key = act.map(b => b.id + "|" + b.from + "|" + b.text).join("\n");
+    if (key === hqKey) return;                                  // unchanged: never restart mid-sentence
+    const isNew = !redraw && act.some(b => !hqKey.includes(b.id + "|"));
+    hqKey = key;
+    if (!act.length) { bar.hidden = true; el.innerHTML = ""; return; }
+    const froms = [...new Set(act.map(b => b.from || "Head office"))];
+    $("hqLabel").textContent = froms.length === 1 ? "Urgent · " + froms[0] : "Urgent";   // two senders: names sit on each message
+    const sep = `<span class="feed-sep">✦</span>`;
+    const one = act.map(b =>
+        `<span class="feed-pill boss">${esc((b.from || "Head office").toUpperCase())}</span><span class="feed-boss">${esc(b.text.replace(/\s+/g, " "))}</span>`
+    ).join(sep);                                                 // ✦ only between messages
+    bar.hidden = false;
+    // one copy: enters from the right edge, crosses the bar, leaves on the left, repeats
+    el.innerHTML = one;
+    if (!el.parentElement.offsetWidth) { hqKey = ""; setTimeout(() => renderHqTicker(redraw), 700); return; }   // not laid out yet
+    el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
+    el.style.animationDuration = Math.max(8, el.offsetWidth / HQ_SPEED).toFixed(1) + "s";
+    if (isNew) { bar.classList.remove("flash"); void bar.offsetWidth; bar.classList.add("flash"); }
+}
+setInterval(() => renderHqTicker(), 30000);                             // drops a message the moment its time is up
+let hqW = innerWidth;                                           // phones fire resize while scrolling; only a width change matters
+window.addEventListener("resize", () => { if (innerWidth === hqW) return; hqW = innerWidth; hqKey = ""; renderHqTicker(true); });
 
 // ---------- Clock ----------
 function updateDateTime() {
