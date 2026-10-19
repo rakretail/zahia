@@ -4044,7 +4044,7 @@ function renderMePanel() {
     const shareIc = `<span class="sh"><svg width="12" height="14" viewBox="0 0 12 14" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V1M3 3.5 6 1l3 2.5M2 6.5H1v6.5h10V6.5h-1"/></svg></span>`;
     function show(mode) {
         if (shown && mode !== "native") return; shown = true;
-        const txt = mode === "native" ? "Opens full-screen from your home screen and shows head-office alerts like email."
+        const txt = mode === "native" ? "Opens full-screen from your home screen and shows head-office alerts."
             : mode === "ios" ? `Tap ${shareIc} <b style="display:inline;font-size:inherit">Share</b>, then <b style="display:inline;font-size:inherit">Add to Home Screen</b> — needed for alerts on iPhone.`
             : `In Safari choose <b style="display:inline;font-size:inherit">File → Add to Dock</b> to use it as an app.`;
         bar.innerHTML = `<img class="ib-ic" src="${NOTIF_ICON}" alt="" onerror="this.style.visibility='hidden'">
