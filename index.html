@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="app-version" content="2026.10.17-4">
+<meta name="app-version" content="3.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>AlZahia Showroom · Tracker</title>
 <link rel="manifest" href="manifest.json">
@@ -172,17 +172,36 @@ body.dark .topbar{background:rgba(7,17,17,.8)}
 #hq-insight .feed-pill.boss{background:#fff;color:#c8102e;border-color:#fff;box-shadow:none}
 #hq-insight .feed-sep{margin:0 44px;opacity:.8}
 @media (prefers-reduced-motion:reduce){.ticker.hq.flash,.ticker.hq .ticker-label{animation:none}}
-.bc-card{max-width:460px;padding:0;overflow:hidden}
-.bc-top{padding:18px 22px 14px;color:#fff;background:linear-gradient(135deg,#006666,#00a88f);display:flex;gap:12px;align-items:center}
-.bc-top.urgent{background:linear-gradient(135deg,#a50d26,#ee3a4a)}
-.bc-ic{flex:none;width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.3rem}
-.bc-top small{display:block;font-size:.66rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;opacity:.85}
-.bc-top b{display:block;font-size:1.15rem;font-weight:800;line-height:1.25}
-.bc-body{padding:18px 22px 6px}
-.bc-text{margin:0;font-size:1.05rem;line-height:1.55;font-weight:500;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}
-.bc-meta{margin:12px 0 0;font-size:.74rem;color:var(--muted);font-weight:600}
-.bc-foot{padding:10px 22px 20px;display:flex;align-items:center;gap:10px}
-.bc-foot .bc-count{font-size:.74rem;color:var(--muted);font-weight:700;margin-right:auto}
+/* manager's message to the team: runs inside the normal Live Feed */
+.feed-pill.mgr{background:#fff;color:#004d4d;border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+.feed-pill.mgr.urg{background:linear-gradient(135deg,#c8102e,#ff5a5f);color:#fff;border-color:rgba(255,255,255,.45)}
+.feed-mgr{font-weight:800}
+/* message pop-up */
+.modal-card.bc-card{max-width:440px;padding:0;overflow:hidden;border-radius:22px;--tone:#006666;--tone2:#00a88f}
+#bcModal[data-tone="team"] .bc-card{--tone:#3f3fb8;--tone2:#6d6ff5}
+#bcModal[data-tone="urgent"] .bc-card{--tone:#a50d26;--tone2:#ee3a4a}
+.bc-band{height:5px;background:linear-gradient(90deg,var(--tone),var(--tone2))}
+.bc-head{display:flex;align-items:center;gap:12px;padding:20px 22px 0}
+.bc-av{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.92rem;letter-spacing:.5px;
+    background:linear-gradient(135deg,var(--tone),var(--tone2));box-shadow:0 8px 18px -8px var(--tone)}
+.bc-who{flex:1;min-width:0}
+.bc-who b{display:block;font-size:1.06rem;font-weight:800;line-height:1.2;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bc-who small{display:block;font-size:.72rem;color:var(--muted);font-weight:600;margin-top:3px}
+.bc-kind{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:.6rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:999px;
+    color:var(--tone);background:color-mix(in srgb,var(--tone2) 13%,transparent)}
+.bc-kind i{width:6px;height:6px;border-radius:50%;background:currentColor}
+#bcModal[data-tone="urgent"] .bc-kind i{animation:blink 1s ease-in-out infinite}
+body.dark .bc-kind{color:var(--tone2)}
+.bc-text{margin:16px 22px 0;padding:14px 16px;border-radius:14px;background:var(--soft);border-left:3px solid var(--tone2);font-size:1.02rem;line-height:1.6;font-weight:500;
+    white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text);max-height:46vh;overflow-y:auto}
+.bc-foot{padding:16px 22px 20px;display:flex;align-items:center;gap:12px}
+.bc-count{font-size:.72rem;color:var(--muted);font-weight:700;margin-right:auto}
+.bc-count:empty{display:none}
+.bc-count:empty+.bc-ok{flex:1}
+/* admin tabs: room for the Message tab */
+.adm-tabs{overflow-x:auto;scrollbar-width:none}.adm-tabs::-webkit-scrollbar{display:none}
+.adm-tabs button{flex:1 0 auto;padding:10px 10px;gap:6px}
+.btn.bc-ok{min-width:140px;background:linear-gradient(135deg,var(--tone),var(--tone2));box-shadow:0 8px 18px -8px var(--tone);letter-spacing:.3px}
 .hero-progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.12)}
 .hero-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5dffb5,#fff);transition:width .45s}
 
@@ -665,6 +684,228 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
 }
 @media (max-width:360px){.executives{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}#smart-insight{animation-duration:240s!important}}
+
+/* ================================================================
+   v3 — visual refresh + new components
+   ================================================================ */
+:root{
+    --bg:#edf3f3; --r:20px; --brand-red:#c8102e;
+    --line:rgba(0,80,80,.09);
+    --shadow:0 1px 2px rgba(0,50,50,.05),0 10px 28px -10px rgba(0,60,60,.16);
+    --shadow-lg:0 2px 6px rgba(0,50,50,.07),0 22px 48px -14px rgba(0,60,60,.24);
+}
+body.dark{--bg:#061012;--line:rgba(255,255,255,.075)}
+body{background:
+    linear-gradient(rgba(0,102,102,.025) 1px,transparent 1px) 0 0/48px 48px,
+    linear-gradient(90deg,rgba(0,102,102,.025) 1px,transparent 1px) 0 0/48px 48px,
+    radial-gradient(1100px 520px at -5% -10%,rgba(0,168,143,.13),transparent 60%),
+    radial-gradient(900px 480px at 105% -5%,rgba(99,102,241,.10),transparent 60%),var(--bg);background-attachment:fixed}
+body.dark{background:
+    radial-gradient(1100px 520px at -5% -10%,rgba(0,168,143,.12),transparent 60%),
+    radial-gradient(900px 480px at 105% -5%,rgba(99,102,241,.10),transparent 60%),var(--bg);background-attachment:fixed}
+.topbar{background:rgba(237,243,243,.84)}
+.brand-txt b{background:linear-gradient(90deg,var(--text),var(--primary));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero{border-radius:26px;background:linear-gradient(120deg,#022f31 0%,#005f60 38%,#008577 72%,#00a88f 100%);background-size:200% 200%}
+.panel,.kpi,.card,.me-panel{border-radius:var(--r)}
+.panel{background:linear-gradient(180deg,var(--card) 0%,color-mix(in srgb,var(--card) 97%,var(--primary)) 100%)}
+.panel.peak{background:linear-gradient(135deg,#022f31,#006666 45%,#00897b)}
+.panel-title .ic{border-radius:12px}
+.kpi{transition:transform .2s,box-shadow .2s}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.kpi .kpi-ic{background:color-mix(in srgb,var(--kc) 14%,transparent)}
+.kpi::before{top:0;bottom:auto;left:18px;right:18px;width:auto;height:3px;border-radius:0 0 4px 4px}
+.section-label{color:var(--text);letter-spacing:1.6px;margin:30px 4px 14px}
+.section-label>span:first-child{display:inline-flex;align-items:center;gap:9px}
+.section-label>span:first-child::before{content:'';width:9px;height:9px;border-radius:2px;background:var(--brand-red)}
+.btn-tool{position:relative;border-radius:12px}
+.card{border-top:1px solid var(--line)}
+.ins{background:color-mix(in srgb,var(--tone,var(--muted)) 6%,var(--soft))}
+footer{opacity:.85}
+
+/* ---------- bell + notification panel ---------- */
+.btn-tool .bdg{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--brand-red);color:#fff;
+    font-size:.6rem;font-weight:800;display:grid;place-items:center;border:2px solid var(--bg);line-height:1;font-family:inherit}
+.btn-tool.ring{animation:ring .9s ease-in-out 2}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(16deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}75%{transform:rotate(3deg)}}
+.np-scrim{position:fixed;inset:0;z-index:940;background:transparent;display:none}
+.np-scrim.on{display:block}
+.np{position:fixed;top:66px;right:max(12px,calc((100vw - 1400px)/2 + 16px));z-index:950;width:min(420px,calc(100vw - 24px));max-height:min(78vh,660px);
+    display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 60px -12px rgba(0,30,30,.35);overflow:hidden;animation:pop .2s ease-out}
+.np svg{display:block;flex:none}
+.np-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 14px 12px 18px;border-bottom:1px solid var(--line)}
+.np-ttl{min-width:0}
+.np-ttl b{display:block;font-size:1.02rem;font-weight:800;letter-spacing:-.2px}
+.np-ttl small{display:block;font-size:.7rem;color:var(--muted);font-weight:600;margin-top:1px}
+.np-acts{display:flex;align-items:center;gap:6px;flex:none}
+.np-act{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--text);
+    font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:border-color .15s,background .15s,color .15s}
+.np-act:hover{border-color:var(--primary);color:var(--primary)}
+.np-act.danger:hover{border-color:var(--down);color:var(--down);background:rgba(224,66,90,.07)}
+.np-act:disabled{opacity:.45;cursor:default;pointer-events:none}
+.np-head .btn-tool{width:32px;height:32px;border-radius:10px;font-size:.85rem}
+.np-perm{margin:12px 14px 0;padding:10px 12px;border-radius:13px;background:var(--soft);font-size:.76rem;line-height:1.4;color:var(--muted);display:flex;gap:10px;align-items:center}
+.np-perm .pi{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--card);color:var(--primary)}
+.np-perm>div{flex:1;min-width:0}
+.np-perm b{display:block;color:var(--text);font-size:.8rem}
+.np-perm .btn{flex:none}
+.np-perm.ok .pi{color:var(--up)}
+.np-perm.warn{background:rgba(245,158,11,.11)}
+.np-perm.warn .pi{color:#b45309}
+body.dark .np-perm.warn .pi{color:#fbbf24}
+.np-list{overflow-y:auto;padding:4px 14px 14px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain;flex:1}
+.np-sec{margin:10px 2px 0;font-size:.6rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+.np-item{all:unset;box-sizing:border-box;display:grid;grid-template-columns:38px minmax(0,1fr);gap:11px;padding:11px 12px;border-radius:14px;background:var(--soft);cursor:pointer;position:relative;border:1.5px solid transparent;transition:border-color .15s,background .15s}
+.np-item:hover{border-color:var(--line)}
+.np-item:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.np-item.unread{background:var(--card);border-color:color-mix(in srgb,var(--brand-red) 30%,transparent);box-shadow:0 6px 16px -10px rgba(200,16,46,.45)}
+.np-item.unread::after{content:'';position:absolute;top:14px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--brand-red)}
+.np-item.idle{background:rgba(224,66,90,.07);border-color:rgba(224,66,90,.22);cursor:default}
+.np-av{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.78rem;letter-spacing:.3px;background:linear-gradient(135deg,#006666,#00a88f)}
+.np-item.team .np-av{background:linear-gradient(135deg,#3f3fb8,#6d6ff5)}
+.np-item.urgent .np-av,.np-item.idle .np-av{background:linear-gradient(135deg,#a50d26,#ee3a4a)}
+.np-from{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-right:14px}
+.np-from b{font-size:.84rem;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.np-from small{font-size:.66rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.np-text{margin:3px 0 0;font-size:.8rem;line-height:1.45;color:var(--text);white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.np-meta{margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.6rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.np-tag{padding:2px 7px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.np-tag.new{color:var(--brand-red);border-color:color-mix(in srgb,var(--brand-red) 30%,transparent)}
+.np-tag.live{color:var(--up);border-color:color-mix(in srgb,var(--up) 30%,transparent)}
+.np-tag.team{color:#4f46e5;border-color:rgba(99,102,241,.3)}
+body.dark .np-tag.team{color:#a5a6ff}
+.np-tag.urg{color:#fff;background:var(--brand-red);border-color:var(--brand-red)}
+.np-empty{margin:18px 0 6px;padding:26px 16px;text-align:center;border:1.5px dashed var(--line);border-radius:16px;color:var(--muted)}
+.np-empty .ei{width:46px;height:46px;margin:0 auto 10px;border-radius:14px;display:grid;place-items:center;background:var(--soft);color:var(--primary)}
+.np-empty b{display:block;color:var(--text);font-size:.88rem}
+.np-empty small{display:block;font-size:.74rem;margin-top:2px}
+.np-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px 10px 18px;border-top:1px solid var(--line);font-size:.74rem;font-weight:700;color:var(--muted)}
+.np-foot>span{display:inline-flex;align-items:center;gap:8px}
+@media (max-width:720px){.np{top:58px;right:12px}}
+@media (max-width:420px){.np-act .lbl{display:none}.np-act{padding:0 9px}}
+
+/* ---------- "turn on notifications" card ---------- */
+#alertSheet{position:fixed;left:50%;top:max(12px,env(safe-area-inset-top));transform:translate(-50%,calc(-100% - 30px));z-index:7100;width:min(460px,calc(100vw - 24px));
+    display:flex;gap:14px;align-items:flex-start;padding:16px 16px 14px;border-radius:20px;background:var(--card);border:1px solid var(--line);
+    box-shadow:0 24px 60px -14px rgba(0,30,30,.45);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+#alertSheet.show{transform:translate(-50%,0)}
+#alertSheet .as-ic{flex:none;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#006666,#00a88f);box-shadow:0 8px 18px -8px #006666}
+#alertSheet .as-txt{flex:1;min-width:0}
+#alertSheet .as-txt b{display:block;font-size:.95rem;font-weight:800;letter-spacing:-.2px}
+#alertSheet .as-txt small{display:block;font-size:.78rem;color:var(--muted);font-weight:500;line-height:1.45;margin-top:2px}
+#alertSheet .as-btns{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+#alertSheet .btn{padding:9px 16px;font-size:.78rem}
+
+/* ---------- admin · message the team ---------- */
+.tm-text{display:block;resize:vertical;min-height:96px;line-height:1.5;font-weight:500}
+.tm-under{display:flex;justify-content:flex-end;margin:6px 2px 10px;font-size:.66rem;font-weight:700;color:var(--muted)}
+.tm-under .over{color:var(--down)}
+.tm-opts{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.tm-opts .field{flex:1;min-width:0}
+.tm-chk{display:inline-flex;align-items:center;gap:8px;padding:0 12px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;user-select:none}
+.tm-chk input{accent-color:#c8102e;width:16px;height:16px;margin:0}
+.tm-chk:has(input:checked){border-color:rgba(200,16,46,.45);color:#c8102e;background:rgba(200,16,46,.06)}
+.tm-list{display:flex;flex-direction:column;gap:8px}
+.tm-item{padding:11px 12px;border-radius:13px;background:var(--soft);border-left:3px solid #6d6ff5}
+.tm-item.urg{border-left-color:#c8102e}
+.tm-item.off{opacity:.62;border-left-color:var(--line)}
+.tm-item p{margin:0;font-size:.84rem;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.tm-meta{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:.66rem;font-weight:700;color:var(--muted)}
+.tm-meta .on{color:var(--up)}
+.tm-read{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.tm-read span{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--muted)}
+.tm-read span.y{color:var(--up);border-color:color-mix(in srgb,var(--up) 30%,transparent)}
+.tm-acts{display:flex;gap:6px;margin-top:9px}
+.np-meta .new{color:var(--brand-red)} .np-meta .live{color:var(--up)}
+
+/* ---------- inactivity watch (managers) ---------- */
+.watch .panel-head{margin-bottom:10px}
+.watch.calm{padding-top:14px;padding-bottom:14px}
+.watch.calm .panel-head{margin:0}
+.watch.alert{border-color:rgba(224,66,90,.35);box-shadow:0 0 0 3px rgba(224,66,90,.08),var(--shadow)}
+.watch.alert .panel-title .ic{background:linear-gradient(135deg,#c8102e,#ff5a5f);box-shadow:0 6px 14px -6px #c8102e}
+.iw-chips{display:flex;flex-wrap:wrap;gap:6px}
+.iw-chip{font-size:.66rem;font-weight:800;letter-spacing:.4px;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.iw-chip.ok{background:rgba(10,159,106,.12);color:var(--up)}
+.iw-chip.bad{background:rgba(224,66,90,.12);color:var(--down)}
+.iw-chip.near{background:rgba(245,158,11,.14);color:#9a5b00}
+body.dark .iw-chip.near{color:#fbbf24}
+.iw-all{margin:0 0 10px;padding:10px 12px;border-radius:12px;background:linear-gradient(90deg,#9e0b23,#d4142f);color:#fff;font-weight:700;font-size:.82rem}
+.iw-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.iw-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--soft);border-left:3px solid var(--down)}
+.iw-row.near{border-left-color:var(--amber)}
+.iw-row .avatar{width:34px;height:34px;border-radius:11px;font-size:.72rem;grid-row:1/3}
+.iw-row b{font-size:.86rem;line-height:1.2;overflow-wrap:anywhere}
+.iw-row small{grid-column:2/4;font-size:.68rem;color:var(--muted);font-weight:600;line-height:1.35}
+.iw-pill{font-size:.56rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:rgba(224,66,90,.14);color:var(--down);white-space:nowrap}
+.iw-row.near .iw-pill{background:rgba(245,158,11,.16);color:#9a5b00}
+body.dark .iw-row.near .iw-pill{color:#fbbf24}
+.iw-bar{grid-column:2/4;height:5px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:2px}
+.iw-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--amber),var(--down))}
+.iw-ok{font-size:.8rem;color:var(--muted);font-weight:600}
+.iw-skip{margin:10px 2px 0;font-size:.72rem;color:var(--muted);font-weight:600}
+.iw-skip b{color:var(--text)}
+
+/* ---------- executive's own view: card + insights side by side ---------- */
+.team-wrap{margin-bottom:8px}
+.team-wrap.solo{display:grid;grid-template-columns:minmax(300px,440px) minmax(0,1fr);gap:16px;align-items:stretch}
+.team-wrap.solo .executives.solo{grid-template-columns:minmax(0,1fr);margin:0}
+.team-wrap.solo .executives.solo .card{height:100%;justify-content:space-between}
+.team-wrap.solo .executives.solo .card-mid{flex:1;align-items:center;flex-direction:column;justify-content:center;gap:14px;padding:6px 0;
+    background:radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--cat) 9%,transparent),transparent 70%)}
+.team-wrap.solo .executives.solo .card-mid>div{text-align:center}
+.team-wrap.solo .executives.solo .today-num{font-size:4rem}
+.team-wrap.solo .executives.solo .spark{width:min(100%,260px);height:64px}
+@media (max-width:900px){.team-wrap.solo .executives.solo .card-mid{flex-direction:row;justify-content:space-between;align-items:flex-end;background:none;padding:0}
+    .team-wrap.solo .executives.solo .card-mid>div{text-align:left}.team-wrap.solo .executives.solo .today-num{font-size:2.6rem}
+    .team-wrap.solo .executives.solo .spark{width:150px;height:40px}}
+.me-panel{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);padding:18px 20px;display:flex;flex-direction:column;gap:14px;min-width:0;position:relative;overflow:hidden}
+.me-panel::before{content:'';position:absolute;right:-70px;top:-70px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--cat) 16%,transparent),transparent 70%);pointer-events:none}
+.me-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;position:relative}
+.me-head small{display:block;font-size:.62rem;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted)}
+.me-head h3{margin:2px 0 0;font-size:1.15rem;font-weight:800;letter-spacing:-.3px}
+.me-rank{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#ffd86b,#f7971e);color:#4a2900;font-weight:800;font-size:.78rem;box-shadow:0 8px 18px -10px #f7971e;white-space:nowrap}
+.me-rank.none{background:var(--soft);color:var(--muted);box-shadow:none}
+.me-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;position:relative}
+.me-tile{background:var(--soft);border-radius:14px;padding:11px 13px;min-width:0}
+.me-tile>span{display:block;font-size:.58rem;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.me-tile>b{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:1.4rem;font-weight:800;letter-spacing:-.5px;margin:2px 0 1px;font-variant-numeric:tabular-nums;color:var(--text)}
+.me-tile>b .delta{font-size:.6rem;letter-spacing:0}
+.me-tile>small{display:block;font-size:.66rem;color:var(--muted);font-weight:600;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.me-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px}
+.me-chart{background:var(--soft);border-radius:14px;padding:12px 13px;min-width:0}
+.me-chart h4,.me-notes h4{margin:0 0 8px;font-size:.68rem;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.me-chart h4 em{font-style:normal;color:var(--cat);letter-spacing:.2px;text-transform:none}
+.me-bars{display:flex;align-items:flex-end;gap:4px;height:92px}
+.me-bars i{flex:1;border-radius:5px 5px 2px 2px;background:color-mix(in srgb,var(--cat) 50%,transparent);min-height:3px}
+.me-bars i.t{background:linear-gradient(180deg,var(--amber),var(--cat))}
+.me-bars i.z{background:var(--line)}
+.me-x{display:flex;justify-content:space-between;gap:8px;font-size:.62rem;color:var(--muted);font-weight:700;margin-top:6px}
+.me-mix{margin-top:10px}
+.me-notes{display:flex;flex-direction:column;gap:7px;min-width:0}
+.me-note{display:flex;gap:9px;align-items:flex-start;font-size:.78rem;line-height:1.42;padding:9px 11px;border-radius:12px;background:var(--soft);font-weight:500}
+.me-note>i{font-style:normal;font-size:.95rem;line-height:1.2}
+.me-note b{color:var(--cat)}
+.me-goal{position:relative;height:8px;border-radius:999px;background:var(--soft);overflow:hidden}
+.me-goal i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cat),var(--amber))}
+@media (max-width:1100px){.me-row{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){.team-wrap.solo{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.me-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.me-panel{padding:14px}}
+
+/* ---------- install-app banner ---------- */
+#installBar{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translate(-50%,160%);z-index:7000;width:min(580px,calc(100vw - 20px));
+    display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:20px;color:#fff;
+    background:linear-gradient(120deg,#022f31,#006666 60%,#00897b);box-shadow:0 22px 50px -12px rgba(0,30,30,.6);border:1px solid rgba(255,255,255,.14);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+#installBar.show{transform:translate(-50%,0)}
+#installBar .ib-ic{width:46px;height:46px;border-radius:13px;flex:none;object-fit:cover;background:rgba(255,255,255,.15);box-shadow:0 0 0 1px rgba(255,255,255,.2)}
+#installBar .ib-txt{flex:1;min-width:0;line-height:1.3}
+#installBar .ib-txt b{display:block;font-size:.92rem;font-weight:800}
+#installBar .ib-txt small{display:block;font-size:.72rem;opacity:.85;font-weight:500}
+#installBar .ib-txt .sh{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:5px;background:rgba(255,255,255,.18);vertical-align:-5px;margin:0 2px}
+#installBar .ib-go{border:none;border-radius:12px;padding:10px 16px;background:#fff;color:#006666;font-weight:800;font-size:.8rem;cursor:pointer;white-space:nowrap;font-family:inherit}
+#installBar .ib-x{border:none;background:rgba(255,255,255,.14);color:#fff;width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:1rem;flex:none;font-family:inherit}
+body.has-ib #toast{bottom:104px}
+@media (max-width:480px){#installBar{flex-wrap:wrap;align-items:flex-start}#installBar .ib-txt{flex:1 1 0}#installBar .ib-go{order:5;flex:1 1 100%;padding:11px}}
+@media print{#installBar,.np{display:none!important}}
 </style>
 </head>
 <body>
@@ -687,12 +928,17 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
     </div>
 </div>
 
-<!-- Head-office message pop-up (messages are posted from the retail page) -->
-<div id="bcModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="bcFrom">
+<!-- Message pop-up (head office from the retail page, or a manager of this showroom) -->
+<div id="bcModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="bcFrom" data-tone="hq">
     <div class="modal-card bc-card">
-        <div class="bc-top" id="bcTop"><span class="bc-ic">📣</span><div><small id="bcKind">Message from head office</small><b id="bcFrom">—</b></div></div>
-        <div class="bc-body"><p class="bc-text" id="bcText"></p><p class="bc-meta" id="bcMeta"></p></div>
-        <div class="bc-foot"><span class="bc-count" id="bcCount"></span><button class="btn" id="bcOk" type="button" onclick="ackBroadcast()">GOT IT</button></div>
+        <div class="bc-band"></div>
+        <div class="bc-head">
+            <span class="bc-av" id="bcAv">—</span>
+            <div class="bc-who"><b id="bcFrom">—</b><small id="bcWhen"></small></div>
+            <span class="bc-kind"><i></i><span id="bcKind">Message</span></span>
+        </div>
+        <p class="bc-text" id="bcText"></p>
+        <div class="bc-foot"><span class="bc-count" id="bcCount"></span><button class="btn bc-ok" id="bcOk" type="button" onclick="ackBroadcast()">Got it</button></div>
     </div>
 </div>
 
@@ -746,6 +992,7 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
         <div class="top-right">
             <span class="pill" id="connPill" title="Connection"><i></i><span>Connecting…</span></span>
             <span class="pill user" id="currentUserChip" hidden><i></i><span id="currentUserName">—</span></span>
+            <button class="btn-tool" id="bellBtn" type="button" title="Notifications" aria-label="Notifications" onclick="toggleNotif()">🔔<span class="bdg" id="bellBadge" hidden>0</span></button>
             <button class="btn-tool" title="Full screen" onclick="toggleFullScreen()">⛶</button>
             <button class="btn-tool" title="Dark mode" onclick="toggleDark()">🌓</button>
             <button class="btn-tool" title="Admin" onclick="openAdmin()">⚙️</button>
@@ -802,9 +1049,15 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
     <!-- Monthly target -->
     <div class="panel" id="goalCard" hidden></div>
 
+    <!-- Inactivity watch (managers only) -->
+    <div class="panel watch" id="idleWatch" hidden></div>
+
     <!-- Executive cards -->
     <div class="section-label" id="secTeam" data-sec><span id="teamLabel">Team</span><em id="teamNote">Tap + to log a walk-in or a phone inquiry · numbers are this month</em></div>
-    <div class="executives" id="grid"></div>
+    <div class="team-wrap" id="teamWrap">
+        <div class="executives" id="grid"></div>
+        <aside class="me-panel" id="mePanel" hidden aria-label="Your insights"></aside>
+    </div>
 
     <div class="section-label" id="secAnalysis" data-sec><span>Analysis</span></div>
 
@@ -974,6 +1227,7 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
     <nav class="adm-tabs" id="admTabs">
         <button type="button" data-tab="team" class="active"><span>👥</span>Team</button>
         <button type="button" data-tab="target"><span>🎯</span>Target</button>
+        <button type="button" data-tab="msg"><span>📣</span>Message</button>
         <button type="button" data-tab="entries" id="admTabEntries" hidden><span>🗂</span>Entries</button>
         <button type="button" data-tab="app"><span>⬆️</span>Updates</button>
     </nav>
@@ -995,10 +1249,19 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
                 </form>
                 <div class="adm-list" id="managerList"></div>
             </div>
+            <div class="adm-card">
+                <div class="adm-card-head"><b>Inactivity alert</b><span class="adm-badge ok" id="idleBadge">7 h</span></div>
+                <form class="adm-add" onsubmit="saveIdleHours();return false;">
+                    <select class="field" id="idleHoursSel" aria-label="Alert after"><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="7">7 hours</option><option value="8">8 hours</option><option value="9">9 hours</option><option value="10">10 hours</option><option value="0">Off</option></select>
+                    <button class="btn" type="submit">Save</button>
+                </form>
+                <div class="adm-help" style="margin:0">Alerts managers when an <b>on-duty</b> executive logs nothing for this many working hours (08:00–22:00). Off-duty staff are skipped.</div>
+            </div>
             <div class="adm-help"><b>How it works</b>
                 <ul>
                     <li>New people log in with PIN <b>1234</b> and are asked to choose their own straight away.</li>
                     <li>The switch sets an executive <b>on or off duty</b>. Off-duty cards can't log entries.</li>
+                    <li>Off-duty executives are left out of inactivity alerts and reports.</li>
                     <li><b>🔑</b> resets a forgotten PIN back to 1234. <b>🗑</b> removes someone — their past entries stay in every report.</li>
                 </ul>
             </div>
@@ -1033,6 +1296,31 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
             </div>
         </section>
 
+        <section class="adm-sec" data-tab="msg" hidden>
+            <div class="adm-card">
+                <div class="adm-card-head"><b>Message your team</b><span class="adm-badge" id="tmLive">—</span></div>
+                <form onsubmit="sendTeamMsg();return false;">
+                    <textarea class="field tm-text" id="tmText" rows="4" maxlength="280" placeholder="Write a message to the team…" oninput="tmCount()"></textarea>
+                    <div class="tm-under"><span id="tmCnt">0 / 280</span></div>
+                    <div class="tm-opts">
+                        <select class="field" id="tmFor" aria-label="Show for">
+                            <option value="2h">Show for 2 hours</option>
+                            <option value="today" selected>Show until end of today</option>
+                            <option value="24h">Show for 24 hours</option>
+                            <option value="3d">Show for 3 days</option>
+                        </select>
+                        <label class="tm-chk"><input type="checkbox" id="tmUrg">Urgent</label>
+                    </div>
+                    <button class="btn wide" id="tmSend" type="submit">Send to team</button>
+                </form>
+            </div>
+            <div class="adm-card">
+                <div class="adm-card-head"><b>Sent messages</b><span class="adm-count" id="tmCount">0</span></div>
+                <div class="tm-list" id="tmList"></div>
+            </div>
+            <div class="adm-help">Pops up with a sound on every team screen and runs in the Live Feed until it ends.</div>
+        </section>
+
         <section class="adm-sec" data-tab="app" hidden>
             <div class="adm-card">
                 <div class="adm-card-head"><b>App version</b><span class="adm-badge" id="admUpToDate">—</span></div>
@@ -1042,12 +1330,27 @@ body.dark #toast button{background:rgba(0,0,0,.08);color:#0f2727;border-color:rg
                 <div class="adm-kv last"><span>Offline support</span><b id="admSw">—</b></div>
                 <button class="btn wide" type="button" onclick="checkForUpdate(true)">Check for updates now</button>
             </div>
-            <div class="adm-help"><b>Check for updates</b>
-               
-            </div>
+            <div class="adm-help">The app updates itself automatically. Use the button to check right away.</div>
         </section>
     </div>
 </aside>
+
+<div id="npScrim" class="np-scrim" onclick="toggleNotif(false)"></div>
+<section id="notifPanel" class="np" aria-label="Notifications" hidden>
+    <div class="np-head">
+        <div class="np-ttl"><b>Notifications</b><small id="npSub">—</small></div>
+        <div class="np-acts">
+            <button class="np-act" id="npCompose" type="button" hidden onclick="composeTeamMsg()" title="Message your team"></button>
+            <button class="np-act danger" id="npClear" type="button" hidden onclick="clearNotifs()" title="Clear all notifications"></button>
+            <button class="btn-tool" type="button" onclick="toggleNotif(false)" aria-label="Close">✕</button>
+        </div>
+    </div>
+    <div id="npPerm"></div>
+    <div class="np-list" id="npList"></div>
+    <div class="np-foot"><span id="npSoundLbl">Sound</span><button class="adm-switch" id="npSound" type="button" role="switch" aria-label="Sound" onclick="toggleSound()"><i></i></button></div>
+</section>
+<div id="alertSheet" role="dialog" aria-label="Turn on notifications" hidden></div>
+<div id="installBar" hidden role="dialog" aria-label="Install the app"></div>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -1406,6 +1709,7 @@ function unlockApp() {
     if (!window.__appBooted) { window.__appBooted = true; initAppLogic(); }
     else renderAll();
     if (getCurrentPin() === DEFAULT_PIN) setTimeout(openChangePin, 700);   // nudge off the shared default PIN
+    else setTimeout(nudgeAlerts, 2500);
 }
 
 function logout() {
@@ -1517,6 +1821,7 @@ function initAppLogic() {
 
     // Keeps "vs same time yesterday", pace and forecast honest, and rolls over at midnight.
     setInterval(renderAll, 5 * 60 * 1000);
+    setInterval(() => { renderIdleWatch(); checkIdleAlerts(); updateBell(); }, 60000);   // inactivity clock
     setInterval(() => { if (isManager()) renderActivityLog(); }, 30000);
 }
 
@@ -1677,11 +1982,12 @@ function renderAll() {
     document.body.classList.toggle("is-loading", !(dataReady.execs && dataReady.walkins));
     document.body.dataset.cat = catFilter;
     recompute();
-    renderCatBar(); renderHero(); renderKpis(); renderGoal(); renderGrid();
+    renderCatBar(); renderHero(); renderKpis(); renderGoal(); renderGrid(); renderMePanel();
     renderPeakCard(); renderChannel(); renderMonthlyLeaderboard();
     renderInsights(); renderShare(); renderChart(); renderCompareChart(); renderScorecard();
     if (FEATURES.studio || FEATURES.calendar || FEATURES.records) { DIDX = buildDayIndex(); renderStudio(); renderCalendar(); renderRecords(); }
     renderShiftHeatmap(); renderActivityLog(); updateTicker();
+    renderIdleWatch(); checkIdleAlerts(); updateBell();
     if ($("adminPanel").classList.contains("active")) renderAdmin();
 }
 
@@ -2803,8 +3109,11 @@ function buildTicker() {
 
     const closing = `👩‍💻 <span class="feed-pill green">Team AlZahia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
     const middle = messages.map(m => ({ html: m.html, o: tickerRand("order:" + m.key) })).sort((a, b) => a.o - b.o).map(m => m.html);
+    // Manager's messages to the team lead the feed, and come round again half-way through.
+    const team = activeTeamMsgs().map(b => `<span class="feed-pill mgr${b.urgent ? " urg" : ""}">${esc(bcSender(b).toUpperCase())}</span><span class="feed-mgr">${esc(b.text.replace(/\s+/g, " "))}</span>`);
+    if (team.length && middle.length > 5) middle.splice(Math.ceil(middle.length / 2), 0, ...team);
     // Text-only feed: strip emoji icons, keep the coloured labels and the ✦ separators.
-    return ([greeting, ...middle, closing].join(SEP) + SEP)
+    return ([greeting, ...team, ...middle, closing].join(SEP) + SEP)
         .replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, "")
         .replace(/ {2,}/g, " ");
 }
@@ -2826,15 +3135,19 @@ $("smart-insight").addEventListener("animationiteration", () => {
     recompute(); updateTicker(true);
 });
 
-// ---------- Head-office messages ----------
-// The retail page writes each message to stores/{store}/broadcasts/{id} = { text, from, ts, until, urgent, seen }.
-// A new message pops up on every logged-in screen and leads the Live Feed until it expires.
-// "Got it" records the acknowledgement under seen/{name}, which the retail page shows back to the bosses.
+// ---------- Messages ----------
+// Head office (retail page) and this showroom's managers both write to stores/{store}/broadcasts/{id}
+//   = { text, from, ts, until, urgent, kind, seen }   — kind "team" = a manager's message to his team.
+// A new message pops up with a sound on every logged-in screen (managers and executives alike).
+// Head-office messages run in the red bar under the Live Feed; team messages run inside the Live Feed.
+// "Got it" records the acknowledgement under seen/{name}.
 let broadcasts = [], bcQueue = [], bcShown = null;
+const isTeamMsg = b => !!b && b.kind === "team";
 const LS_BC_SEEN = () => `${window.STORE_ID}_bc_seen`;
 const bcMem = new Set();                         // fallback when this browser blocks localStorage
+const bcSounded = new Set();                     // each message plays its sound once per page load
 function bcSeenSet() {
-    try { return new Set(JSON.parse(localStorage.getItem(LS_BC_SEEN()) || "[]")); } catch (e) { return new Set(bcMem); }
+    try { const s = new Set(JSON.parse(localStorage.getItem(LS_BC_SEEN()) || "[]")); bcMem.forEach(x => s.add(x)); return s; } catch (e) { return new Set(bcMem); }
 }
 function bcMarkSeen(id) {
     bcMem.add(id);
@@ -2848,15 +3161,22 @@ function activeBroadcasts() {
     const now = Date.now();
     return broadcasts.filter(b => !b.until || +b.until > now).sort((a, b) => (+b.ts || 0) - (+a.ts || 0));
 }
+const activeTeamMsgs = () => activeBroadcasts().filter(isTeamMsg);
+let teamFeedKey = "";
 function onBroadcasts(v) {
     broadcasts = Object.keys(v || {}).map(k => Object.assign({}, v[k], { id: k }))
         .filter(b => b && typeof b.text === "string" && b.text.trim());
     renderHqTicker();
+    const tk = activeTeamMsgs().map(b => b.id + "|" + b.from + "|" + b.text + "|" + !!b.urgent).join("\n");
+    if (tk !== teamFeedKey) { teamFeedKey = tk; try { updateTicker(false); } catch (e) {} }
     queueBroadcasts();
+    notifyBroadcasts();
+    updateBell();
+    try { if (admTab === "msg" && $("adminPanel").classList.contains("active")) renderTeamMsgs(); } catch (e) {}
 }
 function queueBroadcasts() {
     const seen = bcSeenSet();
-    bcQueue = activeBroadcasts().filter(b => !seen.has(b.id) && !bcMem.has(b.id)).reverse();   // oldest first
+    bcQueue = activeBroadcasts().filter(b => !seen.has(b.id)).reverse();   // oldest first
     if (bcShown && !bcQueue.some(b => b.id === bcShown)) bcShown = null;
     showNextBroadcast();
 }
@@ -2867,29 +3187,36 @@ function bcWhen(ts) {
     const diff = Math.round((today - day) / 864e5);
     return diff === 0 ? `Today, ${t}` : diff === 1 ? `Yesterday, ${t}` : `${d.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}, ${t}`;
 }
+const bcSender = b => b.from || (isTeamMsg(b) ? "Manager" : "Head office");
 function showNextBroadcast() {
     const m = $("bcModal");
     if (!m) return;
     const b = bcQueue[0];
-    if (!b) { m.classList.add("hidden"); bcShown = null; return; }
+    if (!b) { if (!m.classList.contains("hidden")) { m.classList.add("hidden"); maybeApplyPending(); } bcShown = null; return; }
     bcShown = b.id;
-    $("bcTop").classList.toggle("urgent", !!b.urgent);
-    $("bcKind").textContent = b.urgent ? "Urgent · message from head office" : "Message from head office";
-    $("bcFrom").textContent = b.from || "Head office";
+    const team = isTeamMsg(b);
+    m.dataset.tone = b.urgent ? "urgent" : team ? "team" : "hq";
+    $("bcKind").textContent = b.urgent ? "Urgent" : team ? "Team message" : "Message";
+    $("bcFrom").textContent = bcSender(b);
+    $("bcAv").textContent = initials(bcSender(b));
+    $("bcWhen").textContent = bcWhen(b.ts);
     $("bcText").textContent = b.text;
-    $("bcMeta").textContent = `Sent ${bcWhen(b.ts)}` + (b.until ? ` · showing in the Live Feed until ${bcWhen(b.until)}` : "");
-    $("bcCount").textContent = bcQueue.length > 1 ? `1 of ${bcQueue.length} new messages` : "";
-    $("bcOk").textContent = bcQueue.length > 1 ? "GOT IT · NEXT" : "GOT IT";
+    $("bcCount").textContent = bcQueue.length > 1 ? `1 of ${bcQueue.length}` : "";
+    $("bcOk").textContent = bcQueue.length > 1 ? "Got it · Next" : "Got it";
     m.classList.remove("hidden");
+    if (!bcSounded.has(b.id)) { bcSounded.add(b.id); playTone(b.urgent ? "urgent" : "message"); }
+}
+function ackRemote(id) {
+    const who = (getCurrentExec() || "Screen").replace(/[.#$\[\]\/]/g, "_").slice(0, 60) || "Screen";
+    try { window.dbSet(R(`broadcasts/${id}/seen/${who}`), Date.now()).catch(() => {}); } catch (e) {}
 }
 function ackBroadcast() {
     const id = bcShown;
     if (!id) { showNextBroadcast(); return; }
-    bcMarkSeen(id);
-    const who = (getCurrentExec() || "Screen").replace(/[.#$\[\]\/]/g, "_").slice(0, 60) || "Screen";
-    try { window.dbSet(R(`broadcasts/${id}/seen/${who}`), Date.now()).catch(() => {}); } catch (e) {}
+    bcMarkSeen(id); ackRemote(id);
     bcQueue = bcQueue.filter(b => b.id !== id); bcShown = null;
     showNextBroadcast();
+    updateBell();
 }
 // Head-office line: a red "Urgent" bar directly under the Live Feed. It appears the moment a message
 // arrives (with a short flash), scrolls in from the right with a flashing URGENT label, and disappears when it expires.
@@ -2898,17 +3225,17 @@ let hqKey = "";
 function renderHqTicker(redraw) {
     const bar = $("hqTicker"), el = $("hq-insight");
     if (!bar || !el) return;
-    const act = activeBroadcasts();
+    const act = activeBroadcasts().filter(b => !isTeamMsg(b));   // team messages run in the normal Live Feed
     const key = act.map(b => b.id + "|" + b.from + "|" + b.text).join("\n");
     if (key === hqKey) return;                                  // unchanged: never restart mid-sentence
     const isNew = !redraw && act.some(b => !hqKey.includes(b.id + "|"));
     hqKey = key;
     if (!act.length) { bar.hidden = true; el.innerHTML = ""; return; }
-    const froms = [...new Set(act.map(b => b.from || "Head office"))];
+    const froms = [...new Set(act.map(bcSender))];
     $("hqLabel").textContent = froms.length === 1 ? "Urgent · " + froms[0] : "Urgent";   // two senders: names sit on each message
     const sep = `<span class="feed-sep">✦</span>`;
     const one = act.map(b =>
-        `<span class="feed-pill boss">${esc((b.from || "Head office").toUpperCase())}</span><span class="feed-boss">${esc(b.text.replace(/\s+/g, " "))}</span>`
+        `<span class="feed-pill boss">${esc(bcSender(b).toUpperCase())}</span><span class="feed-boss">${esc(b.text.replace(/\s+/g, " "))}</span>`
     ).join(sep);                                                 // ✦ only between messages
     bar.hidden = false;
     // one copy: enters from the right edge, crosses the bar, leaves on the left, repeats
@@ -2918,9 +3245,81 @@ function renderHqTicker(redraw) {
     el.style.animationDuration = Math.max(8, el.offsetWidth / HQ_SPEED).toFixed(1) + "s";
     if (isNew) { bar.classList.remove("flash"); void bar.offsetWidth; bar.classList.add("flash"); }
 }
-setInterval(() => renderHqTicker(), 30000);                             // drops a message the moment its time is up
+setInterval(() => {                                              // drops a message the moment its time is up
+    renderHqTicker();
+    const tk = activeTeamMsgs().map(b => b.id + "|" + b.from + "|" + b.text + "|" + !!b.urgent).join("\n");
+    if (tk !== teamFeedKey) { teamFeedKey = tk; try { updateTicker(false); } catch (e) {} }
+}, 30000);
 let hqW = innerWidth;                                           // phones fire resize while scrolling; only a width change matters
 window.addEventListener("resize", () => { if (innerWidth === hqW) return; hqW = innerWidth; hqKey = ""; renderHqTicker(true); });
+
+// ---------- Manager → team messages ----------
+const TM_MAX = 280;
+function tmUntil(v) {
+    const now = Date.now();
+    if (v === "2h") return now + 2 * 3600000;
+    if (v === "24h") return now + DAY;
+    if (v === "3d") return now + 3 * DAY;
+    const e = new Date(); e.setHours(23, 59, 59, 0); return +e;   // end of today
+}
+function tmCount() {
+    const t = $("tmText"), c = $("tmCnt"); if (!t || !c) return;
+    const n = t.value.trim().length;
+    c.textContent = `${n} / ${TM_MAX}`; c.className = n > TM_MAX ? "over" : "";
+    $("tmSend").disabled = !n || n > TM_MAX;
+}
+function composeTeamMsg() {
+    if (!isManager()) return;
+    toggleNotif(false); showAdmin(); setAdminTab("msg");
+    setTimeout(() => { const t = $("tmText"); if (t) t.focus(); }, 260);
+}
+async function sendTeamMsg() {
+    if (!isManager()) { toast("Only managers can message the team.", 2500); return; }
+    const text = $("tmText").value.trim();
+    if (!text || text.length > TM_MAX) return;
+    const id = "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const rec = { text, from: getCurrentExec() || "Manager", ts: Date.now(), until: tmUntil($("tmFor").value), urgent: $("tmUrg").checked, kind: "team" };
+    bcMarkSeen(id); bcSounded.add(id);                           // no pop-up on the sender's own screen
+    const btn = $("tmSend"); btn.disabled = true; btn.textContent = "Sending…";
+    try {
+        await window.dbSet(R(`broadcasts/${id}`), rec);
+        $("tmText").value = ""; $("tmUrg").checked = false; tmCount();
+        toast("✓ Message sent to the team", 2500);
+    } catch (e) {
+        alert(`Couldn't send. Your Firebase rules need to allow writes to stores/${window.STORE_ID}/broadcasts.`);
+    }
+    btn.textContent = "Send to team"; tmCount();
+    renderTeamMsgs();
+}
+async function endTeamMsg(id, del) {
+    if (!isManager()) return;
+    if (del && !confirm("Delete this message for everyone?")) return;
+    try {
+        if (del) await window.dbRemove(R(`broadcasts/${id}`));
+        else await window.dbSet(R(`broadcasts/${id}/until`), Date.now());
+        toast(del ? "Message deleted" : "Message ended", 2000);
+    } catch (e) { alert("Couldn't update the message. Check the connection and try again."); }
+}
+function renderTeamMsgs() {
+    const list = $("tmList"); if (!list) return;
+    const now = Date.now();
+    const mine = broadcasts.filter(isTeamMsg).sort((a, b) => (+b.ts || 0) - (+a.ts || 0));
+    const live = mine.filter(b => !b.until || +b.until > now);
+    $("tmCount").textContent = mine.length;
+    const lb = $("tmLive"); lb.textContent = live.length ? `${live.length} live` : "None live"; lb.className = "adm-badge " + (live.length ? "ok" : "");
+    const team = executives.filter(n => !lockedUsers[n]);
+    if (!mine.length) { list.innerHTML = `<div class="adm-empty">No team messages yet.</div>`; return; }
+    list.innerHTML = mine.slice(0, 15).map(b => {
+        const on = !b.until || +b.until > now, seen = b.seen && typeof b.seen === "object" ? b.seen : {};
+        const read = team.filter(n => seen[keyOf(n)]), left = team.filter(n => !seen[keyOf(n)]);
+        return `<div class="tm-item${b.urgent ? " urg" : ""}${on ? "" : " off"}">
+            <p>${esc(b.text)}</p>
+            <div class="tm-meta"><span>${esc(bcSender(b))} · ${esc(bcWhen(b.ts))}</span>${on ? `<span class="on">● Live until ${esc(bcWhen(b.until))}</span>` : `<span>Ended</span>`}${b.urgent ? `<span style="color:#c8102e">Urgent</span>` : ""}<span>Read by ${read.length} of ${team.length}</span></div>
+            ${team.length ? `<div class="tm-read">${read.map(n => `<span class="y">✓ ${esc(n)}</span>`).join("")}${left.map(n => `<span>${esc(n)}</span>`).join("")}</div>` : ""}
+            <div class="tm-acts">${on ? `<button class="btn ghost sm" type="button" onclick="endTeamMsg('${esc(b.id)}',false)">End now</button>` : ""}<button class="btn ghost sm" type="button" onclick="endTeamMsg('${esc(b.id)}',true)">Delete</button></div>
+        </div>`;
+    }).join("");
+}
 
 // ---------- Clock ----------
 function updateDateTime() {
@@ -2979,6 +3378,7 @@ function setAdminTab(tab) {
     if (tab === "target") renderTargetPreview();
     if (tab === "app") { renderUpdateStatus(); checkForUpdate(false); }
     if (tab === "entries") renderAdminEntries();
+    if (tab === "msg") { renderTeamMsgs(); tmCount(); }
 }
 $("admTabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) setAdminTab(b.dataset.tab); });
 
@@ -2987,6 +3387,7 @@ function renderAdmin() {
     if (document.activeElement !== $("targetInput")) $("targetInput").value = settings.monthlyTarget || "";
     $("execCount").textContent = executives.length;
     $("mgrCount").textContent = managers.length;
+    renderIdleAdmin();
 
     $("unifiedExecList").innerHTML = executives.map(name => {
         const n = esc(name), locked = !!lockedUsers[name], st = snap && snap.exec[name] ? snap.exec[name] : null;
@@ -3086,6 +3487,7 @@ async function addExecutive() {
         await window.dbSet(R("executives/" + name + "/pin"), DEFAULT_PIN);
         await window.dbSet(R("validPins/" + DEFAULT_PIN), true);
         input.value = "";
+        Promise.resolve(window.dbSet(R("settings/dutyTs/" + keyOf(name)), Date.now())).catch(() => {});
         toast(`✅ ${name} added — first login PIN is 1234`, 3500);
     } catch (e) { alert("Couldn't add that person. Check the connection and try again."); }
 }
@@ -3148,7 +3550,8 @@ function toggleLock(name) {
     if (!isManager()) return;
     const next = !lockedUsers[name];
     Promise.resolve(window.dbSet(R("locks/" + name), next))
-        .then(() => toast(next ? `${name} set off duty` : `${name} is back on duty`))
+        .then(() => { toast(next ? `${name} set off duty` : `${name} is back on duty`);
+            Promise.resolve(window.dbSet(R("settings/dutyTs/" + keyOf(name)), Date.now())).catch(() => {}); })
         .catch(() => alert("Couldn't change duty status. Please try again."));
 }
 
@@ -3249,7 +3652,423 @@ function exportData() {
 // Default the export range to this month.
 (document.querySelector('#exportPresets [data-preset="month"]') || { click() {} }).click();
 
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closeDetail(); closeChangePin(); closeAdmin(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeDetail(); closeChangePin(); closeAdmin(); toggleNotif(false); } });
+
+// ================================================================
+//  v3 · ALERTS — new messages arrive as system notifications
+//  (like an email alert), the 🔔 inbox keeps them, and the app icon /
+//  tab title show how many are unread.
+// ================================================================
+const STORE_NAME = ((document.querySelector(".brand-txt b") || {}).textContent || "Showroom").trim();
+const BASE_TITLE = document.title;
+const NOTIF_ICON = "rakwalkin.png";
+const notifSupported = () => "Notification" in window;
+const notifOK = () => notifSupported() && Notification.permission === "granted";
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const isStandalone = () => { try { return matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches || navigator.standalone === true; } catch (e) { return false; } };
+
+async function sysNotify(title, body, tag, opts) {
+    opts = opts || {};
+    if (!notifOK()) return false;
+    const o = { body: String(body || "").slice(0, 300), tag, icon: NOTIF_ICON, badge: NOTIF_ICON, renotify: true, requireInteraction: !!opts.sticky, data: { url: location.href } };
+    // Desktop: a page notification (tapping it brings this window forward).
+    try {
+        const n = new Notification(title, o);
+        n.onclick = () => { try { window.focus(); } catch (e) {} n.close(); if (opts.onclick) opts.onclick(); };
+        return true;
+    } catch (e) { /* phones only allow notifications through the service worker */ }
+    try {
+        const reg = (navigator.serviceWorker && (await navigator.serviceWorker.getRegistration())) || null;
+        if (reg) { await reg.showNotification(title, Object.assign(o, { vibrate: [120, 60, 120] })); return true; }
+    } catch (e) {}
+    return false;
+}
+
+const NP_IC = {
+    bell: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
+    off: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5"/><path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="m2 2 20 20"/></svg>`,
+    ok: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
+    phone: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>`,
+    send: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>`,
+    clear: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg>`,
+    clock: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`,
+    inbox: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`
+};
+
+function askNotif() {
+    unlockAudio();
+    hideAlertSheet();
+    if (!notifSupported()) {
+        toast(isIOS ? "On iPhone/iPad, install the app first (Share → Add to Home Screen), then turn notifications on inside the app." : "This browser can't show notifications.", 5000);
+        return;
+    }
+    Promise.resolve(Notification.requestPermission()).then(p => {
+        renderNotif(); updateBell();
+        if (p === "granted") { sysNotify("Notifications are on", `${STORE_NAME} · you'll be notified of new messages.`, "alerts-on"); playTone("message", true); }
+        else if (p === "denied") toast("Notifications are blocked. Allow them for this site in the browser settings.", 4500);
+    }).catch(() => {});
+}
+function testNotif() {
+    playTone("message", true);
+    sysNotify(`Test · ${STORE_NAME}`, "This is how a new message will appear.", "test").then(ok => { if (!ok) toast("Couldn't show a notification on this device.", 3000); });
+}
+
+// Once per session after login: a small card offering to switch notifications on (needs a tap — browsers require it).
+function nudgeAlerts() {
+    try { if (sessionStorage.getItem("alerts_nudged_v2")) return; } catch (e) {}
+    if (!notifSupported() || Notification.permission !== "default") return;
+    if ($("bcModal") && !$("bcModal").classList.contains("hidden")) { setTimeout(nudgeAlerts, 5000); return; }   // wait for the message pop-up to close
+    try { sessionStorage.setItem("alerts_nudged_v2", "1"); } catch (e) {}
+    const s = $("alertSheet"); if (!s) return;
+    s.innerHTML = `<span class="as-ic">${NP_IC.bell}</span>
+        <div class="as-txt"><b>Turn on notifications</b><small>Get new messages on this device straight away.</small>
+            <div class="as-btns"><button class="btn ghost" type="button" onclick="hideAlertSheet()">Not now</button><button class="btn" type="button" onclick="askNotif()">Turn on</button></div></div>`;
+    s.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add("show")));
+}
+function hideAlertSheet() {
+    const s = $("alertSheet"); if (!s || s.hidden) return;
+    s.classList.remove("show"); setTimeout(() => { s.hidden = true; }, 450);
+}
+
+// ---------- Sound ----------
+// Browsers keep a page silent until someone taps it once, so the audio is unlocked on the first tap / key press
+// (the PIN screen counts). After that every new message plays its tone, even with the app in a background tab.
+let audioCtx = null;
+const LS_SOUND = "walkin_sound";
+function soundOn() { try { return localStorage.getItem(LS_SOUND) !== "off"; } catch (e) { return true; } }
+function getAudio() {
+    try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+    } catch (e) { audioCtx = null; }
+    return audioCtx;
+}
+function unlockAudio() {
+    const c = getAudio(); if (!c) return;
+    try { const b = c.createBuffer(1, 1, 22050), s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); } catch (e) {}   // iOS needs a sound played inside the tap
+    if (c.state === "running") ["pointerdown", "keydown", "touchend"].forEach(t => window.removeEventListener(t, unlockAudio, true));
+}
+["pointerdown", "keydown", "touchend"].forEach(t => window.addEventListener(t, unlockAudio, true));
+// "message": a soft three-note chime · "urgent": a brighter double call
+function playTone(kind, force) {
+    if (!force && !soundOn()) return;
+    const c = getAudio(); if (!c || c.state === "closed") return;
+    try {
+        const urgent = kind === "urgent", t0 = c.currentTime + 0.03;
+        const out = c.createGain(); out.gain.value = urgent ? 0.34 : 0.28; out.connect(c.destination);
+        const notes = urgent ? [[880, 0], [1318.5, 0.13], [880, 0.4], [1318.5, 0.53]] : [[783.99, 0], [1046.5, 0.12], [1567.98, 0.24]];
+        const len = urgent ? 0.5 : 1.1;
+        notes.forEach(([f, at]) => {
+            const s = t0 + at;
+            [[1, "sine", 1], [2, "sine", 0.22], [3, "triangle", 0.06]].forEach(([mul, type, lvl]) => {
+                const o = c.createOscillator(), g = c.createGain();
+                o.type = type; o.frequency.value = f * mul;
+                g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(lvl, s + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, s + len / mul);
+                o.connect(g); g.connect(out); o.start(s); o.stop(s + len + 0.05);
+            });
+        });
+    } catch (e) {}
+    try { if (navigator.vibrate) navigator.vibrate(kind === "urgent" ? [120, 60, 120, 60, 120] : [80, 50, 80]); } catch (e) {}
+}
+function chime() { playTone("message"); }
+function toggleSound() {
+    const on = !soundOn();
+    try { localStorage.setItem(LS_SOUND, on ? "on" : "off"); } catch (e) {}
+    if (on) playTone("message", true);
+    renderNotif();
+}
+function ringBell() { const b = $("bellBtn"); if (!b) return; b.classList.remove("ring"); void b.offsetWidth; b.classList.add("ring"); }
+
+// New messages → one system notification each (once per device) and a ringing bell. The pop-up plays the sound.
+const LS_BC_NOTE = () => `${window.STORE_ID}_bc_notified`;
+const bcRung = new Set();
+function notifyBroadcasts() {
+    let done;
+    try { done = new Set(JSON.parse(localStorage.getItem(LS_BC_NOTE()) || "[]")); } catch (e) { done = new Set(); }
+    const seen = bcSeenSet();
+    const fresh = activeBroadcasts().filter(b => !seen.has(b.id) && !done.has(b.id));
+    if (!fresh.length) return;
+    const unrung = fresh.filter(b => !bcRung.has(b.id));
+    if (unrung.length) { unrung.forEach(b => bcRung.add(b.id)); ringBell(); }
+    if (!notifOK()) return;
+    fresh.slice(0, 3).forEach(b => {
+        done.add(b.id);
+        sysNotify(`${b.urgent ? "🚨 " : ""}${bcSender(b)}${isTeamMsg(b) ? " · Team" : ""}`, b.text, "bc-" + b.id, { sticky: !!b.urgent, onclick: showNextBroadcast });
+    });
+    try { const live = new Set(broadcasts.map(b => b.id)); localStorage.setItem(LS_BC_NOTE(), JSON.stringify([...done].filter(x => live.has(x)))); } catch (e) {}
+}
+
+// ---------- 🔔 inbox ----------
+let notifOpen = false;
+function toggleNotif(force) {
+    notifOpen = typeof force === "boolean" ? force : !notifOpen;
+    const p = $("notifPanel"), s = $("npScrim"); if (!p) return;
+    p.hidden = !notifOpen; s.classList.toggle("on", notifOpen);
+    if (notifOpen) { unlockAudio(); renderNotif(); }
+}
+// "Clear all" (managers): marks every message read and empties the list on this device. New messages still arrive.
+const LS_NP_CLEAR = () => `${window.STORE_ID}_np_cleared`;
+let npClearMem = 0;
+function npClearedAt() { try { return Math.max(+localStorage.getItem(LS_NP_CLEAR()) || 0, npClearMem); } catch (e) { return npClearMem; } }
+const LS_IDLE_CLEAR = id => `${id}_idle_cleared`;
+function idleCleared(id) { try { return JSON.parse(localStorage.getItem(LS_IDLE_CLEAR(id)) || "{}") || {}; } catch (e) { return {}; } }
+// Inactivity alerts that were cleared stay hidden until that person's next idle stretch.
+function visibleIdle(rows, id) { const c = idleCleared(id || window.STORE_ID); return (rows || []).filter(r => c[r.n] !== r.since); }
+function clearNotifs() {
+    if (!isManager()) return;
+    unreadBroadcasts().forEach(b => { bcMarkSeen(b.id); ackRemote(b.id); });
+    bcQueue = []; showNextBroadcast();
+    npClearMem = Date.now();
+    try { localStorage.setItem(LS_NP_CLEAR(), String(npClearMem)); } catch (e) {}
+    const keep = (id, rows) => { const c = idleCleared(id); (rows || []).forEach(r => { c[r.n] = r.since; }); try { localStorage.setItem(LS_IDLE_CLEAR(id), JSON.stringify(c)); } catch (e) {} };
+    if (lastIdle) keep(window.STORE_ID, lastIdle.idle);
+    if (window.__LINK && typeof linkIdle !== "undefined" && linkIdle) keep(window.__LINK.id, linkIdle.idle);
+    updateBell(); renderNotif();
+    toast("✓ Notifications cleared", 1800);
+}
+function unreadBroadcasts() { const seen = bcSeenSet(); return activeBroadcasts().filter(b => !seen.has(b.id)); }
+function idleCount() { return isManager() && lastIdle && lastIdle.lim ? visibleIdle(lastIdle.idle).length : 0; }
+function updateBell() {
+    const unread = unreadBroadcasts().length, n = unread + idleCount();
+    const b = $("bellBadge");
+    if (b) { b.hidden = !n; b.textContent = n > 99 ? "99+" : n; }
+    const bt = $("bellBtn"); if (bt) bt.title = n ? `${n} notification${n === 1 ? "" : "s"}` : "Notifications";
+    document.title = (n ? `(${n}) ` : "") + BASE_TITLE;
+    try { if (navigator.setAppBadge) { if (n) navigator.setAppBadge(n); else navigator.clearAppBadge(); } } catch (e) {}
+    if (notifOpen) renderNotif();
+}
+function renderNotif() {
+    const perm = $("npPerm"), list = $("npList"); if (!perm || !list) return;
+    if (!notifSupported()) perm.innerHTML = `<div class="np-perm warn"><span class="pi">${NP_IC.phone}</span><div><b>${isIOS && !isStandalone() ? "Install the app for notifications" : "Notifications not supported"}</b>${isIOS && !isStandalone() ? "Share → Add to Home Screen, then open it from there." : "Messages still pop up on screen."}</div></div>`;
+    else if (Notification.permission === "granted") perm.innerHTML = `<div class="np-perm ok"><span class="pi">${NP_IC.ok}</span><div><b>Notifications are on</b>This device will alert you to new messages.</div><button class="btn ghost sm" type="button" onclick="testNotif()">Test</button></div>`;
+    else if (Notification.permission === "denied") perm.innerHTML = `<div class="np-perm warn"><span class="pi">${NP_IC.off}</span><div><b>Notifications are blocked</b>Allow them for this site in the browser settings.</div></div>`;
+    else perm.innerHTML = `<div class="np-perm"><span class="pi">${NP_IC.bell}</span><div><b>Notifications are off</b>Turn them on to get new messages instantly.</div><button class="btn sm" type="button" onclick="askNotif()">Turn on</button></div>`;
+
+    const mgr = isManager(), seen = bcSeenSet(), now = Date.now(), cut = npClearedAt();
+    const idle = mgr && lastIdle && lastIdle.lim ? visibleIdle(lastIdle.idle) : [];
+    const msgs = broadcasts.filter(b => (+b.ts || 0) > cut).sort((a, b) => (+b.ts || 0) - (+a.ts || 0)).slice(0, 25);
+    const isUnread = b => (!b.until || +b.until > now) && !seen.has(b.id);
+    const item = b => {
+        const unread = isUnread(b), live = !b.until || +b.until > now, team = isTeamMsg(b);
+        return `<button type="button" class="np-item${unread ? " unread" : ""}${b.urgent ? " urgent" : ""}${team ? " team" : ""}" data-bc="${esc(b.id)}">
+            <span class="np-av">${esc(initials(bcSender(b)))}</span>
+            <div><div class="np-from"><b>${esc(bcSender(b))}</b><small>${esc(bcWhen(b.ts))}</small></div>
+            <p class="np-text">${esc(b.text)}</p>
+            <div class="np-meta">${b.urgent ? `<span class="np-tag urg">Urgent</span>` : ""}${team ? `<span class="np-tag team">Team</span>` : ""}${unread ? `<span class="np-tag new">New</span>` : live ? `<span class="np-tag live">Live</span>` : `<span class="np-tag">Ended</span>`}</div></div></button>`;
+    };
+    const fresh = msgs.filter(isUnread), older = msgs.filter(b => !isUnread(b)), parts = [];
+    if (idle.length) parts.push(`<div class="np-sec">Inactivity</div>` + idle.map(r => `<div class="np-item idle"><span class="np-av">${NP_IC.clock}</span><div><div class="np-from"><b>${esc(r.n)}</b><small>${esc(fmtIdle(r.idle))}</small></div>
+        <p class="np-text">On duty, no entry for ${esc(fmtIdle(r.idle))}${r.last ? ` · last ${esc(bcWhen(r.last))}` : ""}.</p></div></div>`).join(""));
+    if (fresh.length) parts.push(`<div class="np-sec">New</div>` + fresh.map(item).join(""));
+    if (older.length) parts.push(`<div class="np-sec">Earlier</div>` + older.map(item).join(""));
+    list.innerHTML = parts.join("") || `<div class="np-empty empty"><span class="ei">${NP_IC.inbox}</span><b>You're all caught up</b><small>New messages will appear here.</small></div>`;
+
+    const n = fresh.length + idle.length;
+    $("npSub").textContent = n ? `${n} new` : "No new notifications";
+    const cl = $("npClear"), cp = $("npCompose");
+    cl.hidden = !mgr; cl.disabled = !msgs.length && !idle.length; cl.innerHTML = `${NP_IC.clear}<span class="lbl">Clear all</span>`;
+    cp.hidden = !mgr; cp.innerHTML = `${NP_IC.send}<span class="lbl">Message team</span>`;
+    const sw = $("npSound"); if (sw) { const on = soundOn(); sw.classList.toggle("on", on); sw.setAttribute("aria-checked", on); $("npSoundLbl").textContent = on ? "Sound on" : "Sound off"; }
+}
+document.addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest("[data-bc]"); if (!b) return;
+    const id = b.dataset.bc;
+    if (unreadBroadcasts().some(x => x.id === id)) { toggleNotif(false); queueBroadcasts(); }
+});
+
+// ================================================================
+//  v3 · INACTIVITY WATCH — managers (and head office) are alerted when an
+//  ON-DUTY executive logs nothing for N working hours (default 7, 08:00–22:00 only).
+//  Off-duty executives are skipped, and their clock restarts when they
+//  are switched back on duty (settings/dutyTs/{name}).
+// ================================================================
+const BIZ_OPEN = 8, BIZ_CLOSE = 22, DEFAULT_IDLE_H = 7;   // idle time only counts 08:00–22:00
+const keyOf = n => String(n).replace(/[.#$\[\]\/]/g, "_");
+function idleLimitH() { const v = settings.idleHours; if (v === 0 || v === "0") return 0; return +v > 0 ? +v : DEFAULT_IDLE_H; }
+// Opening-hours time between two moments (nights don't count).
+function bizMs(from, to) {
+    if (!(to > from)) return 0;
+    let t = 0, d = new Date(from); d.setHours(0, 0, 0, 0);
+    for (let i = 0; +d < to && i < 400; i++, d = addDays(d, 1)) {
+        const o = new Date(d); o.setHours(BIZ_OPEN, 0, 0, 0);
+        const c = new Date(d); c.setHours(BIZ_CLOSE, 0, 0, 0);
+        const a = Math.max(from, +o), b = Math.min(to, +c);
+        if (b > a) t += b - a;
+    }
+    return t;
+}
+function fmtIdle(ms) {
+    const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
+    const openDay = (BIZ_CLOSE - BIZ_OPEN) * 3600000;
+    if (ms >= openDay * 1.5) { const d = Math.round(ms / openDay); return `${d} opening day${d === 1 ? "" : "s"}`; }
+    return h ? `${h}h ${pad(m)}m` : `${m}m`;
+}
+let lastIdle = null;
+function idleReport() {
+    const now = Date.now(), lim = idleLimitH() * 3600000, last = {}, duty = settings.dutyTs || {};
+    for (const h of historyData) {
+        if (!h || !h.timestamp || h.timestamp > now) continue;
+        for (const n of [h.executive, h.submittedBy]) if (n && (!last[n] || h.timestamp > last[n])) last[n] = h.timestamp;
+    }
+    const rows = executives.map(n => {
+        const off = !!lockedUsers[n], since = Math.max(last[n] || 0, +duty[keyOf(n)] || 0, now - 30 * DAY);
+        const idle = bizMs(since, now);
+        return { n, off, last: last[n] || 0, since, idle, state: off ? "off" : !lim ? "ok" : idle >= lim ? "idle" : idle >= lim * 0.7 ? "near" : "ok" };
+    });
+    const onDuty = rows.filter(r => !r.off);
+    return { lim, rows, onDuty, idle: rows.filter(r => r.state === "idle"), near: rows.filter(r => r.state === "near"), off: rows.filter(r => r.off),
+        allIdle: onDuty.length > 0 && onDuty.every(r => r.state === "idle") };
+}
+function renderIdleWatch() {
+    const el = $("idleWatch"); if (!el) return;
+    const ready = dataReady.execs && dataReady.walkins;
+    lastIdle = ready ? idleReport() : null;
+    if (!isManager() || !ready || !executives.length) { el.hidden = true; return; }
+    const r = lastIdle, H = idleLimitH();
+    el.hidden = false;
+    const head = (sub, chips) => `<div class="panel-head"><h3 class="panel-title"><span class="ic">⏱</span>Inactivity watch</h3>${chips || ""}</div>${sub ? `<p class="panel-sub" style="margin:-4px 0 12px">${sub}</p>` : ""}`;
+    if (!r.lim) { el.className = "panel watch calm"; el.innerHTML = head("", `<button class="btn ghost sm" type="button" onclick="openAdmin()">Alerts are off · turn on</button>`); return; }
+    const chips = `<div class="iw-chips"><span class="iw-chip ok">${r.onDuty.length - r.idle.length - r.near.length} active</span>${r.near.length ? `<span class="iw-chip near">${r.near.length} close</span>` : ""}<span class="iw-chip ${r.idle.length ? "bad" : ""}">${r.idle.length} idle ${H}h+</span><span class="iw-chip">${r.off.length} off duty · skipped</span></div>`;
+    const list = r.rows.filter(x => x.state === "idle" || x.state === "near").sort((a, b) => b.idle - a.idle);
+    const skip = r.off.length ? `<p class="iw-skip">Not tracked while off duty: <b>${r.off.map(x => esc(x.n)).join(", ")}</b></p>` : "";
+    if (!list.length) {
+        el.className = "panel watch calm";
+        el.innerHTML = head("", chips) + `<p class="iw-ok" style="margin:10px 0 0">✓ Everyone on duty has logged an entry within the last ${H} opening hours.</p>` + skip;
+        return;
+    }
+    el.className = "panel watch" + (r.idle.length ? " alert" : "");
+    el.innerHTML = head(`On-duty executives with no entry for ${H}+ opening hours (${pad(BIZ_OPEN)}:00–${pad(BIZ_CLOSE)}:00). Off-duty staff are skipped.`, chips)
+        + (r.allIdle ? `<p class="iw-all">⚠️ Nobody on duty at ${esc(STORE_NAME)} has logged anything for ${H}+ opening hours.</p>` : "")
+        + `<div class="iw-list">${list.map(x => `<div class="iw-row ${x.state}">
+            <span class="avatar" style="--av:${avColor(x.n)}">${esc(initials(x.n))}</span>
+            <b>${esc(x.n)}</b><span class="iw-pill">${x.state === "idle" ? "Idle" : "Close"}</span>
+            <small>${fmtIdle(x.idle)} without an entry · ${x.last ? "last " + esc(bcWhen(x.last)) : "no entries yet"}</small>
+            <span class="iw-bar"><i style="width:${Math.min(100, (x.idle / r.lim) * 100).toFixed(0)}%"></i></span></div>`).join("")}</div>` + skip;
+}
+// One notification per executive per idle stretch (re-arms as soon as they log again).
+const LS_IDLE_NOTE = () => `${window.STORE_ID}_idle_notified`;
+function checkIdleAlerts() {
+    if (!isManager() || !lastIdle || !lastIdle.lim) return;
+    let done = {};
+    try { done = JSON.parse(localStorage.getItem(LS_IDLE_NOTE()) || "{}") || {}; } catch (e) {}
+    const fresh = lastIdle.idle.filter(r => done[r.n] !== r.since);
+    if (!fresh.length) return;
+    const H = idleLimitH(), names = fresh.map(r => r.n);
+    const title = lastIdle.allIdle ? `⚠️ No activity at ${STORE_NAME} for ${H}h+` : `⏱ ${names.length} executive${names.length === 1 ? "" : "s"} inactive ${H}h+ · ${STORE_NAME}`;
+    const body = fresh.map(r => `${r.n} — ${fmtIdle(r.idle)} without an entry`).join("\n") + "\nOff-duty staff are not included.";
+    sysNotify(title, body, "idle-" + window.STORE_ID, { sticky: true });
+    ringBell();
+    fresh.forEach(r => { done[r.n] = r.since; });
+    try { localStorage.setItem(LS_IDLE_NOTE(), JSON.stringify(done)); } catch (e) {}
+}
+async function saveIdleHours() {
+    const v = parseInt($("idleHoursSel").value, 10);
+    try { await window.dbSet(R("settings/idleHours"), isFinite(v) ? v : DEFAULT_IDLE_H); toast(v ? `⏱ Inactivity alert set to ${v} hours` : "Inactivity alerts switched off"); }
+    catch (e) { alert(`Couldn't save. Your Firebase rules need to allow read/write on stores/${window.STORE_ID}/settings.`); }
+}
+function renderIdleAdmin() {
+    const sel = $("idleHoursSel"); if (!sel) return;
+    if (document.activeElement !== sel) sel.value = String(idleLimitH());
+    const b = $("idleBadge"); if (b) { const h = idleLimitH(); b.textContent = h ? `${h} h` : "Off"; b.className = "adm-badge " + (h ? "ok" : ""); }
+}
+
+// ================================================================
+//  v3 · MY INSIGHTS — fills the space beside an executive's own card
+// ================================================================
+function renderMePanel() {
+    const el = $("mePanel"), wrap = $("teamWrap"), me = getCurrentExec();
+    if (!el || !wrap) return;
+    const solo = !isManager() && executives.includes(me) && !!A;
+    wrap.classList.toggle("solo", solo); el.hidden = !solo;
+    if (!solo) return;
+    const s = execStats(me), many = NOUN[catFilter][1], one = NOUN[catFilter][0];
+    const ranked = executives.map(n => ({ n, v: Math.max(0, (A.exec[n] || {}).month || 0) })).sort((x, y) => (y.v - x.v) || x.n.localeCompare(y.n));
+    const pos = ranked.findIndex(r => r.n === me), rank = s.month > 0 ? pos + 1 : 0;
+    // usual day = average of the 28 days before today (only days since the first record)
+    let sum28 = 0, n28 = 0;
+    for (let i = 1; i <= 28; i++) { const d = addDays(A.sod, -i); if (isFinite(A.firstTs) && +d < new Date(A.firstTs).setHours(0, 0, 0, 0)) break; sum28 += Math.max(0, s.byDay[dkey(d)] || 0); n28++; }
+    const usual = n28 ? sum28 / n28 : 0;
+    const first = String(me).split(/\s+/)[0];
+
+    const bars = [], days = 14; let bmax = 1;
+    for (let i = days - 1; i >= 0; i--) { const v = Math.max(0, s.byDay[dkey(addDays(A.sod, -i))] || 0); bars.push(v); bmax = Math.max(bmax, v); }
+    const tot14 = bars.reduce((a, b) => a + b, 0);
+
+    const notes = [];
+    if (rank === 1 && ranked[1]) notes.push(["🏆", ranked[1].v < s.month ? `You're <b>leading the team</b> by ${fmt(s.month - ranked[1].v)} ${s.month - ranked[1].v === 1 ? one : many}. Keep it up!` : `You're <b>tied for the lead</b> with ${esc(ranked[1].n)}.`]);
+    else if (rank > 1) { const ab = ranked[pos - 1], gap = ab.v - s.month + 1; notes.push(["🎯", `<b>${fmt(gap)} more</b> to pass ${esc(ab.n)} for #${pos}.`]); }
+    else notes.push(["🌱", `No ${many} logged this month yet — the next one has your name on it.`]);
+    if (usual > 0) notes.push(["⏱️", s.today >= usual ? `<b>${fmt(s.today)}</b> today — already above your usual day of ${r1(usual)}. 🚀` : `<b>${fmt(s.today)}</b> today; your usual full day is about <b>${r1(usual)}</b>.`]);
+    if (s.peakH >= 0) notes.push(["⚡", `Your busiest walk-in hour is <b>${hourRange(s.peakH)}</b> — be on the floor then.`]);
+    if (A.m > 0 && s.month > 0) notes.push(["📊", `You handled <b>${Math.round(s.share * 100)}%</b> of the team's ${many} this month.`]);
+    const target = +settings.monthlyTarget || 0, onDuty = executives.filter(n => !lockedUsers[n]).length || 1;
+    let goal = "";
+    if (target && catFilter === "all") {
+        const fair = Math.ceil(target / onDuty), p = Math.min(100, (s.month / fair) * 100);
+        goal = `<div><div class="me-x" style="margin:0 0 6px"><span>Your share of the team target · ${fmt(s.month)} of ${fmt(fair)}</span><span>${Math.round((s.month / fair) * 100)}%</span></div><div class="me-goal"><i style="width:${p}%"></i></div></div>`;
+    }
+
+    const delta = s.lastSame > 0 || s.month > 0 ? deltaChip(s.month, s.lastSame) : "";
+    el.innerHTML = `
+        <div class="me-head"><div><small>Your insights · ${esc(A.now.toLocaleString("en-US", { month: "long" }))}</small><h3>Hi ${esc(first)} 👋</h3></div>
+            <span class="me-rank${rank ? "" : " none"}">${rank ? `${rank <= 3 ? ["🥇", "🥈", "🥉"][rank - 1] : "🏅"} #${rank} of ${ranked.length}` : "Not ranked yet"}</span></div>
+        <div class="me-tiles">
+            <div class="me-tile"><span>Today</span><b>${fmt(s.today)}</b><small>${usual ? `usual day ≈ ${r1(usual)}` : cap(many)}</small></div>
+            <div class="me-tile"><span>This month</span><b>${fmt(s.month)} ${delta}</b><small>vs same point last month</small></div>
+            <div class="me-tile"><span>This week</span><b>${fmt(s.week)}</b><small>since Sunday</small></div>
+            <div class="me-tile"><span>Avg / active day</span><b>${r1(s.avg)}</b><small>${s.activeDays} active day${s.activeDays === 1 ? "" : "s"} this month</small></div>
+            <div class="me-tile"><span>Best day</span><b>${s.best.k ? fmt(s.best.v) : "—"}</b><small>${s.best.k ? shortDate(s.best.k) : "no entries yet"}</small></div>
+            <div class="me-tile"><span>Streak</span><b>${s.streak ? "🔥 " + s.streak : "0"}</b><small>day${s.streak === 1 ? "" : "s"} in a row</small></div>
+        </div>
+        <div class="me-row">
+            <div class="me-chart"><h4>Last 14 days <em>${fmt(tot14)} ${tot14 === 1 ? one : many}</em></h4>
+                <div class="me-bars">${bars.map((v, i) => `<i class="${i === days - 1 ? "t" : v ? "" : "z"}" style="height:${v ? Math.max(8, (v / bmax) * 100) : 4}%" title="${shortDate(dkey(addDays(A.sod, i - days + 1)))}: ${v}"></i>`).join("")}</div>
+                <div class="me-x"><span>${shortDate(dkey(addDays(A.sod, -(days - 1))))}</span><span>Today</span></div>
+                ${catFilter === "all" && s.mw + s.mp > 0 ? `<div class="me-mix"><div class="split"><i class="w" style="width:${(s.mw / (s.mw + s.mp)) * 100}%"></i><i class="p" style="width:${(s.mp / (s.mw + s.mp)) * 100}%"></i></div>
+                    <div class="split-lg" style="margin-top:5px"><span class="w">🚶 <b>${fmt(s.mw)}</b> walk-in</span><span class="p">📞 <b>${fmt(s.mp)}</b> phone</span></div></div>` : ""}
+            </div>
+            <div class="me-notes"><h4>Tips for you</h4>${notes.slice(0, 4).map(n => `<div class="me-note"><i>${n[0]}</i><span>${n[1]}</span></div>`).join("")}${goal}</div>
+        </div>`;
+}
+
+// ================================================================
+//  v3 · INSTALL THE APP — shown every time the page opens in a browser
+//  tab (not the installed app). "Not now" hides it until next time.
+// ================================================================
+(function installPrompt() {
+    const bar = $("installBar"); if (!bar || isStandalone()) return;
+    try { if (sessionStorage.getItem("install_snooze")) return; } catch (e) {}
+    const ua = navigator.userAgent, safariMac = !isIOS && /safari/i.test(ua) && !/chrome|chromium|crios|fxios|edg|android/i.test(ua);
+    let deferred = null, shown = false;
+    const shareIc = `<span class="sh"><svg width="12" height="14" viewBox="0 0 12 14" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V1M3 3.5 6 1l3 2.5M2 6.5H1v6.5h10V6.5h-1"/></svg></span>`;
+    function show(mode) {
+        if (shown && mode !== "native") return; shown = true;
+        const txt = mode === "native" ? "Opens full-screen from your home screen and shows head-office alerts like email."
+            : mode === "ios" ? `Tap ${shareIc} <b style="display:inline;font-size:inherit">Share</b>, then <b style="display:inline;font-size:inherit">Add to Home Screen</b> — needed for alerts on iPhone.`
+            : `In Safari choose <b style="display:inline;font-size:inherit">File → Add to Dock</b> to use it as an app.`;
+        bar.innerHTML = `<img class="ib-ic" src="${NOTIF_ICON}" alt="" onerror="this.style.visibility='hidden'">
+            <div class="ib-txt"><b>Install the ${esc(STORE_NAME)} app</b><small>${txt}</small></div>
+            ${mode === "native" ? `<button class="ib-go" type="button" data-ib="go">Install</button>` : ""}
+            <button class="ib-x" type="button" data-ib="x" aria-label="Not now">✕</button>`;
+        bar.hidden = false; document.body.classList.add("has-ib");
+        requestAnimationFrame(() => requestAnimationFrame(() => bar.classList.add("show")));
+    }
+    function hide(snooze) {
+        bar.classList.remove("show"); document.body.classList.remove("has-ib");
+        setTimeout(() => { bar.hidden = true; }, 400);
+        if (snooze) try { sessionStorage.setItem("install_snooze", "1"); } catch (e) {}
+    }
+    bar.addEventListener("click", e => {
+        const b = e.target.closest("[data-ib]"); if (!b) return;
+        if (b.dataset.ib === "x") return hide(true);
+        if (deferred) { deferred.prompt(); Promise.resolve(deferred.userChoice).then(c => { if (c && c.outcome === "accepted") hide(false); deferred = null; }).catch(() => {}); }
+    });
+    window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; show("native"); });
+    window.addEventListener("appinstalled", () => { hide(false); try { toast("✅ App installed — open it from your home screen.", 4000); } catch (e) {} });
+    if (isIOS) setTimeout(() => show("ios"), 1500);
+    else if (safariMac) setTimeout(() => show("mac"), 1500);
+})();
 </script>
 </body>
 </html>
