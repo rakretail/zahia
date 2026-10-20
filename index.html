@@ -3883,7 +3883,7 @@ document.addEventListener("click", e => {
 //  Off-duty executives are skipped, and their clock restarts when they
 //  are switched back on duty (settings/dutyTs/{name}).
 // ================================================================
-const BIZ_OPEN = 8, BIZ_CLOSE = 22, DEFAULT_IDLE_H = 7;   // idle time only counts 08:00–22:00
+const BIZ_OPEN = 9, BIZ_CLOSE = 21, DEFAULT_IDLE_H = 10;   // idle time only counts 08:00–22:00
 const keyOf = n => String(n).replace(/[.#$\[\]\/]/g, "_");
 function idleLimitH() { const v = settings.idleHours; if (v === 0 || v === "0") return 0; return +v > 0 ? +v : DEFAULT_IDLE_H; }
 // Opening-hours time between two moments (nights don't count).
