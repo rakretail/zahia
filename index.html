@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="app-version" content="3.1">
+<meta name="app-version" content="3.3">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>AlZahia Showroom · Tracker</title>
 <link rel="manifest" href="manifest.json">
@@ -1329,6 +1329,217 @@ body:not(.dark)[data-look="teal-light"] .catswitch button.active,body:not(.dark)
 #toast.show{transform:translate(-50%,0)}
 .np-push{margin:10px 14px 0;padding:10px 12px;border-radius:12px;background:var(--soft);border:1px solid var(--line);font-size:.76rem;line-height:1.4;color:var(--muted);display:flex;gap:10px;align-items:center}
 .np-push>div{flex:1;min-width:0} .np-push b{display:block;color:var(--text);font-size:.8rem} .np-push .err{color:var(--down);font-weight:600}
+
+/* ---- v3.2 · leave / hours ---- */
+.tag.leave{background:linear-gradient(135deg,#fde68a,#f59e0b);color:#5b3a00;border:0;font-weight:700}
+.lv-btn{flex:0 0 auto;width:26px;height:26px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-size:13px;line-height:1;cursor:pointer;display:inline-grid;place-items:center;padding:0}
+.lv-btn:hover{border-color:var(--primary)}
+.iw-chip.leave{background:rgba(245,158,11,.14);color:#a15c00}
+body.dark .iw-chip.leave{color:#fbbf24}
+.lv-card h3{margin:0 0 10px}
+.lv-who{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:.95rem}
+.lv-who .avatar{width:34px;height:34px;font-size:12px}
+.lv-row,.hrs-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.lv-row input[type=date]{box-sizing:border-box;max-width:100%;padding-left:10px;padding-right:8px;font-size:.88rem}
+.lv-row label,.hrs-row label{display:flex;flex-direction:column;gap:5px;font-size:.72rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.lv-row .field,.hrs-row .field{width:100%;min-width:0}
+.lv-days{margin:10px 0 0;font-size:.85rem;font-weight:700;color:var(--primary);min-height:1.2em}
+.lv-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.lv-act .btn{flex:1 1 auto}
+.danger-t{color:#e0425a!important}
+.hrs-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0}
+.dchip{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font:700 .78rem/1.1 inherit;cursor:pointer}
+.dchip small{font-size:.62rem;font-weight:600;color:var(--primary)}
+.dchip.off{background:repeating-linear-gradient(135deg,rgba(224,66,90,.07) 0 6px,transparent 6px 12px);border-color:rgba(224,66,90,.35);color:var(--muted)}
+.dchip.off small{color:#e0425a}
+#hoursCard .btn.wide{width:100%;margin-bottom:10px}
+
+/* ---- v3.2 · glossy login with a light sweep ---- */
+.pin-overlay{overflow:hidden;background:radial-gradient(700px 420px at 12% 0%,rgba(255,255,255,.16),transparent 60%),radial-gradient(600px 420px at 100% 100%,rgba(29,108,134,.75),transparent 60%),
+    linear-gradient(135deg,#0b585a 0%,#06555a 45%,#145f72 75%,#1d6c86 100%)!important}
+.pin-overlay::before{content:"";position:absolute;top:-50%;bottom:-50%;left:-60%;width:45%;pointer-events:none;transform:skewX(-18deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.10) 40%,rgba(255,255,255,.22) 50%,rgba(255,255,255,.10) 60%,transparent);animation:sweepX 7s ease-in-out infinite}
+.pin-overlay::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.5),transparent),radial-gradient(1.5px 1.5px at 70% 20%,rgba(255,255,255,.45),transparent),
+    radial-gradient(2px 2px at 85% 70%,rgba(255,255,255,.4),transparent),radial-gradient(1.5px 1.5px at 35% 80%,rgba(255,255,255,.35),transparent);animation:twinkle 4s ease-in-out infinite alternate}
+.pin-card{position:relative;overflow:hidden;z-index:1;background:linear-gradient(160deg,rgba(255,255,255,.97),rgba(240,250,249,.93))!important;
+    border:1px solid rgba(255,255,255,.7)!important;box-shadow:inset 0 1px 0 #fff,0 30px 80px -20px rgba(0,30,35,.6),0 0 0 1px rgba(255,255,255,.08)!important;color:#0f2727}
+body.dark .pin-card{background:linear-gradient(160deg,rgba(16,40,42,.94),rgba(9,26,28,.92))!important;border-color:rgba(255,255,255,.10)!important;color:#e4f3f2;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 30px 80px -20px rgba(0,0,0,.7)!important}
+.pin-card::before{content:"";position:absolute;top:0;bottom:0;left:-80%;width:50%;pointer-events:none;transform:skewX(-20deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:sweepCard 5.5s ease-in-out 1s infinite}
+body.dark .pin-card::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)}
+.pin-card>*{position:relative}
+.pin-btn:not(.secondary){position:relative;overflow:hidden;background:linear-gradient(180deg,#1a8a86 0%,#0b6b6b 50%,#075a5b 100%)!important;color:#fff!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 0 rgba(0,0,0,.12),0 10px 22px -10px rgba(6,85,90,.8)!important}
+.pin-btn:not(.secondary)::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;transform:skewX(-20deg);pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);animation:sweepCard 3.2s ease-in-out infinite}
+.pin-input:focus{box-shadow:0 0 0 4px rgba(18,122,119,.18)}
+@keyframes sweepX{0%{left:-60%}55%,100%{left:120%}}
+@keyframes sweepCard{0%{left:-80%}45%,100%{left:130%}}
+@keyframes twinkle{from{opacity:.35}to{opacity:1}}
+
+/* ---- v3.2 · main page: a light strike across the background + clock card sheen ---- */
+.bg-flash{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.bg-flash::before{content:"";position:absolute;top:-30%;bottom:-30%;left:-40%;width:22%;transform:skewX(-24deg);opacity:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.0) 20%,rgba(255,255,255,.42) 50%,rgba(255,255,255,0) 80%,transparent);
+    mix-blend-mode:soft-light;animation:strike 11s cubic-bezier(.6,0,.3,1) 2.5s infinite}
+.bg-flash::after{content:"";position:absolute;inset:0;opacity:0;background:radial-gradient(1200px 500px at 60% 0%,rgba(94,234,212,.10),transparent 70%);animation:flashGlow 11s ease-out 2.5s infinite}
+body.dark .bg-flash::before{mix-blend-mode:screen;background:linear-gradient(90deg,transparent,rgba(94,234,212,.0) 20%,rgba(94,234,212,.09) 50%,rgba(94,234,212,0) 80%,transparent)}
+@keyframes strike{0%{left:-40%;opacity:0}2%{opacity:1}13%{left:130%;opacity:1}14%,100%{left:130%;opacity:0}}
+@keyframes flashGlow{0%,1%{opacity:0}4%{opacity:1}16%,100%{opacity:0}}
+.hero-sheen{position:absolute;top:0;bottom:0;left:-50%;width:35%;pointer-events:none;z-index:1;transform:skewX(-20deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);animation:sweepCard 8s ease-in-out 1.5s infinite}
+.pin-overlay.hidden~.bg-flash{display:block}
+@media (prefers-reduced-motion:reduce){.pin-overlay::before,.pin-overlay::after,.pin-card::before,.pin-btn::after,.bg-flash,.hero-sheen{animation:none!important;display:none!important}}
+:root{--rak-logo:url("data:image/png;base64,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")}
+/* ---- v3.3 · notifications: clean glass cards like the app ---- */
+:root{--ab-bg:rgba(255,255,255,.88);--ab-line:rgba(0,70,70,.10);--ab-ink:#0f2727;--ab-mute:#5f7979;--ab-sh:0 18px 44px -18px rgba(4,50,52,.38),0 2px 6px -2px rgba(4,50,52,.10)}
+body.dark{--ab-bg:rgba(18,36,38,.9);--ab-line:rgba(255,255,255,.09);--ab-ink:#e8f6f4;--ab-mute:#93b3b0;--ab-sh:0 18px 44px -16px rgba(0,0,0,.7)}
+.ab-logo{flex:none;display:inline-block;height:23px;aspect-ratio:300/174;background:var(--ab-ink);-webkit-mask:var(--rak-logo) center/contain no-repeat;mask:var(--rak-logo) center/contain no-repeat}
+.ab-top .ab-logo{margin-right:4px}
+/* toast */
+#toast{display:flex!important;align-items:center;gap:10px;width:max-content;max-width:min(440px,calc(100vw - 24px));padding:9px 10px 9px 9px!important;border-radius:16px!important;
+    background:var(--ab-bg)!important;color:var(--ab-ink)!important;border:1px solid var(--ab-line)!important;box-shadow:var(--ab-sh)!important;
+    -webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);font-weight:600;font-size:.86rem;line-height:1.35;overflow:hidden;
+    transition:transform .45s cubic-bezier(.2,1.2,.3,1),opacity .25s ease!important}
+#toast .t-ic{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:15px;font-weight:800;color:#fff;
+    background:linear-gradient(160deg,#16807c,#06555a);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+#toast.bad .t-ic{background:linear-gradient(160deg,#ef5a6f,#c0283f)}
+#toast .t-tx{min-width:0;padding-right:6px}
+#toast button{flex:none;background:rgba(11,107,107,.10)!important;color:#0b6b6b!important;border:0!important;border-radius:10px!important;padding:7px 13px!important;font-weight:800!important;letter-spacing:.2px!important}
+body.dark #toast button{background:rgba(94,234,212,.12)!important;color:#7ff0dc!important}
+#toast .t-bar{position:absolute;left:0;bottom:0;height:2px;width:100%;background:linear-gradient(90deg,#16807c,#5eead4);transform-origin:left;transform:scaleX(0)}
+#toast.show .t-bar{animation:tbar var(--t-ms,2200ms) linear forwards}
+#toast.bad .t-bar{background:linear-gradient(90deg,#c0283f,#ef5a6f)}
+@keyframes tbar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+/* confirmations rise from the bottom (messages from managers / head office stay at the top) */
+#toast{top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 18px)!important;transform:translate(-50%,calc(100% + 30px))!important}
+#toast.show{transform:translate(-50%,0)!important}
+body.has-ib #toast{bottom:104px!important}
+/* in-app banner (new message) */
+#abWrap{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 12px);transform:translateX(-50%);z-index:6100;width:min(420px,calc(100vw - 20px));display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.ab{pointer-events:auto;position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;padding:12px 14px 12px 12px;border-radius:20px;background:var(--ab-bg);color:var(--ab-ink);
+    border:1px solid var(--ab-line);box-shadow:var(--ab-sh);-webkit-backdrop-filter:blur(20px) saturate(1.7);backdrop-filter:blur(20px) saturate(1.7);cursor:pointer;overflow:hidden;
+    animation:abIn .5s cubic-bezier(.2,1.25,.3,1) both;touch-action:pan-y}
+.ab.out{animation:abOut .3s ease forwards}
+.ab-top{grid-column:1/-1;display:flex;align-items:center;gap:7px;font-size:.66rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ab-mute);margin-bottom:4px}
+.ab-top .ab-k{color:var(--ab-tone,#0b6b6b)} .ab-top time{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600}
+.ab-av{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.82rem;background:linear-gradient(160deg,var(--ab-tone2,#16807c),var(--ab-tone,#06555a))}
+.ab-b{min-width:0}
+.ab-b b{display:block;font-size:.92rem;font-weight:800;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ab-b p{margin:2px 0 0;font-size:.86rem;line-height:1.4;color:var(--ab-ink);opacity:.86;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ab-b em{font-style:normal;font-size:.72rem;font-weight:700;color:var(--ab-mute)}
+.ab-act{grid-column:2;display:flex;gap:8px;margin-top:8px}
+.ab-act button{border:0;border-radius:10px;padding:7px 14px;font:800 .78rem/1 inherit;cursor:pointer;background:rgba(11,107,107,.10);color:#0b6b6b}
+.ab-act button.pri{background:linear-gradient(180deg,#127a77,#0a5f5e);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
+body.dark .ab-act button{background:rgba(255,255,255,.08);color:#cfeee9}
+.ab[data-tone=team]{--ab-tone:#3f46c8;--ab-tone2:#6d74f5}
+.ab-bar{position:absolute;left:0;bottom:0;height:2px;width:100%;background:linear-gradient(90deg,var(--ab-tone,#0b6b6b),transparent);transform-origin:left;animation:tbar var(--ab-ms,7000ms) linear forwards}
+.ab:hover .ab-bar{animation-play-state:paused}
+@keyframes abIn{from{opacity:0;transform:translateY(-26px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes abOut{to{opacity:0;transform:translateY(-22px) scale(.97)}}
+/* message pop-up */
+.modal-card.bc-card{max-width:420px!important;border-radius:26px!important;background:var(--ab-bg)!important;border:1px solid var(--ab-line)!important;
+    -webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);box-shadow:0 30px 70px -24px rgba(0,30,35,.55)!important;color:var(--ab-ink)}
+#bcModal{background:rgba(4,30,32,.38)!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.bc-band{height:0!important}
+.bc-card::before{content:"";position:absolute;inset:0 0 auto 0;height:120px;pointer-events:none;border-radius:26px 26px 0 0;
+    background:radial-gradient(120% 100% at 0% 0%,color-mix(in srgb,var(--tone) 16%,transparent),transparent 70%)}
+.bc-card{position:relative}
+.bc-app{position:relative;display:flex;align-items:center;gap:8px;padding:16px 20px 0;font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ab-mute)}
+.bc-app .bc-appn{margin-right:auto}
+.bc-app .bc-kind{background:color-mix(in srgb,var(--tone) 12%,transparent)!important;color:var(--tone)!important;border:0!important}
+body.dark .bc-app .bc-kind{color:var(--tone2)!important}
+.bc-head{position:relative;padding:14px 20px 0!important}
+.bc-av{width:44px!important;height:44px!important;border-radius:14px!important;background:linear-gradient(160deg,var(--tone2),var(--tone))!important}
+.bc-who b{font-size:1.05rem!important}
+.bc-text{margin:12px 20px 0!important;padding:0!important;background:none!important;border:0!important;font-size:1.04rem!important;line-height:1.6!important;color:var(--ab-ink)!important;font-weight:500!important}
+.bc-foot{padding:18px 20px 20px!important}
+body #bcModal .bc-card .btn.bc-ok{border-radius:14px!important;min-height:46px;background:linear-gradient(180deg,color-mix(in srgb,var(--tone) 82%,#fff),var(--tone))!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 10px 20px -10px var(--tone)!important}
+#bcModal[data-tone="urgent"] .bc-card{box-shadow:0 0 0 2px rgba(224,66,90,.35),0 30px 70px -24px rgba(120,10,30,.55)!important}
+#bcModal:not(.hidden) .bc-card{animation:abIn .45s cubic-bezier(.2,1.25,.3,1) both}
+@media (max-width:560px){#bcModal{align-items:flex-start!important;padding-top:calc(env(safe-area-inset-top) + 14px)!important}}
+@media (prefers-reduced-motion:reduce){.ab,#bcModal .bc-card{animation:none!important}#toast .t-bar,.ab-bar{display:none}}
+
+/* ================= v3.3 · refreshed look ================= */
+body:not(.dark){background:
+    radial-gradient(900px 620px at -8% -12%,rgba(20,160,150,.14),transparent 62%),
+    radial-gradient(820px 600px at 108% -4%,rgba(29,108,134,.13),transparent 60%),
+    radial-gradient(1000px 700px at 50% 112%,rgba(201,166,70,.09),transparent 62%),
+    #edf4f4!important;background-attachment:fixed!important}
+body.dark{background:radial-gradient(900px 620px at -8% -12%,rgba(20,184,166,.16),transparent 62%),radial-gradient(820px 600px at 108% -4%,rgba(29,108,134,.18),transparent 60%),#061314!important;background-attachment:fixed!important}
+
+/* glass cards with a fine teal → gold edge */
+body:not(.dark) .kpi,body:not(.dark) .panel:not(.watch),body:not(.dark) #grid .card{
+    background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.80)) padding-box,
+               linear-gradient(145deg,rgba(255,255,255,.95),rgba(11,107,107,.20) 48%,rgba(201,166,70,.38)) border-box!important;
+    border:1px solid transparent!important;
+    box-shadow:inset 0 1px 0 #fff,0 14px 32px -20px rgba(4,60,64,.40),0 2px 6px -3px rgba(4,60,64,.10)!important}
+body.dark .kpi,body.dark .panel:not(.watch),body.dark #grid .card{
+    background:linear-gradient(180deg,rgba(24,46,48,.92),rgba(14,30,32,.88)) padding-box,
+               linear-gradient(145deg,rgba(255,255,255,.14),rgba(45,212,191,.16) 48%,rgba(230,201,118,.30)) border-box!important;
+    border:1px solid transparent!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -20px rgba(0,0,0,.7)!important}
+body #grid .card.me{box-shadow:0 0 0 3px rgba(201,166,70,.22),inset 0 1px 0 #fff,0 16px 34px -18px rgba(4,60,64,.45)!important}
+@media (hover:hover){
+  body .kpi,body #grid .card{transition:transform .25s cubic-bezier(.2,.8,.3,1),box-shadow .25s}
+  body .kpi:hover,body #grid .card:not(.locked):hover{transform:translateY(-3px)}
+  body:not(.dark) .kpi:hover,body:not(.dark) #grid .card:not(.locked):hover{box-shadow:inset 0 1px 0 #fff,0 22px 40px -20px rgba(4,60,64,.5),0 2px 6px -3px rgba(4,60,64,.1)!important}
+}
+
+/* KPI: soft glow, glossy icon tile, deep-teal numbers */
+.kpi::after{opacity:.10!important;width:140px!important;height:140px!important;right:-46px!important;top:-46px!important;background:radial-gradient(circle,var(--kc),transparent 70%)!important}
+.kpi .kpi-ic{background:linear-gradient(160deg,color-mix(in srgb,var(--kc) 24%,#fff),color-mix(in srgb,var(--kc) 9%,#fff))!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 14px -8px var(--kc)}
+body.dark .kpi .kpi-ic{background:linear-gradient(160deg,color-mix(in srgb,var(--kc) 34%,transparent),color-mix(in srgb,var(--kc) 12%,transparent))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+body:not(.is-loading):not(.dark) .kpi .kpi-num{background:linear-gradient(180deg,#0f3d3d 10%,#0b6b6b 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+body:not(.is-loading).dark .kpi .kpi-num{background:linear-gradient(180deg,#f2fffd,#7ff0dc);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* panel icons: glossy tiles */
+body:not(.dark) .panel-title .ic{background:linear-gradient(160deg,#ffffff,#d9efec)!important;box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,107,107,.10),0 6px 14px -8px rgba(6,85,90,.45)!important}
+body.dark .panel-title .ic{background:linear-gradient(160deg,rgba(94,234,212,.22),rgba(94,234,212,.06))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)!important}
+
+/* section headings: gem + fading rule */
+.section-label>span:first-child::before{width:9px!important;height:9px!important;border-radius:3px!important;transform:rotate(45deg);
+    background:linear-gradient(135deg,#E6C976,#b8892b)!important;box-shadow:0 0 0 3px rgba(201,166,70,.16)}
+.section-label::after{background:linear-gradient(90deg,rgba(11,107,107,.28),rgba(201,166,70,.22) 40%,transparent)!important;height:1px}
+
+/* monthly target: glossy bar with a running shine */
+.goal-bar{height:16px!important;background:linear-gradient(180deg,rgba(0,60,60,.08),rgba(0,60,60,.04))!important;box-shadow:inset 0 1px 2px rgba(0,40,40,.12)}
+.goal-fill:not(.fc){position:relative;overflow:hidden;background:linear-gradient(90deg,#0b6b6b,#14a39a 60%,#5eead4)!important;box-shadow:0 0 14px -3px rgba(20,163,154,.7),inset 0 1px 0 rgba(255,255,255,.35)}
+.goal-fill:not(.fc)::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);background-size:220% 100%;animation:shine 3.2s ease-in-out infinite}
+.goal-mark{width:4px!important;border-radius:3px!important;background:linear-gradient(180deg,#E6C976,#b8892b)!important;opacity:1!important;box-shadow:0 0 0 2px rgba(255,255,255,.8)}
+@keyframes shine{0%{background-position:120% 0}60%,100%{background-position:-120% 0}}
+
+/* team cards: avatar ring, glossy buttons, #1 crown */
+#grid .card .avatar{box-shadow:0 0 0 2px var(--card),0 0 0 4px color-mix(in srgb,var(--av,#0b6b6b) 40%,transparent),0 8px 16px -10px var(--av,#0b6b6b)!important}
+#grid .card.rk1 .avatar,#grid .card.rk2 .avatar,#grid .card.rk3 .avatar{position:relative}
+#grid .card.rk1 .avatar{box-shadow:0 0 0 2px var(--card),0 0 0 4px #E6C976,0 8px 18px -8px #b8892b!important}
+#grid .card.rk2 .avatar{box-shadow:0 0 0 2px var(--card),0 0 0 4px #c9d3d6!important}
+#grid .card.rk3 .avatar{box-shadow:0 0 0 2px var(--card),0 0 0 4px #d9a27a!important}
+#grid .card.rk1 .avatar::after{content:"👑";position:absolute;top:-13px;right:-9px;font-size:15px;transform:rotate(18deg);filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+.ctl button:not(.minus){background-image:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,0) 55%)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 12px -6px rgba(0,40,40,.45)!important}
+.ctl{box-shadow:inset 0 1px 2px rgba(0,40,40,.06)}
+/* an entry lands: card glows and a +1 floats up */
+#grid .card.bump{animation:cardGlow 1.4s ease-out!important}
+@keyframes cardGlow{0%{box-shadow:0 0 0 0 rgba(20,163,154,.55),0 14px 32px -20px rgba(4,60,64,.4)}35%{box-shadow:0 0 0 8px rgba(20,163,154,.18),0 0 34px 4px rgba(94,234,212,.45)}100%{box-shadow:0 0 0 14px rgba(20,163,154,0),0 14px 32px -20px rgba(4,60,64,.4)}}
+.plus1{position:absolute;right:18px;top:46px;z-index:3;font:800 1.3rem/1 Poppins,sans-serif;color:#0b9b8f;text-shadow:0 2px 10px rgba(94,234,212,.6);pointer-events:none;animation:plus1 1.5s cubic-bezier(.2,.8,.3,1) forwards}
+.plus1.ph{color:#6366f1;text-shadow:0 2px 10px rgba(99,102,241,.45)}
+@keyframes plus1{0%{opacity:0;transform:translateY(10px) scale(.6)}20%{opacity:1;transform:translateY(0) scale(1.15)}100%{opacity:0;transform:translateY(-46px) scale(1)}}
+
+/* leaderboard: gold / silver / bronze rows */
+body:not(.dark) #leaderboardRows .lb-row:nth-child(1){background:linear-gradient(90deg,rgba(230,201,118,.32),rgba(230,201,118,.06))!important}
+body:not(.dark) #leaderboardRows .lb-row:nth-child(2){background:linear-gradient(90deg,rgba(176,190,197,.30),rgba(176,190,197,.06))!important}
+body:not(.dark) #leaderboardRows .lb-row:nth-child(3){background:linear-gradient(90deg,rgba(217,162,122,.28),rgba(217,162,122,.05))!important}
+body.dark #leaderboardRows .lb-row:nth-child(1){background:linear-gradient(90deg,rgba(230,201,118,.20),rgba(230,201,118,.03))!important}
+
+/* scroll reveal */
+.rv{opacity:0;transform:translateY(18px)}
+.rv.rv-in{opacity:1;transform:none;transition:opacity .6s ease,transform .7s cubic-bezier(.2,.8,.3,1)}
+
+/* confetti layer */
+.confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:6500}
+@media (prefers-reduced-motion:reduce){.goal-fill::after{animation:none}.rv{opacity:1;transform:none}.plus1{display:none}}
 .kpi .kpi-num,.today-num,#time,#heroToday,.ad-tile b,.ms-t b{font-weight:800}
 button,input,select,textarea{font-family:inherit}
 </style>
@@ -1357,10 +1568,10 @@ button,input,select,textarea{font-family:inherit}
 <div id="bcModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="bcFrom" data-tone="hq">
     <div class="modal-card bc-card">
         <div class="bc-band"></div>
+        <div class="bc-app"><span class="ab-logo" role="img" aria-label="RAK Ceramics"></span><span class="bc-appn"></span><span class="bc-kind"><i></i><span id="bcKind">Message</span></span></div>
         <div class="bc-head">
             <span class="bc-av" id="bcAv">—</span>
             <div class="bc-who"><b id="bcFrom">—</b><small id="bcWhen"></small></div>
-            <span class="bc-kind"><i></i><span id="bcKind">Message</span></span>
         </div>
         <p class="bc-text" id="bcText"></p>
         <div class="bc-foot"><span class="bc-count" id="bcCount"></span><button class="btn bc-ok" id="bcOk" type="button" onclick="ackBroadcast()">Got it</button></div>
@@ -1680,7 +1891,7 @@ button,input,select,textarea{font-family:inherit}
         <button type="button" data-tab="msg"><span>📣</span>Communication centre</button>
         <div class="adm-grp">Operations</div>
         <button type="button" data-tab="entries" id="admTabEntries" hidden><span>🗂</span>Entry management</button>
-        <button type="button" data-tab="idle"><span>⏱</span>Inactivity monitoring</button>
+        <button type="button" data-tab="idle"><span>⏱</span>Hours &amp; inactivity</button>
         <button type="button" data-tab="app"><span>⚙️</span>App &amp; system settings</button>
     </nav>
     <div class="adm-body">
@@ -1726,7 +1937,14 @@ button,input,select,textarea{font-family:inherit}
                     <select class="field" id="idleHoursSel" aria-label="Alert after"><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="7">7 hours</option><option value="8">8 hours</option><option value="9">9 hours</option><option value="10">10 hours</option><option value="0">Off</option></select>
                     <button class="btn" type="submit">Save</button>
                 </form>
-                <div class="adm-help" style="margin:0">Alerts managers when an <b>on-duty</b> executive logs nothing for this many working hours (08:00–22:00). Off-duty staff are skipped.</div>
+                <div class="adm-help" style="margin:0">Alerts managers when an <b>on-duty</b> executive logs nothing for this many opening hours. Off-duty and on-leave staff are skipped.</div>
+            </div>
+            <div class="adm-card" id="hoursCard">
+                <div class="adm-card-head"><b>Showroom hours</b><span class="adm-badge ok" id="hoursBadge">09–21</span></div>
+                <div class="hrs-row"><label>Opens<select class="field" id="hOpen" aria-label="Opens"></select></label><label>Closes<select class="field" id="hClose" aria-label="Closes"></select></label></div>
+                <div class="hrs-days" id="offDaysBox" aria-label="Working days"></div>
+                <button class="btn wide" type="button" onclick="saveHours()">Save hours</button>
+                <div class="adm-help" style="margin:0">Tap a day to mark it <b>off</b>. Inactivity is counted only during opening hours on working days.</div>
             </div>
             <div class="adm-wide" id="admIdleList"></div>
         </section>
@@ -1922,6 +2140,140 @@ document.addEventListener("click", function (e) { if (e.target.closest && e.targ
     place(); setInterval(place, 1500);
 })();
 
+// v3.2 · light strike across the page and a sheen on the clock card
+(function shine() {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const f = document.createElement("div"); f.className = "bg-flash"; f.setAttribute("aria-hidden", "true"); document.body.appendChild(f);
+    const h = document.querySelector(".hero"); if (h && !h.querySelector(".hero-sheen")) { const s = document.createElement("i"); s.className = "hero-sheen"; s.setAttribute("aria-hidden", "true"); h.appendChild(s); }
+})();
+
+// v3.3 · in-app banner for new messages: who, what, Read — slides in at the top, swipe up / Later to dismiss
+function appBanner(o) {
+    if (!o._w) { o._w = 1; setTimeout(() => appBanner(o), 80); return; }                 // let the urgent pop-up open first
+    const bm = document.getElementById("bcModal");
+    if (bm && !bm.classList.contains("hidden")) { setTimeout(() => appBanner(o), 1200); return; }   // show it once that pop-up is closed   // after the urgent pop-up is closed
+    let w = document.getElementById("abWrap");
+    if (!w) { w = document.createElement("div"); w.id = "abWrap"; w.setAttribute("aria-live", "polite"); document.body.appendChild(w); }
+    while (w.children.length >= 2) w.firstChild.remove();
+    const d = document.createElement("div"), ms = o.ms || 8000;
+    d.className = "ab"; d.dataset.tone = o.tone || "hq"; d.style.setProperty("--ab-ms", ms + "ms"); d.setAttribute("role", "status");
+    const when = o.ts ? new Date(o.ts).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "now";
+    d.innerHTML = `<div class="ab-top"><span class="ab-logo" role="img" aria-label="RAK Ceramics"></span><span class="ab-k">${esc(o.kind || "Message")}</span><time>${esc(when)}</time></div>
+        <span class="ab-av">${esc(initials(o.who || "RAK"))}</span>
+        <div class="ab-b"><b>${esc(o.who || "")}</b><p>${esc(o.text || "")}</p>${o.more ? `<em>${esc(o.more)}</em>` : ""}</div>
+        <div class="ab-act">${o.fn ? `<button type="button" class="pri" data-ab="go">${esc(o.label || "Open")}</button>` : ""}<button type="button" data-ab="x">Later</button></div><i class="ab-bar"></i>`;
+    let t = null;
+    const close = () => { clearTimeout(t); d.classList.add("out"); setTimeout(() => { d.remove(); if (!w.children.length) document.body.classList.remove("has-ab"); }, 320); };
+    d.addEventListener("click", e => { const b = e.target.closest("[data-ab]"); close(); if ((!b || b.dataset.ab === "go") && o.fn) o.fn(); });
+    d.addEventListener("mouseenter", () => clearTimeout(t)); d.addEventListener("mouseleave", () => { t = setTimeout(close, 2500); });
+    let y0 = null; d.addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, { passive: true });
+    d.addEventListener("touchmove", e => { if (y0 !== null && e.touches[0].clientY - y0 < -24) { y0 = null; close(); } }, { passive: true });
+    w.appendChild(d); document.body.classList.add("has-ab"); t = setTimeout(close, ms);
+}
+
+// ---------- v3.3 · numbers count up, cards appear as you scroll, celebrations ----------
+const RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+document.addEventListener("DOMContentLoaded", function countUp() {
+    const SEL = "#daily,#weekly,#monthly,#forecast,#heroToday,.goal-top .num";
+    const num = t => { const s = String(t).replace(/[,\s]/g, ""); return /^\d+$/.test(s) ? +s : null; };
+    let first = true;
+    function run(el, from, to) {
+        const tok = (el._cu || 0) + 1; el._cu = tok; el.dataset.cuTo = to;
+        const t0 = performance.now(), dur = first ? 1100 : 650;
+        const step = now => { if (el._cu !== tok) return;
+            const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(from + (to - from) * e).toLocaleString("en-US");
+            if (p < 1) requestAnimationFrame(step); else delete el.dataset.cuTo; };
+        requestAnimationFrame(step);
+    }
+    const orig = renderAll;
+    renderAll = function () {
+        const before = {};
+        document.querySelectorAll(SEL).forEach(el => { const k = el.id || "goal"; before[k] = el.dataset.cuTo != null ? +el.dataset.cuTo : num(el.textContent); });
+        const r = orig.apply(this, arguments);
+        if (RM || !window.__appBooted || document.body.classList.contains("is-loading")) return r;
+        document.querySelectorAll(SEL).forEach(el => {
+            const k = el.id || "goal", to = num(el.textContent); if (to === null) return;
+            const from = first ? 0 : before[k]; if (from == null || from === to) return;
+            el._cu = (el._cu || 0) + 1; run(el, from, to);
+        });
+        first = false;
+        return r;
+    };
+});
+(function reveal() {
+    if (RM || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("rv-in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -6% 0px" });
+    function scan() {
+        document.querySelectorAll(".kpi, main .panel, .section-label, .ep-pair>.panel").forEach((el, i) => {
+            if (el._rv) return; el._rv = 1;
+            const r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) return;   // already on screen: no fade
+            el.classList.add("rv"); el.style.transitionDelay = (el.classList.contains("kpi") ? (i % 4) * 70 : 0) + "ms"; io.observe(el);
+        });
+    }
+    setTimeout(scan, 1200); document.addEventListener("click", () => setTimeout(scan, 300));
+})();
+function confetti(big) {
+    if (RM) return;
+    const c = document.createElement("canvas"), x = c.getContext("2d"), d = Math.min(2, devicePixelRatio || 1);
+    c.className = "confetti"; c.width = innerWidth * d; c.height = innerHeight * d; x.scale(d, d); document.body.appendChild(c);
+    const W = innerWidth, H = innerHeight, cols = ["#0b6b6b", "#14a39a", "#5eead4", "#C9A646", "#E6C976", "#ffffff", "#1d6c86", "#f59e0b"];
+    const P = [], n = big ? 220 : 110;
+    for (let i = 0; i < n; i++) {
+        const left = i % 2 === 0, a = (left ? -60 : -120) * Math.PI / 180 + (Math.random() - .5) * .9, v = 9 + Math.random() * (big ? 12 : 8);
+        P.push({ x: left ? -10 : W + 10, y: H * .72, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: Math.random() * 6.28, vr: (Math.random() - .5) * .3,
+            w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, c: cols[i % cols.length], s: Math.random() < .3 });
+    }
+    const t0 = performance.now(), dur = big ? 4200 : 3000;
+    (function f(now) {
+        const t = now - t0; x.clearRect(0, 0, W, H);
+        for (const p of P) {
+            p.vy += .22; p.vx *= .992; p.vy *= .992; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+            x.save(); x.globalAlpha = Math.max(0, 1 - t / dur); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c;
+            if (p.s) { x.beginPath(); x.arc(0, 0, p.w / 2, 0, 6.28); x.fill(); } else x.fillRect(-p.w / 2, -p.h / 4, p.w, p.h / 2);
+            x.restore();
+        }
+        if (t < dur) requestAnimationFrame(f); else c.remove();
+    })(t0);
+}
+document.addEventListener("DOMContentLoaded", function celebrate() {
+    const prevToday = {};
+    const LS = k => `${window.STORE_ID}_cel_${k}`;
+    const get = k => { try { return localStorage.getItem(LS(k)); } catch (e) { return null; } };
+    const put = (k, v) => { try { localStorage.setItem(LS(k), v); } catch (e) {} };
+    const orig = renderGrid;
+    renderGrid = function () {
+        const r = orig.apply(this, arguments);
+        if (!A || !dataReady.execs || !dataReady.walkins) return r;
+        // rank rings / crown (whole month, walk-ins + phone)
+        const S = AT || A, rows = executives.map(n => ({ n, v: Math.max(0, (S.exec[n] || {}).month || 0) })).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
+        const rk = {}; rows.slice(0, 3).forEach((x, i) => { rk[x.n] = i + 1; });
+        document.querySelectorAll("#grid .card").forEach(card => {
+            const nm = (card.querySelector(".card-name") || {}).textContent; card.classList.remove("rk1", "rk2", "rk3");
+            if (nm && rk[nm]) card.classList.add("rk" + rk[nm]);
+            const t = Math.max(0, ((S.exec[nm] || {}).today) || 0);
+            if (nm in prevToday && t > prevToday[nm] && !RM) {
+                const p = document.createElement("i"); p.className = "plus1"; p.textContent = "+" + (t - prevToday[nm]); card.appendChild(p); setTimeout(() => p.remove(), 1600);
+            }
+            if (nm) prevToday[nm] = t;
+        });
+        // a new #1 this month
+        const mk = A.todayKey.slice(0, 7), top = rows[0], tie = rows[1] && rows[1].v === (top && top.v);
+        if (top && !tie) {
+            const was = get("lead" + mk);
+            if (was && was !== top.n) { confetti(false); playTone("win"); toast(`👑 ${top.n} takes #1 this month`, 4500); }
+            if (was !== top.n) put("lead" + mk, top.n);
+        }
+        // monthly target reached
+        const target = +settings.monthlyTarget || 0, m = (AT || A).m;
+        if (target > 0 && m >= target && !get("tgt" + mk)) {
+            put("tgt" + mk, "1");
+            setTimeout(() => { confetti(true); playTone("win"); toast(`🎉 Monthly target reached · ${fmt(m)} of ${fmt(target)}`, 6000); }, 600);
+        }
+        return r;
+    };
+});
+
 </script>
 
 <footer>© 2026 Hesper. All rights reserved. · <span id="footVersion"></span></footer>
@@ -2067,7 +2419,7 @@ if ("serviceWorker" in navigator) {
 // ================================================================
 let executives = [];
 let managers = [];
-let lockedUsers = {};
+let lockedUsers = {}, rawLocks = {}, leaveMap = {};   // lockedUsers = off duty OR on annual leave today
 let settings = {};
 let historyData = [];
 let dataReady = { execs: false, walkins: false };
@@ -2111,10 +2463,15 @@ const shortDate = k => { const [y, m, d] = k.split("-"); return new Date(+y, +m 
 
 let toastTimer;
 function toast(msg, ms, action) {
-    const t = $("toast");
-    t.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button">${esc(action.label)}</button>` : ""}`;
+    const t = $("toast"); msg = String(msg);
+    const bad = /couldn|can't|cannot|failed|blocked|denied|error|not allowed/i.test(msg);
+    const m = msg.match(/^(\p{Extended_Pictographic}\uFE0F?|✓|✕)\s*/u), ic = m ? m[1] : (bad ? "!" : "✓");
+    if (m) msg = msg.slice(m[0].length);
+    t.className = bad ? "bad" : "";
+    t.style.setProperty("--t-ms", (ms || 2200) + "ms");
+    t.innerHTML = `<span class="t-ic">${esc(ic)}</span><span class="t-tx">${esc(msg)}</span>${action ? `<button type="button">${esc(action.label)}</button>` : ""}<i class="t-bar"></i>`;
     if (action) t.querySelector("button").onclick = () => { t.classList.remove("show"); clearTimeout(toastTimer); action.fn(); };
-    t.classList.add("show");
+    t.classList.remove("show"); void t.offsetWidth; t.classList.add("show");
     clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), ms || 2200);
 }
 
@@ -2359,8 +2716,12 @@ function initAppLogic() {
         renderAll();
         if ($("adminPanel").classList.contains("active")) renderAdmin();
     });
+    window.dbOnValue(R("leave"), snap => {
+        leaveMap = snap.val() || {}; recalcOff(); renderAll();
+        if ($("adminPanel").classList.contains("active")) renderAdmin();
+    }, () => { leaveMap = {}; });
     window.dbOnValue(R("locks"), snap => {
-        lockedUsers = snap.val() || {};
+        rawLocks = snap.val() || {}; recalcOff();
         renderAll();
         if ($("adminPanel").classList.contains("active")) renderAdmin();
     });
@@ -2375,7 +2736,7 @@ function initAppLogic() {
         execDefaultPin = {}; Object.keys(v).forEach(k => { execDefaultPin[k] = !!(v[k] && v[k].pin === DEFAULT_PIN); });
         if ($("adminPanel").classList.contains("active")) renderAdmin();
     }, () => {});
-    window.dbOnValue(R("settings"), snap => { settings = snap.val() || {}; renderAll(); }, () => { settings = {}; });
+    window.dbOnValue(R("settings"), snap => { settings = snap.val() || {}; applyHours(); renderAll(); if ($("adminPanel").classList.contains("active")) renderIdleAdmin(); }, () => { settings = {}; });
     window.dbOnValue(R("broadcasts"), snap => onBroadcasts(snap.val()), () => {});
     window.dbOnValue(R("walkins"), snap => {
         const rows = [];
@@ -2550,6 +2911,7 @@ function execStats(name) {
 // ================================================================
 function renderAll() {
     if (!window.__appBooted) return;
+    recalcOff();
     document.body.classList.toggle("is-loading", !(dataReady.execs && dataReady.walkins));
     document.body.dataset.cat = catFilter;
     recompute();
@@ -2690,8 +3052,9 @@ function renderGrid() {
         const n = esc(name), sig = `${s.tw}|${s.tp}`;
         next[name] = sig;
         const bump = ready && prevCard[name] !== undefined && prevCard[name] !== sig;
-        const meta = [rank[name] ? `#${rank[name]} this month` : "No entries this month", s.streak > 1 ? `🔥 ${s.streak}d streak` : ""].filter(Boolean).join(" · ");
-        const status = manager
+        const away = onLeave(name), lvTxt = lvNote(name);
+        const meta = [!away && lvTxt ? lvTxt : "", rank[name] ? `#${rank[name]} this month` : "No entries this month", s.streak > 1 ? `🔥 ${s.streak}d streak` : ""].filter(Boolean).join(" · ");
+        const status = away ? `<span class="tag leave" title="${esc(lvTxt)}">🌴 On leave</span>` : (manager || isMe)
             ? `<button class="duty ${locked ? "off" : "on"}" data-act="lock" data-name="${n}" title="Tap to ${locked ? "activate" : "set off duty"}"><i></i><span>${locked ? "OFF DUTY" : "ACTIVE"}</span></button>`
             : locked ? `<span class="tag view">Off duty</span>` : isMe ? `<span class="tag you">You</span>` : `<span class="tag view ro-tag">View</span>`;
         return `
@@ -2700,7 +3063,7 @@ function renderGrid() {
                 <span class="avatar" style="--av:${avColor(name)}">${esc(initials(name))}</span>
                 <div class="card-who">
                     <button class="card-name ${name.length > 22 ? "long" : ""}" data-act="detail" data-name="${n}" title="${n} — view details">${n}</button>
-                    <div class="card-sub">${status}<span class="card-meta" title="${esc(meta)}">${meta}</span></div>
+                    <div class="card-sub">${status}${isMe || manager ? `<button class="lv-btn" type="button" data-act="leave" data-name="${n}" title="Annual leave${isMe ? "" : " for " + n}" aria-label="Annual leave">🌴</button>` : ""}<span class="card-meta" title="${esc(meta)}">${meta}</span></div>
                 </div>
             </div>
             <div class="card-mid"><div><span class="today-num">${s.today}</span><span class="today-lbl">${todayLbl}</span></div>${sparkSvg(s.spark)}</div>
@@ -2718,6 +3081,7 @@ $("grid").addEventListener("click", e => {
     if (b.dataset.act === "inc") update(name, 1, b.dataset.type);
     else if (b.dataset.act === "dec") update(name, -1, b.dataset.type);
     else if (b.dataset.act === "lock") toggleLock(name);
+    else if (b.dataset.act === "leave") openLeave(name);
     else if (b.dataset.act === "detail") openDetail(name);
 });
 
@@ -3594,7 +3958,7 @@ function buildTicker() {
     if (hour >= 12 && hour < 17) { gi = "☀️"; gw = "Good afternoon"; }
     else if (hour >= 17 && hour < 22) { gi = "🌇"; gw = "Good evening"; }
     else if (hour >= 22 || hour < 5) { gi = "🌙"; gw = "Late shift, legends"; }
-    const greeting = `${gi} <span class="feed-pill blue">TEAM ALZAHIA</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
+    const greeting = `${gi} <span class="feed-pill blue">TEAM ALZAHIAia</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
 
     add("today", dailyTotal > 0
         ? `🚀 <span class="feed-pill green">TODAY</span> ${fmt(dailyTotal)} walk-in${s(dailyTotal)} served so far — momentum is building! 📈`
@@ -3673,11 +4037,11 @@ function buildTicker() {
         `👃 <span class="feed-pill gold">Mariam SENSES</span> "I can smell a big sale from the parking lot. Get ready!" 💰`
     ], "boss"));
 
-    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> Team AlZahia has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
+    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> TEAM ALZAHIAia has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
     else if (A.m >= 500) add("milestone", `🎊 <span class="feed-pill green">MILESTONE</span> ${fmt(A.m)} walk-ins this month — only ${fmt(1000 - A.m)} more to reach 1,000! Push! 💥`);
     else if (A.m >= 100) add("milestone", `🎈 <span class="feed-pill blue">CENTURY+</span> ${fmt(A.m)} walk-ins logged this month. Onwards! 🚀`);
 
-    const closing = `👩‍💻 <span class="feed-pill green">Team AlZahia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
+    const closing = `👩‍💻 <span class="feed-pill green">TEAM ALZAHIAia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
     const middle = messages.map(m => ({ html: m.html, o: tickerRand("order:" + m.key) })).sort((a, b) => a.o - b.o).map(m => m.html);
     // Manager's messages to the team lead the feed, and come round again half-way through.
     const team = activeTeamMsgs().map(b => `<span class="feed-pill mgr${b.urgent ? " urg" : ""}">${esc(bcSender(b).toUpperCase())}</span><span class="feed-mgr">${esc(b.text.replace(/\s+/g, " "))}</span>`);
@@ -3772,7 +4136,10 @@ function showNextBroadcast() {
     if (fresh.length) {
         fresh.forEach(x => bcQuiet.add(x.id));
         const one = fresh[fresh.length - 1];
-        toast(fresh.length === 1 ? `New message from ${bcSender(one)}` : `${fresh.length} new messages`, 6000, { label: "Read", fn: () => openBroadcast(one.id) });
+        appBanner({ who: bcSender(one), kind: isTeamMsg(one) ? "Team message" : "Head office", text: fresh.length === 1 ? one.text : `${one.text}`,
+            more: fresh.length > 1 ? `+${fresh.length - 1} more` : "", tone: isTeamMsg(one) ? "team" : "hq", ts: one.ts,
+            label: "Read", fn: () => openBroadcast(one.id) });
+        playTone("message");
     }
     const b = bcManual ? bcQueue.find(x => x.id === bcManual) : bcQueue.find(x => x.urgent);
     if (!b) { if (!m.classList.contains("hidden")) { m.classList.add("hidden"); maybeApplyPending(); } bcShown = null; return; }
@@ -3986,9 +4353,10 @@ function renderAdmin() {
         const month = st ? Math.max(0, st.month) : 0, today = st ? Math.max(0, st.today) : 0;
         return `<div class="adm-person ${locked ? "off" : ""}">
             <span class="avatar" style="--av:${avColor(name)}">${esc(initials(name))}</span>
-            <div class="adm-person-txt"><b>${n}</b><small>${execDefaultPin[name] ? `<em class="adm-pill">Default PIN</em>` : ""}${locked ? "Off duty · " : ""}${fmt(today)} today · ${fmt(month)} this month</small></div>
+            <div class="adm-person-txt"><b>${n}</b><small>${execDefaultPin[name] ? `<em class="adm-pill">Default PIN</em>` : ""}${lvNote(name) ? esc(lvNote(name)) + " · " : locked ? "Off duty · " : ""}${fmt(today)} today · ${fmt(month)} this month</small></div>
             <div class="adm-actions">
                 <button type="button" class="adm-switch ${locked ? "" : "on"}" data-act="lock" data-name="${n}" role="switch" aria-checked="${!locked}" title="${locked ? "Off duty — tap to set on duty" : "On duty — tap to set off duty"}"><i></i></button>
+                <button type="button" class="adm-icon" data-act="leave" data-name="${n}" title="Annual leave for ${n}">🌴</button>
                 <button type="button" class="adm-icon" data-act="reset" data-kind="executives" data-name="${n}" title="Reset ${n}'s PIN to 1234">🔑</button>
                 <button type="button" class="adm-icon danger" data-act="remove-exec" data-name="${n}" title="Remove ${n}">🗑</button>
             </div></div>`;
@@ -4013,6 +4381,7 @@ $("adminPanel").addEventListener("click", e => {
     const b = e.target.closest("button[data-act]"); if (!b || b.disabled) return;
     const name = b.dataset.name, act = b.dataset.act;
     if (act === "lock") toggleLock(name);
+    else if (act === "leave") openLeave(name);
     else if (act === "reset") resetPin(b.dataset.kind, name);
     else if (act === "remove-exec") deleteExecutive(name);
     else if (act === "remove-mgr") deleteManager(name);
@@ -4138,9 +4507,73 @@ async function deleteExecutive(name) {
     } catch (e) { alert("Couldn't fully remove that person. Please try again."); }
 }
 
+// ---------- v3.2 · annual leave ----------
+const todayISO = (d = new Date()) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const fmtISO = s => new Date(s + "T00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+function leaveOf(name) { const v = leaveMap[keyOf(name)]; return v && v.from && v.to ? v : null; }
+function onLeave(name, iso) { const v = leaveOf(name); iso = iso || todayISO(); return !!(v && v.from <= iso && iso <= v.to); }
+function leaveBack(name) {   // start of the first day back, once the leave is over (idle clock restarts there)
+    const v = leaveOf(name); if (!v) return 0;
+    const t = new Date(v.to + "T00:00").getTime() + DAY; return t <= Date.now() ? t : 0;
+}
+function lvNote(name) {
+    const v = leaveOf(name); if (!v) return "";
+    if (onLeave(name)) return `🌴 On leave · back ${fmtISO(todayISO(new Date(new Date(v.to + "T00:00").getTime() + DAY)))}`;
+    const t = todayISO(); if (v.from > t && new Date(v.from + "T00:00") - Date.now() < 45 * DAY) return `🌴 Leave ${fmtISO(v.from)} – ${fmtISO(v.to)}`;
+    return "";
+}
+function recalcOff() { const o = Object.assign({}, rawLocks); executives.forEach(n => { if (onLeave(n)) o[n] = true; }); lockedUsers = o; }
+function canManageSelf(name) { return isManager() || (!!name && name === getCurrentExec()); }
+function leaveModal() {
+    let m = $("leaveModal"); if (m) return m;
+    m = document.createElement("div"); m.id = "leaveModal"; m.className = "modal-overlay hidden";
+    m.innerHTML = `<div class="modal-card lv-card" role="dialog" aria-modal="true" aria-labelledby="lvTitle">
+        <h3 id="lvTitle">🌴 Annual leave</h3>
+        <p class="lv-who"><span class="avatar" id="lvAv"></span><b id="lvName"></b></p>
+        <div class="lv-row"><label>From<input type="date" class="field" id="lvFrom"></label><label>To<input type="date" class="field" id="lvTo"></label></div>
+        <p class="lv-days" id="lvDays"></p>
+        <div class="pin-error" id="lvErr"></div>
+        <div class="lv-act"><button class="btn" type="button" id="lvSave">Save leave</button><button class="btn ghost danger-t" type="button" id="lvClear" hidden>Cancel leave</button><button class="btn ghost" type="button" id="lvClose">Close</button></div>
+    </div>`;
+    document.body.appendChild(m);
+    const days = () => { const f = $("lvFrom").value, t = $("lvTo").value; if (!f || !t || t < f) { $("lvDays").textContent = ""; return; }
+        const n = Math.round((new Date(t + "T00:00") - new Date(f + "T00:00")) / DAY) + 1; $("lvDays").textContent = `${n} day${n === 1 ? "" : "s"}`; };
+    $("lvFrom").addEventListener("change", () => { if ($("lvTo").value < $("lvFrom").value) $("lvTo").value = $("lvFrom").value; $("lvTo").min = $("lvFrom").value; days(); });
+    $("lvTo").addEventListener("change", days);
+    m.addEventListener("click", e => { if (e.target === m || e.target.id === "lvClose") m.classList.add("hidden"); });
+    $("lvSave").addEventListener("click", saveLeave); $("lvClear").addEventListener("click", clearLeave);
+    return m;
+}
+function openLeave(name) {
+    if (!canManageSelf(name)) return;
+    const m = leaveModal(), v = leaveOf(name), t = todayISO();
+    m.dataset.name = name; $("lvName").textContent = name;
+    $("lvAv").textContent = initials(name); $("lvAv").style.setProperty("--av", avColor(name));
+    $("lvFrom").value = v && v.to >= t ? v.from : t; $("lvTo").value = v && v.to >= t ? v.to : t; $("lvTo").min = $("lvFrom").value;
+    $("lvClear").hidden = !(v && v.to >= t); $("lvErr").textContent = ""; $("lvFrom").dispatchEvent(new Event("change"));
+    m.classList.remove("hidden");
+}
+async function saveLeave() {
+    const m = leaveModal(), name = m.dataset.name, f = $("lvFrom").value, t = $("lvTo").value;
+    if (!f || !t) { $("lvErr").textContent = "Pick both dates."; return; }
+    if (t < f) { $("lvErr").textContent = "The end date is before the start date."; return; }
+    if (t < todayISO()) { $("lvErr").textContent = "That leave has already finished."; return; }
+    try { await window.dbSet(R("leave/" + keyOf(name)), { name, from: f, to: t, by: getCurrentExec() || "", ts: Date.now() });
+        m.classList.add("hidden"); toast(`🌴 Leave saved · ${fmtISO(f)} – ${fmtISO(t)}`); }
+    catch (e) { $("lvErr").textContent = "Couldn't save. Please try again."; }
+}
+async function clearLeave() {
+    const m = leaveModal(), name = m.dataset.name;
+    try { await window.dbRemove(R("leave/" + keyOf(name)));
+        Promise.resolve(window.dbSet(R("settings/dutyTs/" + keyOf(name)), Date.now())).catch(() => {});
+        m.classList.add("hidden"); toast(`${name} is back from leave`); }
+    catch (e) { $("lvErr").textContent = "Couldn't cancel. Please try again."; }
+}
+
 function toggleLock(name) {
-    if (!isManager()) return;
-    const next = !lockedUsers[name];
+    if (!canManageSelf(name)) return;
+    if (onLeave(name)) { openLeave(name); return; }
+    const next = !rawLocks[name];
     Promise.resolve(window.dbSet(R("locks/" + name), next))
         .then(() => { toast(next ? `${name} set off duty` : `${name} is back on duty`);
             Promise.resolve(window.dbSet(R("settings/dutyTs/" + keyOf(name)), Date.now())).catch(() => {}); })
@@ -4262,7 +4695,7 @@ const isStandalone = () => { try { return matchMedia("(display-mode: standalone)
 async function sysNotify(title, body, tag, opts) {
     opts = opts || {};
     if (!notifOK()) return false;
-    const o = { body: String(body || "").slice(0, 300), tag, icon: NOTIF_ICON, badge: NOTIF_ICON, renotify: true, requireInteraction: !!opts.sticky, data: { url: location.href } };
+    const o = { body: String(body || "").slice(0, 300), tag, icon: NOTIF_ICON, badge: "notif-badge.png", renotify: true, silent: false, timestamp: Date.now(), requireInteraction: !!opts.sticky, data: { url: location.href } };
     // Desktop: a page notification (tapping it brings this window forward).
     try {
         const n = new Notification(title, o);
@@ -4296,13 +4729,13 @@ function askNotif() {
     }
     Promise.resolve(Notification.requestPermission()).then(p => {
         renderNotif(); updateBell();
-        if (p === "granted") { sysNotify("Notifications are on", `${STORE_NAME} · you'll be notified of new messages.`, "alerts-on"); playTone("message", true); }
+        if (p === "granted") { sysNotify("✅ Notifications are on", `${STORE_NAME} · new messages will appear here.`, "alerts-on"); playTone("message", true); }
         else if (p === "denied") toast("Notifications are blocked. Allow them for this site in the browser settings.", 4500);
     }).catch(() => {});
 }
 function testNotif() {
     playTone("message", true);
-    sysNotify(`Test · ${STORE_NAME}`, "This is how a new message will appear.", "test").then(ok => { if (!ok) toast("Couldn't show a notification on this device.", 3000); });
+    sysNotify(`Head office · ${STORE_NAME}`, "This is how a new message will look on this device.", "test").then(ok => { if (!ok) toast("Couldn't show a notification on this device.", 3000); });
 }
 
 // Once per session after login: a small card offering to switch notifications on (needs a tap — browsers require it).
@@ -4344,24 +4777,29 @@ function unlockAudio() {
 ["pointerdown", "keydown", "touchend"].forEach(t => window.addEventListener(t, unlockAudio, true));
 // "message": a soft three-note chime · "urgent": a brighter double call
 function playTone(kind, force) {
+    // "message": a soft two-note ping · "urgent": a bright three-pulse call, played twice
     if (!force && !soundOn()) return;
     const c = getAudio(); if (!c || c.state === "closed") return;
     try {
         const urgent = kind === "urgent", t0 = c.currentTime + 0.03;
-        const out = c.createGain(); out.gain.value = urgent ? 0.34 : 0.28; out.connect(c.destination);
-        const notes = urgent ? [[880, 0], [1318.5, 0.13], [880, 0.4], [1318.5, 0.53]] : [[783.99, 0], [1046.5, 0.12], [1567.98, 0.24]];
-        const len = urgent ? 0.5 : 1.1;
+        const out = c.createGain(); out.gain.value = urgent ? 0.36 : 0.3; out.connect(c.destination);
+        const comp = c.createDynamicsCompressor ? c.createDynamicsCompressor() : null; if (comp) { out.disconnect(); out.connect(comp); comp.connect(c.destination); }
+        const win = kind === "win";
+        const notes = win ? [[1046.5, 0], [1318.51, .1], [1567.98, .2], [2093, .32], [1567.98, .5], [2093, .6]]
+            : urgent ? [[987.77, 0], [1318.51, .11], [1760, .22], [987.77, .62], [1318.51, .73], [1760, .84]]
+            : [[1174.66, 0], [1567.98, .14]];
+        const len = urgent ? .32 : .9;
         notes.forEach(([f, at]) => {
             const s = t0 + at;
-            [[1, "sine", 1], [2, "sine", 0.22], [3, "triangle", 0.06]].forEach(([mul, type, lvl]) => {
+            [[1, "sine", 1], [2.01, "sine", .18], [4.2, "sine", .05]].forEach(([mul, type, lvl]) => {   // bell-like partials
                 const o = c.createOscillator(), g = c.createGain();
                 o.type = type; o.frequency.value = f * mul;
-                g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(lvl, s + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, s + len / mul);
+                g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(lvl, s + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, s + len / Math.sqrt(mul));
                 o.connect(g); g.connect(out); o.start(s); o.stop(s + len + 0.05);
             });
         });
     } catch (e) {}
-    try { if (navigator.vibrate) navigator.vibrate(kind === "urgent" ? [120, 60, 120, 60, 120] : [80, 50, 80]); } catch (e) {}
+    try { if (navigator.vibrate) navigator.vibrate(kind === "urgent" ? [160, 70, 160, 70, 160] : [60, 40, 60]); } catch (e) {}
 }
 function chime() { playTone("message"); }
 function toggleSound() {
@@ -4386,7 +4824,7 @@ function notifyBroadcasts() {
     if (!notifOK() || pushIsOn()) return;                         // phone/computer alerts handle it
     fresh.slice(0, 3).forEach(b => {
         done.add(b.id);
-        sysNotify(`${b.urgent ? "🚨 " : ""}${bcSender(b)}${isTeamMsg(b) ? " · Team" : ""}`, b.text, "bc-" + b.id, { sticky: !!b.urgent, onclick: showNextBroadcast });
+        sysNotify(b.urgent ? `🔴 Urgent · ${bcSender(b)}` : `${bcSender(b)} · ${isTeamMsg(b) ? "Team" : "Head office"}`, b.text, "bc-" + b.id, { sticky: !!b.urgent, onclick: showNextBroadcast });
     });
     try { const live = new Set(broadcasts.map(b => b.id)); localStorage.setItem(LS_BC_NOTE(), JSON.stringify([...done].filter(x => live.has(x)))); } catch (e) {}
 }
@@ -4475,7 +4913,42 @@ document.addEventListener("click", e => {
 //  Off-duty executives are skipped, and their clock restarts when they
 //  are switched back on duty (settings/dutyTs/{name}).
 // ================================================================
-const BIZ_OPEN = 9, BIZ_CLOSE = 21, DEFAULT_IDLE_H = 10;   // idle time only counts 08:00–22:00
+let BIZ_OPEN = 9, BIZ_CLOSE = 21; const DEFAULT_IDLE_H = 10;   // opening hours: settings/workHours {open, close}
+const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"], DAY_LBL = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+function applyHours() {
+    const w = settings.workHours || {}; let o = parseInt(w.open, 10), c = parseInt(w.close, 10);
+    if (!(o >= 0 && o <= 23)) o = 9; if (!(c > o && c <= 24)) c = Math.max(o + 1, 21);
+    BIZ_OPEN = o; BIZ_CLOSE = c;
+}
+function isOffDay(d) { return !!(settings.offDays || {})[DAY_KEYS[new Date(d).getDay()]]; }
+let hoursDraft = null;
+function renderHoursAdmin() {
+    const o = $("hOpen"), c = $("hClose"), box = $("offDaysBox"); if (!o || !c || !box) return;
+    if (!o.options.length) {
+        for (let h = 0; h <= 23; h++) o.add(new Option(pad(h) + ":00", h));
+        for (let h = 1; h <= 24; h++) c.add(new Option(pad(h) + ":00", h));
+        const dirty = () => { hoursDraft = hoursDraft || { off: Object.assign({}, settings.offDays || {}) }; };
+        o.addEventListener("change", dirty); c.addEventListener("change", dirty);
+        box.addEventListener("click", e => { const b = e.target.closest("button[data-day]"); if (!b) return;
+            hoursDraft = hoursDraft || { off: Object.assign({}, settings.offDays || {}) };
+            hoursDraft.off[b.dataset.day] = !hoursDraft.off[b.dataset.day]; renderHoursAdmin(); });
+    }
+    if (!hoursDraft) { o.value = String(BIZ_OPEN); c.value = String(BIZ_CLOSE); }
+    const off = hoursDraft ? hoursDraft.off : (settings.offDays || {});
+    box.innerHTML = DAY_KEYS.map((k, i) => `<button type="button" class="dchip ${off[k] ? "off" : ""}" data-day="${k}" aria-pressed="${!off[k]}">${DAY_LBL[i]}<small>${off[k] ? "Off" : "Open"}</small></button>`).join("");
+    const so = settings.offDays || {}, offs = DAY_KEYS.filter(k => so[k]).map(k => DAY_LBL[DAY_KEYS.indexOf(k)]);
+    const b = $("hoursBadge"); if (b) b.textContent = `${pad(BIZ_OPEN)}–${pad(BIZ_CLOSE)}${offs.length ? " · " + offs.join(", ") + " off" : ""}`;
+}
+async function saveHours() {
+    const o = parseInt($("hOpen").value, 10), c = parseInt($("hClose").value, 10);
+    const src = hoursDraft ? hoursDraft.off : (settings.offDays || {}), off = {};
+    DAY_KEYS.forEach(k => { if (src[k]) off[k] = true; });
+    if (!(c > o)) { alert("Closing time must be after opening time."); return; }
+    if (Object.keys(off).length >= 7) { alert("At least one day must be a working day."); return; }
+    try { await window.dbSet(R("settings/workHours"), { open: o, close: c }); await window.dbSet(R("settings/offDays"), Object.keys(off).length ? off : null);
+        hoursDraft = null; toast(`🕘 Hours saved · ${pad(o)}:00–${pad(c)}:00`); }
+    catch (e) { alert(`Couldn't save. Your Firebase rules need to allow read/write on stores/${window.STORE_ID}/settings.`); }
+}   // idle time only counts 08:00–22:00
 const keyOf = n => String(n).replace(/[.#$\[\]\/]/g, "_");
 function idleLimitH() { const v = settings.idleHours; if (v === 0 || v === "0") return 0; return +v > 0 ? +v : DEFAULT_IDLE_H; }
 // Opening-hours time between two moments (nights don't count).
@@ -4483,6 +4956,7 @@ function bizMs(from, to) {
     if (!(to > from)) return 0;
     let t = 0, d = new Date(from); d.setHours(0, 0, 0, 0);
     for (let i = 0; +d < to && i < 400; i++, d = addDays(d, 1)) {
+        if (isOffDay(d)) continue;                      // showroom closed that day
         const o = new Date(d); o.setHours(BIZ_OPEN, 0, 0, 0);
         const c = new Date(d); c.setHours(BIZ_CLOSE, 0, 0, 0);
         const a = Math.max(from, +o), b = Math.min(to, +c);
@@ -4504,12 +4978,12 @@ function idleReport() {
         for (const n of [h.executive, h.submittedBy]) if (n && (!last[n] || h.timestamp > last[n])) last[n] = h.timestamp;
     }
     const rows = executives.map(n => {
-        const off = !!lockedUsers[n], since = Math.max(last[n] || 0, +duty[keyOf(n)] || 0, now - 30 * DAY);
+        const leave = onLeave(n), off = !!lockedUsers[n], since = Math.max(last[n] || 0, +duty[keyOf(n)] || 0, leaveBack(n), now - 30 * DAY);
         const idle = bizMs(since, now);
-        return { n, off, last: last[n] || 0, since, idle, state: off ? "off" : !lim ? "ok" : idle >= lim ? "idle" : idle >= lim * 0.7 ? "near" : "ok" };
+        return { n, off, leave, last: last[n] || 0, since, idle, state: off ? "off" : !lim ? "ok" : idle >= lim ? "idle" : idle >= lim * 0.7 ? "near" : "ok" };
     });
     const onDuty = rows.filter(r => !r.off);
-    return { lim, rows, onDuty, idle: rows.filter(r => r.state === "idle"), near: rows.filter(r => r.state === "near"), off: rows.filter(r => r.off),
+    return { lim, rows, onDuty, idle: rows.filter(r => r.state === "idle"), near: rows.filter(r => r.state === "near"), off: rows.filter(r => r.off), leave: rows.filter(r => r.leave),
         allIdle: onDuty.length > 0 && onDuty.every(r => r.state === "idle") };
 }
 function renderIdleWatch() {
@@ -4521,7 +4995,7 @@ function renderIdleWatch() {
     el.hidden = false;
     const head = (sub, chips) => `<div class="panel-head"><h3 class="panel-title"><span class="ic">⏱</span>Inactivity watch</h3>${chips || ""}</div>${sub ? `<p class="panel-sub" style="margin:-4px 0 12px">${sub}</p>` : ""}`;
     if (!r.lim) { el.className = "panel watch calm"; el.innerHTML = head("", `<button class="btn ghost sm" type="button" onclick="openAdmin()">Alerts are off · turn on</button>`); return; }
-    const chips = `<div class="iw-chips"><span class="iw-chip ok">${r.onDuty.length - r.idle.length - r.near.length} active</span>${r.near.length ? `<span class="iw-chip near">${r.near.length} close</span>` : ""}<span class="iw-chip ${r.idle.length ? "bad" : ""}">${r.idle.length} idle ${H}h+</span><span class="iw-chip">${r.off.length} off duty · skipped</span></div>`;
+    const chips = `<div class="iw-chips"><span class="iw-chip ok">${r.onDuty.length - r.idle.length - r.near.length} active</span>${r.near.length ? `<span class="iw-chip near">${r.near.length} close</span>` : ""}<span class="iw-chip ${r.idle.length ? "bad" : ""}">${r.idle.length} idle ${H}h+</span><span class="iw-chip">${r.off.length - r.leave.length} off duty</span>${r.leave.length ? `<span class="iw-chip leave">🌴 ${r.leave.length} on leave</span>` : ""}${isOffDay(new Date()) ? `<span class="iw-chip">Closed today</span>` : ""}</div>`;
     const list = r.rows.filter(x => x.state === "idle" || x.state === "near").sort((a, b) => b.idle - a.idle);
     const skip = r.off.length ? `<p class="iw-skip">Not tracked while off duty: <b>${r.off.map(x => esc(x.n)).join(", ")}</b></p>` : "";
     if (!list.length) {
@@ -4560,6 +5034,7 @@ async function saveIdleHours() {
     catch (e) { alert(`Couldn't save. Your Firebase rules need to allow read/write on stores/${window.STORE_ID}/settings.`); }
 }
 function renderIdleAdmin() {
+    renderHoursAdmin();
     const sel = $("idleHoursSel"); if (!sel) return;
     if (document.activeElement !== sel) sel.value = String(idleLimitH());
     const b = $("idleBadge"); if (b) { const h = idleLimitH(); b.textContent = h ? `${h} h` : "Off"; b.className = "adm-badge " + (h ? "ok" : ""); }
