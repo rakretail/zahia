@@ -1533,6 +1533,10 @@ body:not(.dark) #leaderboardRows .lb-row:nth-child(2){background:linear-gradient
 body:not(.dark) #leaderboardRows .lb-row:nth-child(3){background:linear-gradient(90deg,rgba(217,162,122,.28),rgba(217,162,122,.05))!important}
 body.dark #leaderboardRows .lb-row:nth-child(1){background:linear-gradient(90deg,rgba(230,201,118,.20),rgba(230,201,118,.03))!important}
 
+/* Peak Activity (deep-teal card): light text and glass pills */
+body:not(.dark) .peak .peak-pill{background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.24)!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+body:not(.dark) .peak .panel-title .ic{background:linear-gradient(160deg,rgba(255,255,255,.30),rgba(255,255,255,.10))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)!important;color:#fff}
+body:not(.dark) .peak,body:not(.dark) .peak .panel-sub,body:not(.dark) .peak-sub{color:#eafaf7!important}
 /* scroll reveal */
 .rv{opacity:0;transform:translateY(18px)}
 .rv.rv-in{opacity:1;transform:none;transition:opacity .6s ease,transform .7s cubic-bezier(.2,.8,.3,1)}
@@ -3958,7 +3962,7 @@ function buildTicker() {
     if (hour >= 12 && hour < 17) { gi = "☀️"; gw = "Good afternoon"; }
     else if (hour >= 17 && hour < 22) { gi = "🌇"; gw = "Good evening"; }
     else if (hour >= 22 || hour < 5) { gi = "🌙"; gw = "Late shift, legends"; }
-    const greeting = `${gi} <span class="feed-pill blue">TEAM ALZAHIAia</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
+    const greeting = `${gi} <span class="feed-pill blue">TEAM ALZAHIA</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
 
     add("today", dailyTotal > 0
         ? `🚀 <span class="feed-pill green">TODAY</span> ${fmt(dailyTotal)} walk-in${s(dailyTotal)} served so far — momentum is building! 📈`
@@ -4037,11 +4041,11 @@ function buildTicker() {
         `👃 <span class="feed-pill gold">Mariam SENSES</span> "I can smell a big sale from the parking lot. Get ready!" 💰`
     ], "boss"));
 
-    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> TEAM ALZAHIAia has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
+    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> TEAM ALZAHIA has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
     else if (A.m >= 500) add("milestone", `🎊 <span class="feed-pill green">MILESTONE</span> ${fmt(A.m)} walk-ins this month — only ${fmt(1000 - A.m)} more to reach 1,000! Push! 💥`);
     else if (A.m >= 100) add("milestone", `🎈 <span class="feed-pill blue">CENTURY+</span> ${fmt(A.m)} walk-ins logged this month. Onwards! 🚀`);
 
-    const closing = `👩‍💻 <span class="feed-pill green">TEAM ALZAHIAia</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
+    const closing = `👩‍💻 <span class="feed-pill green">TEAM ALZAHIA</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
     const middle = messages.map(m => ({ html: m.html, o: tickerRand("order:" + m.key) })).sort((a, b) => a.o - b.o).map(m => m.html);
     // Manager's messages to the team lead the feed, and come round again half-way through.
     const team = activeTeamMsgs().map(b => `<span class="feed-pill mgr${b.urgent ? " urg" : ""}">${esc(bcSender(b).toUpperCase())}</span><span class="feed-mgr">${esc(b.text.replace(/\s+/g, " "))}</span>`);
