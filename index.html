@@ -3962,7 +3962,7 @@ function buildTicker() {
     if (hour >= 12 && hour < 17) { gi = "☀️"; gw = "Good afternoon"; }
     else if (hour >= 17 && hour < 22) { gi = "🌇"; gw = "Good evening"; }
     else if (hour >= 22 || hour < 5) { gi = "🌙"; gw = "Late shift, legends"; }
-    const greeting = `${gi} <span class="feed-pill blue">TEAM ALZAHIA</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
+    const greeting = `${gi} <span class="feed-pill blue">TEAM ALZAHIA SHOWROOM</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
 
     add("today", dailyTotal > 0
         ? `🚀 <span class="feed-pill green">TODAY</span> ${fmt(dailyTotal)} walk-in${s(dailyTotal)} served so far — momentum is building! 📈`
@@ -4041,11 +4041,11 @@ function buildTicker() {
         `👃 <span class="feed-pill gold">Mariam SENSES</span> "I can smell a big sale from the parking lot. Get ready!" 💰`
     ], "boss"));
 
-    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> TEAM ALZAHIA has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
+    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> TEAM ALZAHIA SHOWROOM has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
     else if (A.m >= 500) add("milestone", `🎊 <span class="feed-pill green">MILESTONE</span> ${fmt(A.m)} walk-ins this month — only ${fmt(1000 - A.m)} more to reach 1,000! Push! 💥`);
     else if (A.m >= 100) add("milestone", `🎈 <span class="feed-pill blue">CENTURY+</span> ${fmt(A.m)} walk-ins logged this month. Onwards! 🚀`);
 
-    const closing = `👩‍💻 <span class="feed-pill green">TEAM ALZAHIA</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
+    const closing = `👩‍💻 <span class="feed-pill green">TEAM ALZAHIA SHOWROOM</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
     const middle = messages.map(m => ({ html: m.html, o: tickerRand("order:" + m.key) })).sort((a, b) => a.o - b.o).map(m => m.html);
     // Manager's messages to the team lead the feed, and come round again half-way through.
     const team = activeTeamMsgs().map(b => `<span class="feed-pill mgr${b.urgent ? " urg" : ""}">${esc(bcSender(b).toUpperCase())}</span><span class="feed-mgr">${esc(b.text.replace(/\s+/g, " "))}</span>`);
