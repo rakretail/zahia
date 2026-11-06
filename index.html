@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="app-version" content="3.0">
+<meta name="app-version" content="3.1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>AlZahia Showroom · Tracker</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#006666">
+<meta name="theme-color" content="#0A1324">
 <link rel="apple-touch-icon" href="rakwalkin.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -35,6 +35,7 @@
     window.dbRemove = remove;
     window.dbGet = get;
     window.dbOnValue = onValue;
+    window.FB_CFG = firebaseConfig;   // reused by phone alerts (same project)
 
     // Fixed per showroom installation — data stays under stores/zahia/
     window.STORE_ID = "zahia";
@@ -907,6 +908,430 @@ body.has-ib #toast{bottom:104px}
 @media (max-width:480px){#installBar{flex-wrap:wrap;align-items:flex-start}#installBar .ib-txt{flex:1 1 0}#installBar .ib-go{order:5;flex:1 1 100%;padding:11px}}
 @media print{#installBar,.np{display:none!important}}
 </style>
+<style id="ep-theme">
+/* ================================================================
+   RAK CERAMICS SHOWROOM TRACKER · v5 themes + layout
+   Themes: Teal (default) · Gold · Blue · Light (body:not(.dark)).
+   The RAK Ceramics mark uses the official logo artwork, white on dark
+   and ink on light — never recoloured. Visual layer only: every id,
+   data path and function is unchanged.
+   ================================================================ */
+:root{--logo:url("data:image/png;base64,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")}
+/* ---------- Light ---------- */
+:root,body{
+    --primary:#1E3A8A; --primary-2:#2563EB; --accent:#2563EB; --amber:#B45309;
+    --walk:#2563EB; --phone:#F59E0B;
+    --bg:#F4F7FB; --side:#FFFFFF; --card:#FFFFFF; --text:#0F1B2D; --muted:#5B6B82;
+    --line:rgba(15,27,45,.09); --soft:#F1F5FA;
+    --up:#15803D; --down:#DC2626; --warn:#B45309; --on:#FFFFFF; --brand-red:#DC2626;
+    --gold:#C9A45C; --gold-ink:#8A6A28; --gold-soft:rgba(201,164,92,.18); --btn:#1E3A8A; --btn-on:#FFFFFF;
+    --hero-a:#FFFFFF; --hero-b:#EEF3FB; --hero-ink:#0F1B2D; --hero-muted:#5B6B82; --hero-ln:rgba(15,27,45,.08); --hero-soft:rgba(15,27,45,.04);
+    --shadow:0 1px 2px rgba(15,27,45,.04),0 6px 18px rgba(15,27,45,.06);
+    --shadow-lg:0 2px 6px rgba(15,27,45,.06),0 16px 36px rgba(15,27,45,.10);
+    --r:16px;
+}
+/* ---------- Teal (default dark) ---------- */
+body.dark,body.dark[data-look="teal"]{
+    --primary:#14B8A6; --primary-2:#0F8C80; --accent:#5EEAD4; --amber:#F5B547;
+    --walk:#2DD4BF; --phone:#F5B547;
+    --bg:#061518; --side:#081D21; --card:#0B2328; --text:#EAF4F3; --muted:#8FB1AE;
+    --line:rgba(255,255,255,.07); --soft:rgba(255,255,255,.045);
+    --up:#34D399; --down:#F87171; --warn:#F5B547; --on:#04201D; --brand-red:#F87171;
+    --gold:#14B8A6; --gold-ink:#5EEAD4; --gold-soft:rgba(20,184,166,.15); --btn:#14B8A6; --btn-on:#04201D;
+    --hero-a:#07282C; --hero-b:#0D4147; --hero-ink:#F1F8F7; --hero-muted:#9CC4C0; --hero-ln:rgba(255,255,255,.08); --hero-soft:rgba(255,255,255,.06);
+    --shadow:0 10px 28px rgba(0,0,0,.25); --shadow-lg:0 18px 44px rgba(0,0,0,.4);
+}
+body.dark[data-look="gold"]{
+    --primary:#D4AF37; --primary-2:#B08D2A; --accent:#F0D27A; --amber:#FBBF24;
+    --walk:#D4AF37; --phone:#9FB4D6;
+    --bg:#0A0A0B; --side:#0F0F11; --card:#141416; --text:#F5F1E6; --muted:#A8A294;
+    --line:rgba(212,175,55,.14); --soft:rgba(255,255,255,.04);
+    --up:#4ADE80; --down:#F87171; --warn:#FBBF24; --on:#0A0A0B; --brand-red:#F87171;
+    --gold:#D4AF37; --gold-ink:#F0D27A; --gold-soft:rgba(212,175,55,.15); --btn:#D4AF37; --btn-on:#0A0A0B;
+    --hero-a:#111111; --hero-b:#2A2212; --hero-ink:#F8F4E8; --hero-muted:#BDB49C; --hero-ln:rgba(212,175,55,.16); --hero-soft:rgba(255,255,255,.05);
+}
+body.dark[data-look="blue"]{
+    --primary:#3B82F6; --primary-2:#1D4ED8; --accent:#93C5FD; --amber:#F5B547;
+    --walk:#60A5FA; --phone:#F5B547;
+    --bg:#08122B; --side:#0B1838; --card:#0F1F45; --text:#EEF3FF; --muted:#9DB0D6;
+    --line:rgba(255,255,255,.08); --soft:rgba(255,255,255,.05);
+    --up:#34D399; --down:#F87171; --warn:#F5B547; --on:#FFFFFF; --brand-red:#F87171;
+    --gold:#3B82F6; --gold-ink:#93C5FD; --gold-soft:rgba(59,130,246,.18); --btn:#3B82F6; --btn-on:#FFFFFF;
+    --hero-a:#0B1A40; --hero-b:#1A3A8C; --hero-ink:#F3F7FF; --hero-muted:#AFC2EA; --hero-ln:rgba(255,255,255,.08); --hero-soft:rgba(255,255,255,.06);
+}
+body{font-family:Poppins,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg)!important;letter-spacing:0}
+.num,.kpi-num,.today-num,.ctl-num,.lb-count,#time,.goal-top b,.st-tile>b,.me-tile>b,.det-stat b,.ch-val strong,.share-center b,.peak-window,
+.panel-title,.section-label,.brand-txt b,h1,h2,h3{font-family:Poppins,sans-serif}
+.container{max-width:1320px;padding:18px 22px 8px}
+
+/* ---- the RAK Ceramics mark: official artwork, white on dark / ink on light ---- */
+.brand-mark{display:block!important;width:74px;height:43px;flex:none;padding:0!important;border:0!important;background:var(--text)!important;
+    -webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}
+.brand-mark>*{display:none!important}
+.pin-logo .brand-mark{width:120px;height:70px;margin:0 auto 14px;background:var(--text)!important}
+
+/* ---- top bar ---- */
+.topbar{background:color-mix(in srgb,var(--bg) 90%,transparent)!important;border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1320px;padding:10px 22px;row-gap:8px}
+.brand-txt b{background:none!important;-webkit-text-fill-color:currentColor!important;color:var(--text)}
+.btn-tool{width:42px;height:42px;border-radius:11px;color:var(--text);background:var(--card)}
+.btn-tool:hover{border-color:var(--gold);box-shadow:none;transform:none}
+.btn-tool .bdg{background:var(--down);color:#fff;border-color:var(--bg)}
+.pill{background:var(--card)}
+.pill.on i{background:var(--up);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 20%,transparent)}
+.pill.user{color:var(--text)} .pill.user i{background:var(--gold)}
+.catswitch{box-shadow:none;border-radius:14px}
+.catswitch button.active{box-shadow:none}
+.catswitch button.active b,.catswitch button.active small{color:var(--btn-on)}
+.catswitch button.active .cs-ic{background:rgba(255,255,255,.22);color:var(--btn-on)}
+.catswitch [data-cat="all"]{--k:var(--btn)}
+.catswitch [data-cat="walkin"] b,.catswitch [data-cat="phone"] b{color:var(--text)}
+.catswitch button.active[data-cat="walkin"] b,.catswitch button.active[data-cat="phone"] b{color:var(--on)}
+.secnav{display:none!important}
+
+/* ---- sidebar navigation (new) ---- */
+.side{display:block;background:var(--side);border-bottom:1px solid var(--line)}
+.side-brand,.side-lbl,.side-extra,.side-foot{display:none}
+.viewtabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding:0 14px}
+.viewtabs::-webkit-scrollbar{display:none}
+.viewtabs button{flex:none;min-height:46px;padding:0 13px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--muted);
+    font:500 .84rem Poppins,sans-serif;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:9px}
+.viewtabs button:hover{color:var(--text)}
+.viewtabs button.active{color:var(--text);border-bottom-color:var(--gold);font-weight:600}
+.viewtabs svg,.side-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.viewtabs button.active svg{stroke:var(--gold-ink)}
+.themes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.themes button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px 4px;border-radius:10px;border:1px solid var(--line);font-size:.68rem;font-weight:600;color:var(--muted);min-height:44px}
+.themes button i{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--a) 50%,var(--b) 50%);box-shadow:0 0 0 1px rgba(127,127,127,.35)}
+.themes button[aria-pressed=true]{border-color:var(--gold);background:var(--gold-soft);color:var(--text)}
+
+
+/* ---- hero: welcome band (follows the theme) ---- */
+.hero{background:radial-gradient(70% 140% at 95% -30%,var(--hero-b) 0,transparent 60%),linear-gradient(155deg,var(--hero-b),var(--hero-a))!important;animation:none!important;border-radius:18px!important;
+    border:1px solid var(--line);box-shadow:var(--shadow)!important;color:var(--hero-ink)!important}
+.hero::before{display:none!important}
+.hero-clock{padding:20px 26px 16px}
+.hc-side small{opacity:1;color:var(--hero-muted)}
+.eyebrow{opacity:1;color:var(--hero-muted)}
+.hero-who{display:block;margin-top:6px;font-size:.78rem;font-weight:600;color:var(--gold-ink)}
+.hero-who .loc{display:inline-flex;align-items:center;gap:6px;color:var(--up);font-weight:600}
+.hero-who svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#time{text-shadow:none;font-weight:700;color:var(--hero-ink)}
+.pulse{background:var(--up)}
+.hero-split span{background:var(--hero-soft);border-color:var(--hero-ln);color:var(--hero-ink)}
+.hero-progress{background:var(--hero-soft)} .hero-progress i{background:linear-gradient(90deg,var(--primary-2),var(--accent))}
+
+/* ---- Live Feed: one quiet line ---- */
+.ticker{background:var(--hero-soft);border-top:1px solid var(--hero-ln);min-height:42px;position:relative;color:var(--hero-ink)}
+.ticker:not(.hq) .ticker-wrap{position:absolute;left:0;right:0;top:0;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+.ticker-label{background:var(--hero-soft);color:var(--hero-ink);font-size:.62rem;letter-spacing:1.2px}
+.live-dot{background:var(--up);box-shadow:0 0 6px var(--up);animation:none}
+.feed-line{flex:1;min-width:0;font-size:.86rem;font-weight:500;color:var(--hero-ink);opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .35s}
+.feed-line.fade{opacity:0}
+.feed-count{flex:none;font-size:.66rem;color:var(--hero-muted);font-weight:600}
+.feed-pill{background:var(--gold-soft)!important;border:1px solid color-mix(in srgb,var(--gold) 35%,transparent)!important;color:var(--gold-ink)!important;box-shadow:none!important;font-size:.64rem;letter-spacing:.6px}
+.feed-pill.red,.feed-pill.urg{color:var(--down)!important;background:color-mix(in srgb,var(--down) 12%,transparent)!important;border-color:color-mix(in srgb,var(--down) 35%,transparent)!important}
+.feed-pill.green{color:var(--up)!important}
+.feed-boss,.feed-mgr{font-weight:600}
+
+/* ---- head-office message: pinned card ---- */
+.ticker.hq{background:color-mix(in srgb,var(--down) 12%,var(--card))!important;border-top:1px solid color-mix(in srgb,var(--down) 40%,transparent);animation:none!important;cursor:pointer;
+    flex-wrap:wrap;padding:10px 14px;gap:8px 12px;color:var(--text)}
+.ticker.hq .ticker-label{background:var(--down)!important;color:#fff!important;animation:none!important;box-shadow:none!important}
+.ticker.hq .ticker-wrap{position:static;opacity:1;height:auto;-webkit-mask-image:none!important;mask-image:none!important;overflow:visible}
+#hq-insight{animation:none!important;padding-left:0!important;white-space:normal!important;transform:none!important;font-size:.92rem!important;font-weight:600!important;text-shadow:none!important;line-height:1.5;color:var(--text)}
+#hq-insight .feed-pill.boss{background:transparent!important;border:0!important;color:var(--down)!important;padding:0;margin-right:8px}
+#hq-insight .feed-sep{margin:0 14px!important}
+.hq-open{flex:none;font-size:.72rem;font-weight:700;color:var(--down);white-space:nowrap}
+
+/* ---- panels, KPIs ---- */
+.panel{background:var(--card)!important;border-radius:var(--r)}
+.panel-title{text-transform:none;letter-spacing:0;font-size:1rem;font-weight:700}
+.panel-title .ic{background:var(--gold-soft)!important;color:var(--gold-ink);box-shadow:none!important;font-size:.85rem}
+.panel.peak,.peak{background:radial-gradient(80% 120% at 100% 0%,var(--hero-b),transparent 65%),var(--card)!important;border:1px solid var(--line)!important;color:var(--text)}
+.peak .panel-title{color:var(--text)}.peak .panel-title .ic{background:var(--gold-soft)!important;color:var(--gold-ink)}
+.peak .panel-sub{color:var(--muted)}
+.peak-window{color:var(--gold-ink)}
+.peak-pill{background:var(--soft);border-color:var(--line);color:var(--text)}
+.section-label{color:var(--text);letter-spacing:.08em;font-size:.72rem;margin:24px 4px 12px}
+.section-label>span:first-child::before{background:var(--gold);border-radius:50%;width:7px;height:7px}
+.view>.section-label:first-child{margin-top:8px}
+.kpi::before{background:var(--kc);height:2px}
+.kpi::after{opacity:.05}
+.kpi h3{letter-spacing:.08em;font-weight:700}
+.kpi .kpi-ic{background:color-mix(in srgb,var(--kc) 14%,transparent)}
+.kpi .kpi-num{font-weight:700;letter-spacing:-.02em}
+body:not(.dark) .kpi{background:linear-gradient(180deg,#F7FAFF,#FFFFFF)}
+.seg{background:var(--soft)}
+.seg button{text-transform:none;letter-spacing:0;font-size:.76rem;font-weight:600;min-height:34px}
+.seg button.active{background:var(--btn);color:var(--btn-on);box-shadow:none}
+.delta.up{background:color-mix(in srgb,var(--up) 14%,transparent)}
+.delta.down{background:color-mix(in srgb,var(--down) 14%,transparent)}
+.goal-fill{background:linear-gradient(90deg,var(--primary-2),var(--accent))}
+
+/* ---- dashboard rows (reference layout) ---- */
+.ep-row2{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(300px,1fr);gap:16px;align-items:start}
+.ep-row2>.panel,.ep-row3>.panel{margin-bottom:0}
+.ep-row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start;margin:16px 0 0}
+.ep-row3>.panel[hidden]{display:none!important}
+.ep-row2{margin-bottom:0}
+.row3{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ep-feed{list-style:none;margin:0;padding:0}
+.ep-feed li{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:.82rem}
+.ep-feed li:first-child{border-top:0}
+.ep-feed .av{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--walk) 16%,transparent);color:var(--walk);font-weight:800;font-size:.74rem}
+.ep-feed .av.p{background:color-mix(in srgb,var(--phone) 18%,transparent);color:var(--phone)}
+.ep-feed .av.m{background:color-mix(in srgb,var(--down) 15%,transparent);color:var(--down)}
+.ep-feed small{color:var(--muted);white-space:nowrap;font-size:.72rem}
+.ep-feed .mut{color:var(--muted)}
+@media (max-width:1000px){.ep-row2{grid-template-columns:minmax(0,1fr)}}
+
+/* ---- entry cards (controls unchanged) ---- */
+.card.me{border-color:color-mix(in srgb,var(--gold) 55%,transparent);box-shadow:0 0 0 3px var(--gold-soft),var(--shadow)}
+.card::before{background:linear-gradient(90deg,var(--walk),var(--phone))}
+.tag.you{background:var(--gold-soft);color:var(--gold-ink)}
+.ctl.walkin{background:color-mix(in srgb,var(--walk) 8%,transparent)} .ctl.phone{background:color-mix(in srgb,var(--phone) 8%,transparent)}
+.ctl button{color:#fff;box-shadow:none}
+body.dark .ctl button{color:var(--on)}
+body.dark[data-look="blue"] .ctl button:not(.minus){color:#08122B}
+.ctl.phone button:not(.minus){box-shadow:none}
+.ctl button.minus{color:var(--text)!important;background:var(--card)!important;border:1.5px solid var(--line)!important}
+.duty.on{background:var(--up);color:#fff} .duty.off{background:var(--down);color:#fff} .duty i{background:currentColor}
+body.dark .duty.on,body.dark .duty.off{color:var(--bg)}
+.executives.solo .ctl button{width:56px;height:56px;font-size:1.6rem}
+.executives.solo .ctl{padding:6px;border-radius:16px}
+.executives.solo .ctl-num{font-size:1.45rem}
+.executives.solo .ctl-lbl{font-size:.66rem}
+.lb-row.is-me{outline-color:color-mix(in srgb,var(--gold) 50%,transparent)}
+.lb-rank{color:var(--gold-ink)}
+.score tr.is-me td{background:var(--gold-soft)}
+.field:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+.me-rank{background:var(--gold)!important;color:var(--on)!important;box-shadow:none!important}
+body:not(.dark) .me-rank{color:#3A2A00!important}
+
+/* ---- buttons ---- */
+.btn{background:var(--btn);color:var(--btn-on);box-shadow:none;letter-spacing:.2px;font-weight:700;border-radius:11px;min-height:44px}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost{background:var(--soft);color:var(--text);border:1px solid var(--line)}
+.btn.danger{background:var(--down);color:#fff}
+.btn.sm{min-height:34px}
+.btn.bc-ok{background:var(--tone)!important;box-shadow:none!important;color:#fff}
+
+/* ---- messages ---- */
+.modal-card.bc-card{--tone:var(--primary-2);--tone2:var(--accent)}
+#bcModal[data-tone="team"] .bc-card{--tone:#2563EB;--tone2:#60A5FA}
+#bcModal[data-tone="urgent"] .bc-card{--tone:#C53030;--tone2:#F87171}
+.bc-av{box-shadow:none}
+.modal-overlay{background:rgba(5,10,20,.55)}
+
+/* ---- notification centre ---- */
+.np{border-radius:18px;box-shadow:0 24px 60px -12px rgba(5,10,20,.45)}
+.np-tabs{display:flex;gap:2px;padding:4px 12px 0;border-bottom:1px solid var(--line)}
+.np-tabs button{min-height:40px;padding:0 10px;border:0;border-bottom:2px solid transparent;background:none;color:var(--muted);font:600 .78rem Poppins,sans-serif;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.np-tabs button.active{color:var(--text);border-bottom-color:var(--gold)}
+.np-tabs em{font-style:normal;min-width:18px;height:18px;border-radius:9px;background:var(--soft);font-size:.66rem;display:inline-grid;place-items:center;padding:0 5px}
+.np-av{background:var(--gold-soft)!important;color:var(--gold-ink)}
+.np-item.team .np-av{background:color-mix(in srgb,var(--walk) 16%,transparent)!important;color:var(--walk)}
+.np-item.urgent .np-av,.np-item.idle .np-av{background:color-mix(in srgb,var(--down) 16%,transparent)!important;color:var(--down)}
+.np-item.unread{border-color:color-mix(in srgb,var(--gold) 40%,transparent);box-shadow:none}
+.np-item.unread::after{background:var(--gold)}
+.np-item.unread.urgent{border-color:color-mix(in srgb,var(--down) 50%,transparent);background:color-mix(in srgb,var(--down) 6%,var(--card))}
+.np-item.unread.urgent::after{background:var(--down)}
+.np-tag.new{color:var(--gold-ink);border-color:color-mix(in srgb,var(--gold) 35%,transparent)}
+.np-tag.urg{background:var(--down);border-color:var(--down);color:#fff}
+.np-tag.team{color:var(--walk)!important}
+.np-act:hover{border-color:var(--gold);color:var(--gold-ink)}
+.np-hint{margin:8px 14px 0;font-size:.7rem;color:var(--muted)}
+#alertSheet .as-ic{background:var(--gold-soft);color:var(--gold-ink);box-shadow:none}
+#toast{background:var(--text);color:var(--bg);border:0}
+#toast button{border-color:color-mix(in srgb,var(--bg) 40%,transparent);color:var(--bg);background:transparent}
+body.dark #toast{background:var(--text);color:var(--bg)}
+body.dark #toast button{color:var(--bg);border-color:color-mix(in srgb,var(--bg) 40%,transparent)}
+
+/* ---- PIN screen ---- */
+.pin-overlay{background:radial-gradient(900px 500px at 15% 0%,rgba(20,184,166,.20),transparent 60%),linear-gradient(140deg,#061518,#0B3A3F)!important}
+.pin-card{border-radius:22px;border:1px solid var(--line)}
+.pin-btn{background:var(--btn);color:var(--btn-on)}
+.pin-btn.secondary{background:transparent;color:var(--text)}
+.pin-store-tag,.role-tag{background:var(--gold-soft);color:var(--gold-ink)}
+.pin-input:focus{border-color:var(--gold)}
+#installBar{background:linear-gradient(120deg,var(--hero-a),var(--hero-b))!important;border-color:var(--line);color:var(--hero-ink)}
+#installBar .ib-go{color:var(--btn-on);background:var(--btn)}
+
+/* ================================================================
+   ADMIN CONTROL CENTRE — full-screen workspace
+   ================================================================ */
+#adminPanel{max-width:none!important;width:100%;left:0;right:0;transform:translateY(14px)!important;opacity:0;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .25s,visibility 0s .3s!important;box-shadow:none;
+    display:grid!important;grid-template-columns:264px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);background:var(--bg)}
+#adminPanel.active{transform:none!important;opacity:1;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .25s,visibility 0s!important}
+.adm-head{grid-column:1/-1;padding:14px 24px;background:var(--side)}
+.adm-title .ic{background:var(--gold-soft)!important;color:var(--gold-ink);box-shadow:none!important;border-radius:12px}
+.adm-title h2{font-family:Poppins,sans-serif;font-weight:700}
+.adm-tabs{flex-direction:column;align-items:stretch;gap:3px;padding:16px 12px;border-bottom:0;border-right:1px solid var(--line);overflow-y:auto;background:var(--side)}
+.adm-tabs button{flex:0 0 auto!important;justify-content:flex-start!important;min-height:44px;padding:0 14px!important;border-radius:10px;font-size:.86rem;font-weight:500;color:var(--text)}
+.adm-tabs button span{width:22px;text-align:center}
+.adm-tabs button.active{background:var(--gold-soft);color:var(--text);box-shadow:none;font-weight:600}
+.adm-tabs .adm-grp{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px 14px 6px}
+.adm-tabs .adm-grp:first-child{padding-top:2px}
+.adm-body{padding:26px 30px 40px}
+.adm-sec{max-width:1180px;margin:0 auto;display:grid!important;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start}
+.adm-sec[hidden]{display:none!important}
+.adm-sec>.adm-help,.adm-sec>.adm-wide{grid-column:1/-1}
+.adm-sec-h{grid-column:1/-1;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:2px}
+.adm-sec-h h3{margin:0;font:700 1.35rem Poppins,sans-serif}
+.adm-sec-h p{margin:2px 0 0;font-size:.8rem;color:var(--muted)}
+.adm-card{border-radius:14px;padding:18px}
+.adm-count{color:var(--gold-ink)}
+.adm-switch.on{background:var(--up)!important}
+.adm-badge.ok{color:var(--up)}
+.ad-hero{grid-column:1/-1;border-radius:18px;padding:22px 24px;border:1px solid var(--line);color:var(--hero-ink);
+    background:radial-gradient(70% 140% at 95% -30%,var(--hero-b) 0,transparent 60%),linear-gradient(155deg,var(--hero-b),var(--hero-a));display:flex;flex-direction:column;gap:16px}
+.ad-hero h3{margin:0;font:700 1.35rem Poppins,sans-serif}
+.ad-hero p{margin:3px 0 0;font-size:.82rem;color:var(--hero-muted)}
+.ad-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.ad-tile{background:var(--hero-soft);border:1px solid var(--hero-ln);border-radius:13px;padding:14px;min-width:0}
+.ad-tile span{display:block;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hero-muted)}
+.ad-tile b{display:block;font:700 1.5rem Poppins,sans-serif;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.ad-tile small{display:block;font-size:.72rem;color:var(--hero-muted)}
+.ad-tile.warn b{color:var(--warn)} .ad-tile.bad b{color:var(--down)} .ad-tile.ok b{color:var(--up)}
+.ad-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ad-chip{all:unset;cursor:pointer;font-size:.74rem;font-weight:600;padding:7px 12px;border-radius:999px;background:var(--hero-soft);border:1px solid var(--hero-ln);color:var(--hero-ink)}
+.ad-chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.ad-chip.bad{color:var(--down);border-color:color-mix(in srgb,var(--down) 45%,transparent)}
+.ad-qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ad-qa button{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);background:var(--soft);border-radius:13px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-size:.78rem;font-weight:600;min-height:44px}
+.ad-qa button:hover{border-color:var(--gold)}
+.ad-qa i{font-style:normal;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--gold-soft);color:var(--gold-ink);font-size:1rem}
+.ad-feed{display:flex;flex-direction:column}
+.ad-feed div{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:.82rem}
+.ad-feed div:first-child{border-top:0}
+.ad-feed i{width:8px;height:8px;border-radius:50%;background:var(--walk)}
+.ad-feed i.p{background:var(--phone)} .ad-feed i.m{background:var(--down)}
+.ad-feed small{color:var(--muted);font-size:.72rem;white-space:nowrap}
+.ad-goal .panel-head{margin-bottom:10px}
+.ad-pins{display:flex;flex-wrap:wrap;gap:6px}
+.ad-pins span{font-size:.74rem;font-weight:600;padding:5px 10px;border-radius:999px;background:color-mix(in srgb,var(--warn) 12%,transparent);color:var(--warn)}
+@media (max-width:860px){
+    #adminPanel{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr)}
+    .adm-tabs{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px 10px}
+    .adm-tabs .adm-grp{display:none}
+    .adm-tabs button{white-space:nowrap}
+    .adm-body{padding:16px 14px 30px}
+    .adm-sec{grid-template-columns:minmax(0,1fr)}
+    .ad-qa{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:720px){
+    .topbar-in{padding:8px 12px}
+    .topbar .brand-mark{display:block!important;width:58px;height:34px}
+    .container{padding:12px 10px 8px}
+    .hero-who{text-align:center}
+    .executives.solo .ctl button{width:60px;height:60px}
+    .ticker.hq{flex-direction:column;align-items:flex-start}
+    .ticker.hq .ticker-wrap{width:100%}
+    .ticker.hq .hq-open{align-self:flex-end}
+}
+
+
+/* ================================================================
+   v4.1 — no sidebar: section tabs in the header, aligned cards
+   ================================================================ */
+.topbar .viewtabs{grid-column:1/-1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px 0 0;flex-direction:row}
+.topbar .viewtabs::-webkit-scrollbar{display:none}
+.topbar .viewtabs button{flex:none;min-height:34px;padding:0 15px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--muted);
+    font:600 .78rem Poppins,sans-serif;display:inline-flex;align-items:center;gap:7px;opacity:1;width:auto}
+.topbar .viewtabs button:hover{color:var(--text);border-color:var(--gold)}
+.topbar .viewtabs button.active{background:var(--gold);border-color:var(--gold);color:var(--btn-on,#0b0f12)}
+.topbar .viewtabs button.active svg{stroke:currentColor}
+.topbar .viewtabs svg{width:15px;height:15px}
+.topbar .viewtabs button[hidden]{display:none}
+body{display:block}
+#goalCard,#idleWatch{margin-bottom:16px}
+.ep-trend{margin-bottom:16px}
+.ep-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch;margin-bottom:16px}
+.ep-pair>.panel{margin:0;height:100%;display:flex;flex-direction:column}
+.ep-pair .leaderboard-list{flex:1;max-height:420px;overflow-y:auto}
+.lb-pages{display:none}
+@media (max-width:900px){.ep-pair{grid-template-columns:minmax(0,1fr)}}
+.kpis{align-items:stretch}.kpi{height:100%}
+.row3{align-items:stretch}.row3>.panel{height:calc(100% - 16px)}
+/* Teal light: the original white / glossy teal look */
+body:not(.dark)[data-look="teal-light"]{
+    --primary:#006666; --primary-2:#00897b; --accent:#00a88f; --amber:#B45309;
+    --walk:#0d9488; --phone:#6366f1;
+    --bg:#f1f6f6; --side:#FFFFFF; --card:#FFFFFF; --text:#0f2727; --muted:#5f7979;
+    --line:rgba(0,80,80,.10); --soft:rgba(0,102,102,.055);
+    --up:#0a9f6a; --down:#e0425a; --warn:#B45309; --on:#FFFFFF; --brand-red:#e0425a;
+    --gold:#006666; --gold-ink:#006666; --gold-soft:rgba(0,102,102,.12); --btn:#006666; --btn-on:#FFFFFF;
+    --hero-a:#004d4d; --hero-b:#00a88f; --hero-ink:#FFFFFF; --hero-muted:rgba(255,255,255,.82); --hero-ln:rgba(255,255,255,.16); --hero-soft:rgba(255,255,255,.12);
+    --shadow:0 1px 2px rgba(0,50,50,.04),0 10px 28px -10px rgba(0,60,60,.18);
+    --shadow-lg:0 2px 6px rgba(0,50,50,.07),0 22px 48px -14px rgba(0,60,60,.24);
+}
+body:not(.dark)[data-look="teal-light"] .panel.peak,body:not(.dark)[data-look="teal-light"] .peak{background:linear-gradient(135deg,#004d4d,#006666 45%,#00897b)!important;color:#fff}
+body:not(.dark)[data-look="teal-light"] .peak .panel-title,body:not(.dark)[data-look="teal-light"] .peak .panel-sub,body:not(.dark)[data-look="teal-light"] .peak-window,body:not(.dark)[data-look="teal-light"] .peak-sub{color:#fff!important}
+body:not(.dark)[data-look="teal-light"] .hero .loc{color:#c9f7e4}
+#heroWho{display:none!important}
+@media (min-width:721px){.topbar .top-right{flex-wrap:nowrap}}
+@media (min-width:721px) and (max-width:1100px){.executives:not(.solo){grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* ---- section tabs under the clock card: crystal glass ---- */
+.viewtabs.down{display:flex;gap:6px;margin:0 0 18px;padding:6px;border-radius:16px;overflow-x:auto;scrollbar-width:none;
+    background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+    border:1px solid rgba(0,102,102,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 8px 22px -16px rgba(0,60,60,.35)}
+.viewtabs.down::-webkit-scrollbar{display:none}
+.viewtabs.down button{flex:none;min-height:38px;padding:0 16px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--muted);
+    font:600 .8rem Poppins,sans-serif;display:inline-flex;align-items:center;gap:8px;width:auto;opacity:1;transition:background .2s,color .2s}
+.viewtabs.down button:hover{color:var(--text);background:rgba(0,102,102,.05)}
+.viewtabs.down button.active{color:#005c58;border-color:rgba(20,184,166,.35);
+    background:linear-gradient(180deg,rgba(153,246,228,.55),rgba(94,234,212,.22));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 14px -8px rgba(13,148,136,.55)}
+.viewtabs.down button.active svg{stroke:#0d9488}
+.viewtabs.down svg{width:16px;height:16px}
+.viewtabs.down button[hidden]{display:none}
+body.dark .viewtabs.down{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+body.dark .viewtabs.down button:hover{background:rgba(255,255,255,.05)}
+body.dark .viewtabs.down button.active{color:#c5f8ef;border-color:rgba(45,212,191,.35);background:linear-gradient(180deg,rgba(45,212,191,.28),rgba(20,184,166,.10));box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+body.dark .viewtabs.down button.active svg{stroke:#5eead4}
+/* ---- Teal light: deep teal → blue-teal clock card (reference colours), glossy ---- */
+body:not(.dark)[data-look="teal-light"]{--hero-a:#06555a;--hero-b:#1b6a82;--btn:#0b6b6b}
+body:not(.dark)[data-look="teal-light"] .hero{background:radial-gradient(55% 140% at 0% 0%,rgba(255,255,255,.10),transparent 60%),
+    linear-gradient(110deg,#28625f 0%,#0b585a 36%,#06555a 55%,#145f72 78%,#1d6c86 100%)!important;
+    border:1px solid rgba(255,255,255,.10)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 18px 40px -22px rgba(4,60,64,.6)!important}
+body:not(.dark)[data-look="teal-light"] .hero::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,0) 40%)}
+body:not(.dark)[data-look="teal-light"] .hero .ticker:not(.hq){background:rgba(0,0,0,.16)!important;border-top-color:rgba(255,255,255,.08)!important}
+body:not(.dark)[data-look="teal-light"] .catswitch button.active,body:not(.dark)[data-look="teal-light"] .btn:not(.ghost):not(.danger){
+    background:linear-gradient(180deg,#127a77,#0a5f5e)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 6px 14px -8px rgba(6,85,90,.6)!important;border-color:transparent!important}
+.viewtabs.down button.active{color:#fff!important;border-color:transparent!important;background:linear-gradient(180deg,#127a77,#0a5f5e)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 6px 14px -8px rgba(6,85,90,.6)!important}
+.viewtabs.down button.active svg{stroke:#fff!important}
+/* Live Feed titles: each type keeps its own colour */
+.ticker .feed-pill{border:0!important;color:#fff!important;font-weight:800!important;box-shadow:none!important}
+.ticker .feed-pill.gold{background:linear-gradient(135deg,#ffd86b,#f7971e)!important;color:#4a2900!important}
+.ticker .feed-pill.green{background:linear-gradient(135deg,#00d68f,#00a86b)!important}
+.ticker .feed-pill.red{background:linear-gradient(135deg,#ff6b6b,#ee0979)!important}
+.ticker .feed-pill.blue{background:linear-gradient(135deg,#4facfe,#0083d1)!important}
+.ticker .feed-pill.purple{background:linear-gradient(135deg,#b06ab3,#4568dc)!important}
+.ticker .feed-pill.boss,.ticker .feed-pill.urg{background:linear-gradient(135deg,#c8102e,#ff5a5f)!important}
+.ticker .feed-pill.mgr{background:#fff!important;color:#004d4d!important}
+.kpi .kpi-num,.today-num,#time,.ctl-num,.lb-count,.ms-t b{font-weight:800}
+/* Live Feed: scrolling line again, with the red live dot */
+.ticker:not(.hq) .ticker-wrap{position:static!important;opacity:1!important;height:auto!important;pointer-events:auto!important;flex:1;min-width:0;overflow:hidden}
+.feed-line,.feed-count{display:none!important}
+#smart-insight{animation:ticker 240s linear infinite;font-size:.9rem;font-weight:500;color:var(--hero-ink);cursor:pointer}
+#smart-insight.paused{animation-play-state:paused}
+.ticker:not(.hq) .live-dot{background:#ff4d4d!important;box-shadow:0 0 8px #ff4d4d!important;animation:blink 1.2s ease-in-out infinite!important}
+#teamNote,#forecastNote,.watch>p.panel-sub,.fe-hint,.compare-note,.st-box>small,#alDelNote{display:none!important}
+@media (max-width:720px){
+    .topbar .brand-txt small,.topbar button[title="Full screen"]{display:none}
+    .topbar .brand-txt b{max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+#toast{bottom:auto;top:calc(var(--hdr,120px) + 6px);transform:translate(-50%,-30px)}
+#toast.show{transform:translate(-50%,0)}
+.np-push{margin:10px 14px 0;padding:10px 12px;border-radius:12px;background:var(--soft);border:1px solid var(--line);font-size:.76rem;line-height:1.4;color:var(--muted);display:flex;gap:10px;align-items:center}
+.np-push>div{flex:1;min-width:0} .np-push b{display:block;color:var(--text);font-size:.8rem} .np-push .err{color:var(--down);font-weight:600}
+.kpi .kpi-num,.today-num,#time,#heroToday,.ad-tile b,.ms-t b{font-weight:800}
+button,input,select,textarea{font-family:inherit}
+</style>
 </head>
 <body>
 
@@ -1013,7 +1438,7 @@ body.has-ib #toast{bottom:104px}
 <div class="container">
     <section class="hero">
         <div class="hero-clock">
-            <div class="hc-side"><span class="eyebrow"><i class="pulse"></i><span id="greet">Welcome</span></span><b id="day"></b><small id="date"></small></div>
+            <div class="hc-side"><span class="eyebrow"><i class="pulse"></i><span id="greet">Welcome</span></span><b id="day"></b><small id="date"></small><small class="hero-who" id="heroWho"></small></div>
             <h1 id="time"><span id="time-h">00</span><span class="sep">:</span><span id="time-m">00</span><span class="sec" id="time-s">00</span></h1>
             <div class="hc-side right">
                 <span class="eyebrow">Live today</span>
@@ -1031,7 +1456,16 @@ body.has-ib #toast{bottom:104px}
         </div>
         <span class="hero-progress"><i id="clk-progress-fill"></i></span>
     </section>
+    <nav class="viewtabs down" id="viewTabs" aria-label="Sections" role="tablist">
+            <button type="button" role="tab" data-view="dash" class="active"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</button>
+            <button type="button" role="tab" data-view="analysis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M6 16v-5M10 16V7M14 16V9M18 16V5"/></svg>Analysis</button>
+            <button type="button" role="tab" data-view="studio" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Analysis Studio</button>
+            <button type="button" role="tab" data-view="calrec" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>Calendar &amp; Records</button>
+            <button type="button" role="tab" data-view="log" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Activity log</button>
+            <button type="button" role="tab" data-view="export"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Export</button>
+        </nav>
 
+    <div class="view" data-view="dash">
     <div class="section-label" id="secOverview" data-sec><span>Overview</span><em id="catNote">Showing walk-ins + phone inquiries</em></div>
 
     <!-- KPI row -->
@@ -1046,53 +1480,17 @@ body.has-ib #toast{bottom:104px}
             <span class="kpi-num" id="forecast">0</span><div class="kpi-foot" id="forecastFoot"></div><div class="kpi-note" id="forecastNote"></div></div>
     </div>
 
-    <!-- Monthly target -->
+
     <div class="panel" id="goalCard" hidden></div>
-
-    <!-- Inactivity watch (managers only) -->
     <div class="panel watch" id="idleWatch" hidden></div>
-
     <!-- Executive cards -->
-    <div class="section-label" id="secTeam" data-sec><span id="teamLabel">Team</span><em id="teamNote">Tap + to log a walk-in or a phone inquiry · numbers are this month</em></div>
+    <div class="section-label" id="secTeam" data-sec><span id="teamLabel">Team</span><em id="teamNote"></em></div>
     <div class="team-wrap" id="teamWrap">
         <div class="executives" id="grid"></div>
         <aside class="me-panel" id="mePanel" hidden aria-label="Your insights"></aside>
     </div>
-
-    <div class="section-label" id="secAnalysis" data-sec><span>Analysis</span></div>
-
-    <div class="row3">
-        <div class="panel peak">
-            <div class="panel-head"><h3 class="panel-title"><span class="ic">⚡</span>Peak Activity</h3><span class="panel-sub">Physical walk-ins · last 30 days</span></div>
-            <div class="peak-window" id="peak-hour-val">Analyzing...</div>
-            <div class="peak-sub" id="peak-sub">Calculating the busiest hour from recent walk-ins</div>
-            <div class="peak-meta" id="peak-meta"></div>
-        </div>
-        <div class="panel">
-            <div class="panel-head"><h3 class="panel-title"><span class="ic" style="background:linear-gradient(135deg,var(--walk),var(--phone))">◐</span>Channel Mix</h3><span class="panel-sub">This month · tap to filter</span></div>
-            <div class="ch-donut"><canvas id="channelChart"></canvas><div class="share-center"><b id="channelTotal">0</b><span>inquiries</span></div></div>
-            <div class="ch-rows" id="channelLegend"></div>
-        </div>
-        <div class="panel">
-            <div class="panel-head"><h3 class="panel-title"><span class="ic" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">🏅</span>Leaderboard</h3><span class="panel-sub" id="lb-sub">This month vs same point last month</span></div>
-            <div class="leaderboard-list" id="leaderboardList"><div class="lb-rows" id="leaderboardRows"></div></div>
-            <div class="lb-pages" id="leaderboardPages"></div>
-        </div>
-    </div>
-
-    <div class="row21">
-        <div class="panel">
-            <div class="panel-head"><h3 class="panel-title"><span class="ic">💡</span>Smart Insights</h3><span class="panel-sub">Generated automatically from your data</span></div>
-            <div class="ins-grid" id="insights"></div>
-        </div>
-        <div class="panel">
-            <div class="panel-head"><h3 class="panel-title"><span class="ic">◔</span>Team Share</h3><span class="panel-sub">This month</span></div>
-            <div class="share-wrap"><canvas id="shareChart"></canvas><div class="share-center"><b id="shareTotal">0</b><span id="shareNoun">inquiries</span></div></div>
-            <div class="share-legend" id="shareLegend"></div>
-        </div>
-    </div>
-
-    <div class="panel">
+    <div class="section-label" id="secTrends" data-sec><span>Performance</span></div>
+    <div class="panel ep-trend">
         <div class="panel-head">
             <h3 class="panel-title"><span class="ic">📈</span>Traffic Trends</h3>
             <div class="seg" id="trendSeg">
@@ -1104,6 +1502,44 @@ body.has-ib #toast{bottom:104px}
         </div>
         <div class="chart-kpis" id="chartKpis"></div>
         <div class="chart-canvas-wrap"><canvas id="walkinChart"></canvas></div>
+    </div>
+    <div class="ep-pair">
+        <div class="panel">
+            <div class="panel-head"><h3 class="panel-title"><span class="ic" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">🏅</span>Leaderboard</h3><span class="panel-sub" id="lb-sub">This month vs same point last month</span></div>
+            <div class="leaderboard-list" id="leaderboardList"><div class="lb-rows" id="leaderboardRows"></div></div>
+            <div class="lb-pages" id="leaderboardPages"></div>
+        </div>
+    <div class="panel" id="epRecentCard"><div class="panel-head"><h3 class="panel-title"><span class="ic">☰</span>Recent activity</h3><span class="panel-sub" id="epRecentSub">Latest entries</span></div><ul class="ep-feed" id="epRecent"></ul></div>
+    </div>
+
+    </div>
+    <div class="view" data-view="analysis" hidden>
+    <div class="section-label" id="secAnalysis" data-sec><span>Analysis</span></div>
+
+    <div class="row3">
+        <div class="panel peak">
+            <div class="panel-head"><h3 class="panel-title"><span class="ic">⚡</span>Peak Activity</h3><span class="panel-sub">Physical walk-ins · last 30 days</span></div>
+            <div class="peak-window" id="peak-hour-val">Analyzing...</div>
+            <div class="peak-sub" id="peak-sub">Calculating the busiest hour from recent walk-ins</div>
+            <div class="peak-meta" id="peak-meta"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-head"><h3 class="panel-title"><span class="ic" style="background:linear-gradient(135deg,var(--walk),var(--phone))">◐</span>Channel Mix</h3><span class="panel-sub">This month</span></div>
+            <div class="ch-donut"><canvas id="channelChart"></canvas><div class="share-center"><b id="channelTotal">0</b><span>inquiries</span></div></div>
+            <div class="ch-rows" id="channelLegend"></div>
+        </div>
+    </div>
+
+    <div class="row21">
+        <div class="panel">
+            <div class="panel-head"><h3 class="panel-title"><span class="ic">💡</span>Smart Insights</h3></div>
+            <div class="ins-grid" id="insights"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-head"><h3 class="panel-title"><span class="ic">◔</span>Team Share</h3><span class="panel-sub">This month</span></div>
+            <div class="share-wrap"><canvas id="shareChart"></canvas><div class="share-center"><b id="shareTotal">0</b><span id="shareNoun">inquiries</span></div></div>
+            <div class="share-legend" id="shareLegend"></div>
+        </div>
     </div>
 
     <div class="panel">
@@ -1118,6 +1554,19 @@ body.has-ib #toast{bottom:104px}
         <div class="compare-canvas-wrap"><canvas id="compareChart"></canvas></div>
     </div>
 
+    <div class="panel">
+        <div class="panel-head"><h3 class="panel-title"><span class="ic">▦</span>Executive Scorecard</h3></div>
+        <div class="table-scroll"><table class="score" id="scoreTable"></table></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><h3 class="panel-title"><span class="ic">🔥</span>Shift Heatmap</h3><span class="panel-sub" id="hmSub">Physical walk-ins by weekday and hour · 08:00 → 00:00 · last 30 days</span></div>
+        <div class="heatmap-scroll"><div class="heatmap-grid" id="heatmapGrid"></div></div>
+        <div class="heatmap-legend"><span>Quiet</span><span class="lg"><i data-i="0"></i><i data-i="1"></i><i data-i="2"></i><i data-i="3"></i><i data-i="4"></i><i data-i="5"></i></span><span>Peak</span></div>
+    </div>
+
+    </div>
+    <div class="view" data-view="studio" hidden>
     <!-- Analysis Studio (optional, per store) -->
     <div class="panel" id="studio" hidden>
         <div class="panel-head">
@@ -1144,17 +1593,8 @@ body.has-ib #toast{bottom:104px}
         </div>
     </div>
 
-    <div class="panel">
-        <div class="panel-head"><h3 class="panel-title"><span class="ic">▦</span>Executive Scorecard</h3><span class="panel-sub">Tap a column to sort · tap a name for details</span></div>
-        <div class="table-scroll"><table class="score" id="scoreTable"></table></div>
     </div>
-
-    <div class="panel">
-        <div class="panel-head"><h3 class="panel-title"><span class="ic">🔥</span>Shift Heatmap</h3><span class="panel-sub" id="hmSub">Physical walk-ins by weekday and hour · 08:00 → 00:00 · last 30 days</span></div>
-        <div class="heatmap-scroll"><div class="heatmap-grid" id="heatmapGrid"></div></div>
-        <div class="heatmap-legend"><span>Quiet</span><span class="lg"><i data-i="0"></i><i data-i="1"></i><i data-i="2"></i><i data-i="3"></i><i data-i="4"></i><i data-i="5"></i></span><span>Peak</span></div>
-    </div>
-
+    <div class="view" data-view="calrec" hidden>
     <!-- Calendar with day drill-down (optional, per store) -->
     <div class="panel" id="calPanel" hidden>
         <div class="panel-head">
@@ -1173,6 +1613,8 @@ body.has-ib #toast{bottom:104px}
         <div class="st-tiles" id="recTiles" style="margin:0"></div>
     </div>
 
+    </div>
+    <div class="view" data-view="log" hidden>
     <!-- Manager-only activity log -->
     <div class="panel" id="activityLog" hidden>
         <div class="panel-head">
@@ -1190,6 +1632,8 @@ body.has-ib #toast{bottom:104px}
         <div class="al-list" id="al-list"></div>
     </div>
 
+    </div>
+    <div class="view" data-view="export" hidden>
     <div class="section-label" id="secRecords" data-sec><span>Records</span></div>
 
     <div class="panel">
@@ -1211,6 +1655,8 @@ body.has-ib #toast{bottom:104px}
         <p class="fe-hint">Includes a summary, every entry with its type, and daily, executive, hourly and weekday totals split into walk-ins and phone inquiries.</p>
     </div>
 
+    </div>
+
     <div class="session-bar">
         <span class="who" id="sessionBarWho">Not signed in</span>
         <button class="btn ghost sm" onclick="openChangePin()">🔑 Change PIN</button>
@@ -1221,18 +1667,27 @@ body.has-ib #toast{bottom:104px}
 <div id="adminScrim" class="adm-scrim" onclick="closeAdmin()"></div>
 <aside id="adminPanel" aria-label="Admin tools">
     <div class="adm-head">
-        <div class="adm-title"><span class="ic">⚙️</span><div><h2>Admin</h2><small>AlZahia Showroom · manager tools</small></div></div>
+        <div class="adm-title"><span class="ic">⚙️</span><div><h2>Admin Control Centre</h2><small>AlZahia Showroom · manager tools</small></div></div>
         <button class="btn-tool" type="button" onclick="closeAdmin()" aria-label="Close admin">✕</button>
     </div>
-    <nav class="adm-tabs" id="admTabs">
-        <button type="button" data-tab="team" class="active"><span>👥</span>Team</button>
-        <button type="button" data-tab="target"><span>🎯</span>Target</button>
-        <button type="button" data-tab="msg"><span>📣</span>Message</button>
-        <button type="button" data-tab="entries" id="admTabEntries" hidden><span>🗂</span>Entries</button>
-        <button type="button" data-tab="app"><span>⬆️</span>Updates</button>
+    <nav class="adm-tabs" id="admTabs" aria-label="Admin sections">
+        <div class="adm-grp">Admin</div>
+        <button type="button" data-tab="dash" class="active"><span>▦</span>Admin dashboard</button>
+        <div class="adm-grp">Management</div>
+        <button type="button" data-tab="team"><span>👥</span>Team management</button>
+        <button type="button" data-tab="mgr"><span>🛡</span>Manager management</button>
+        <button type="button" data-tab="target"><span>🎯</span>Target management</button>
+        <button type="button" data-tab="msg"><span>📣</span>Communication centre</button>
+        <div class="adm-grp">Operations</div>
+        <button type="button" data-tab="entries" id="admTabEntries" hidden><span>🗂</span>Entry management</button>
+        <button type="button" data-tab="idle"><span>⏱</span>Inactivity monitoring</button>
+        <button type="button" data-tab="app"><span>⚙️</span>App &amp; system settings</button>
     </nav>
     <div class="adm-body">
-        <section class="adm-sec" data-tab="team">
+        <section class="adm-sec" data-tab="dash"><div id="admDash" style="display:contents"></div></section>
+
+        <section class="adm-sec" data-tab="team" hidden>
+            <div class="adm-sec-h"><div><h3>Team management</h3><p>Add executives, set them on or off duty, reset a forgotten PIN or remove someone.</p></div></div>
             <div class="adm-card">
                 <div class="adm-card-head"><b>Executives</b><span class="adm-count" id="execCount">0</span></div>
                 <form class="adm-add" onsubmit="addExecutive();return false;">
@@ -1240,22 +1695,6 @@ body.has-ib #toast{bottom:104px}
                     <button class="btn" type="submit">＋ Add</button>
                 </form>
                 <div class="adm-list" id="unifiedExecList"></div>
-            </div>
-            <div class="adm-card">
-                <div class="adm-card-head"><b>Managers</b><span class="adm-count" id="mgrCount">0</span></div>
-                <form class="adm-add" onsubmit="addManager();return false;">
-                    <input class="field" type="text" id="newManagerName" placeholder="New manager's full name" autocomplete="off" maxlength="40">
-                    <button class="btn" type="submit">＋ Add</button>
-                </form>
-                <div class="adm-list" id="managerList"></div>
-            </div>
-            <div class="adm-card">
-                <div class="adm-card-head"><b>Inactivity alert</b><span class="adm-badge ok" id="idleBadge">7 h</span></div>
-                <form class="adm-add" onsubmit="saveIdleHours();return false;">
-                    <select class="field" id="idleHoursSel" aria-label="Alert after"><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="7">7 hours</option><option value="8">8 hours</option><option value="9">9 hours</option><option value="10">10 hours</option><option value="0">Off</option></select>
-                    <button class="btn" type="submit">Save</button>
-                </form>
-                <div class="adm-help" style="margin:0">Alerts managers when an <b>on-duty</b> executive logs nothing for this many working hours (08:00–22:00). Off-duty staff are skipped.</div>
             </div>
             <div class="adm-help"><b>How it works</b>
                 <ul>
@@ -1267,7 +1706,33 @@ body.has-ib #toast{bottom:104px}
             </div>
         </section>
 
+        <section class="adm-sec" data-tab="mgr" hidden>
+            <div class="adm-sec-h"><div><h3>Manager management</h3><p>Managers see the manager dashboard, can log on anyone's behalf and open this Control Centre.</p></div></div>
+            <div class="adm-card">
+                <div class="adm-card-head"><b>Managers</b><span class="adm-count" id="mgrCount">0</span></div>
+                <form class="adm-add" onsubmit="addManager();return false;">
+                    <input class="field" type="text" id="newManagerName" placeholder="New manager's full name" autocomplete="off" maxlength="40">
+                    <button class="btn" type="submit">＋ Add</button>
+                </form>
+                <div class="adm-list" id="managerList"></div>
+            </div>
+        </section>
+
+        <section class="adm-sec" data-tab="idle" hidden>
+            <div class="adm-sec-h"><div><h3>Inactivity monitoring</h3><p>Who has gone quiet while on duty, and who still uses the default PIN.</p></div></div>
+            <div class="adm-card">
+                <div class="adm-card-head"><b>Inactivity alert</b><span class="adm-badge ok" id="idleBadge">7 h</span></div>
+                <form class="adm-add" onsubmit="saveIdleHours();return false;">
+                    <select class="field" id="idleHoursSel" aria-label="Alert after"><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="7">7 hours</option><option value="8">8 hours</option><option value="9">9 hours</option><option value="10">10 hours</option><option value="0">Off</option></select>
+                    <button class="btn" type="submit">Save</button>
+                </form>
+                <div class="adm-help" style="margin:0">Alerts managers when an <b>on-duty</b> executive logs nothing for this many working hours (08:00–22:00). Off-duty staff are skipped.</div>
+            </div>
+            <div class="adm-wide" id="admIdleList"></div>
+        </section>
+
         <section class="adm-sec" data-tab="target" hidden>
+            <div class="adm-sec-h"><div><h3>Target management</h3><p>One monthly target for walk-ins + phone inquiries, shown on every dashboard.</p></div></div>
             <div class="adm-card">
                 <div class="adm-card-head"><b>Monthly target</b><span class="panel-sub">walk-ins + phone inquiries</span></div>
                 <form class="adm-add" onsubmit="saveTarget();return false;">
@@ -1280,6 +1745,7 @@ body.has-ib #toast{bottom:104px}
         </section>
 
         <section class="adm-sec" data-tab="entries" hidden>
+            <div class="adm-sec-h"><div><h3>Entry management</h3><p>Permanently remove entries that should never exist.</p></div></div>
             <div class="adm-card">
                 <div class="adm-card-head"><b>Remove entries</b><span class="adm-count" id="admEntCount">0</span></div>
                 <div class="adm-add">
@@ -1297,6 +1763,7 @@ body.has-ib #toast{bottom:104px}
         </section>
 
         <section class="adm-sec" data-tab="msg" hidden>
+            <div class="adm-sec-h"><div><h3>Communication centre</h3><p>Message your team and see who has read it.</p></div></div>
             <div class="adm-card">
                 <div class="adm-card-head"><b>Message your team</b><span class="adm-badge" id="tmLive">—</span></div>
                 <form onsubmit="sendTeamMsg();return false;">
@@ -1322,6 +1789,17 @@ body.has-ib #toast{bottom:104px}
         </section>
 
         <section class="adm-sec" data-tab="app" hidden>
+            <div class="adm-sec-h"><div><h3>App &amp; system settings</h3><p>Version, updates and this device.</p></div></div>
+            <div class="adm-card">
+                <div class="adm-card-head"><b>Your account &amp; this device</b></div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                    <button class="btn ghost wide" type="button" onclick="openChangePin()">🔑 Change my PIN</button>
+                    <button class="btn ghost wide" type="button" onclick="toggleDark()">🌓 Switch light / dark</button>
+                    <button class="btn ghost wide" type="button" onclick="toggleFullScreen()">⛶ Full screen</button>
+                    <button class="btn ghost wide" type="button" onclick="pushEnable(false)">🔔 Alerts on this device</button>
+                    <button class="btn danger wide" type="button" onclick="logout()">⏻ Log out</button>
+                </div>
+            </div>
             <div class="adm-card">
                 <div class="adm-card-head"><b>App version</b><span class="adm-badge" id="admUpToDate">—</span></div>
                 <div class="adm-kv"><span>This device</span><b id="admVersion">—</b></div>
@@ -1346,6 +1824,7 @@ body.has-ib #toast{bottom:104px}
         </div>
     </div>
     <div id="npPerm"></div>
+    <div id="npPush"></div>
     <div class="np-list" id="npList"></div>
     <div class="np-foot"><span id="npSoundLbl">Sound</span><button class="adm-switch" id="npSound" type="button" role="switch" aria-label="Sound" onclick="toggleSound()"><i></i></button></div>
 </section>
@@ -1353,6 +1832,97 @@ body.has-ib #toast{bottom:104px}
 <div id="installBar" hidden role="dialog" aria-label="Install the app"></div>
 
 <div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// ================================================================
+//  PHONE / COMPUTER ALERTS — even when the app is closed.
+//  Firebase Cloud Messaging (free on the Spark plan) delivers them; the free
+//  Google Apps Script "rak-push.gs" sends them. No extra app to install:
+//  alerts come from this page itself (on iPhone: after Add to Home Screen).
+//  The device is registered under pushTokens/{store}/{id} — a new path;
+//  no existing data is changed.
+// ================================================================
+var PUSH_VAPID_KEY = "BM6_eImTKKgBrsOhAvWFnQFnw0OI622tLkLDzLPxejByfKLIo_P5VyQ39MnqiTenqfSRMFaQY5vIQs9b4GapwvU";   // Firebase → Project settings → Cloud Messaging → Web Push certificates
+var PUSH_SENDER_URL = "https://script.google.com/macros/s/AKfycbzcExZJZACMgrOnFOT3UM8F1p2lYgdbUDzdyohtGAn2ECpJ7gNZMjxu5IFdMy6nvlBtkA/exec"; // the Web app URL shown when you deploy rak-push.gs
+var PUSH_FB = "https://www.gstatic.com/firebasejs/11.0.1/";
+var pushErr = "";
+function pushReady() { return PUSH_VAPID_KEY.indexOf("PASTE_") !== 0 && PUSH_SENDER_URL.indexOf("PASTE_") !== 0; }
+function pushLsKey() { return window.STORE_ID + "_push_id"; }
+function pushIsOn() { try { return !!localStorage.getItem(pushLsKey()); } catch (e) { return false; } }
+function pushIdOf(t) { var h = 2166136261 >>> 0; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return "w" + (h >>> 0).toString(36) + t.length.toString(36); }
+async function pushEnable(silent) {
+    pushErr = "";
+    try {
+        if (PUSH_VAPID_KEY.indexOf("PASTE_") === 0) throw new Error("Alerts are not switched on for this showroom yet.");
+        var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+        if (!("serviceWorker" in navigator) || !("Notification" in window) || !("PushManager" in window))
+            throw new Error(ios && !standalone ? "On iPhone: Share → Add to Home Screen, open the app from there, then turn alerts on." : "This browser can't show alerts.");
+        if (Notification.permission !== "granted") {
+            if (silent) return;
+            if ((await Notification.requestPermission()) !== "granted") throw new Error("Notifications are blocked for this site in the browser settings.");
+        }
+        var reg = await navigator.serviceWorker.register("firebase-messaging-sw.js", { scope: "./push/" });
+        var appMod = await import(PUSH_FB + "firebase-app.js"), msgMod = await import(PUSH_FB + "firebase-messaging.js");
+        if (!(await msgMod.isSupported())) throw new Error("This browser can't show alerts.");
+        var app = appMod.getApps().find(function (a) { return a.name === "push"; }) || appMod.initializeApp(window.FB_CFG, "push");
+        var m = msgMod.getMessaging(app);
+        if (!window.__pushHooked) { window.__pushHooked = true; msgMod.onMessage(m, function () {}); }   // page open: shown in-app already
+        var token = await msgMod.getToken(m, { vapidKey: PUSH_VAPID_KEY, serviceWorkerRegistration: reg });
+        var id = pushIdOf(token);
+        await window.dbSet(window.dbRef(window.db, "pushTokens/" + window.STORE_ID + "/" + id), {
+            token: token, name: getCurrentExec() || "Screen", role: getCurrentRole(), url: location.origin + location.pathname, ts: Date.now()
+        });
+        try { localStorage.setItem(pushLsKey(), id); } catch (e) {}
+        if (!silent) toast("🔔 Alerts are on for this device", 3000);
+    } catch (e) { pushErr = (e && e.message) || String(e); if (!silent) toast(pushErr, 4500); }
+    renderPushRow();
+}
+async function pushDisable() {
+    var id = null; try { id = localStorage.getItem(pushLsKey()); localStorage.removeItem(pushLsKey()); } catch (e) {}
+    if (id) { try { await window.dbRemove(window.dbRef(window.db, "pushTokens/" + window.STORE_ID + "/" + id)); } catch (e) {} }
+    toast("Alerts turned off on this device", 2500); renderPushRow();
+}
+// Ask the sender to deliver a message that is already saved in the database (it re-reads it there).
+function pushSend(stores, id) {
+    if (!pushReady()) return;
+    try { fetch(PUSH_SENDER_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ stores: stores, id: id }) }).catch(function () {}); } catch (e) {}
+}
+function pushTest() {
+    var id = null; try { id = localStorage.getItem(pushLsKey()); } catch (e) {}
+    if (!id) { toast("Turn alerts on first.", 2500); return; }
+    try { fetch(PUSH_SENDER_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ test: true, stores: [window.STORE_ID], tid: id }) }).catch(function () {}); } catch (e) {}
+    toast("Test sent — close the app now; it arrives in about 20 seconds.", 6000);
+}
+function renderPushRow() {
+    var el = document.getElementById("npPush"); if (!el) return;
+    var on = pushIsOn();
+    el.innerHTML = '<div class="np-push"><div><b>' + (on ? "Alerts on this device: on" : "Get alerts even when the app is closed") + "</b>"
+        + (pushErr ? '<span class="err">' + esc(pushErr) + "</span>" : "") + "</div>"
+        + (on ? '<button class="btn sm" type="button" onclick="pushTest()">Send test</button><button class="btn ghost sm" type="button" onclick="pushDisable()">Turn off</button>' : '<button class="btn sm" type="button" onclick="pushEnable(false)">Turn on</button>') + "</div>";
+}
+document.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("#bellBtn")) setTimeout(renderPushRow, 30); });
+
+// Live Feed: steady reading speed whatever its length; tap to pause / resume.
+(function feedSpeed() {
+    const el = document.getElementById("smart-insight"); if (!el) return;
+    const set = () => { const w = el.scrollWidth; if (w > 0) el.style.animationDuration = Math.max(60, Math.round(w / 45)) + "s"; };
+    setTimeout(set, 3000);
+    el.addEventListener("animationiteration", () => setTimeout(set, 60));
+    el.addEventListener("click", () => el.classList.toggle("paused"));
+})();
+// Executives: their own entry card sits straight under the clock; managers keep the overview first.
+(function placeCard() {
+    function place() {
+        const lbl = document.getElementById("secTeam"), wrap = document.getElementById("teamWrap"), ov = document.getElementById("secOverview");
+        if (!lbl || !wrap || !ov || typeof isManager !== "function") return;
+        const exec = !!getCurrentExec() && !isManager();
+        if (exec && lbl.nextElementSibling === wrap && wrap.nextElementSibling !== ov) { ov.before(lbl); ov.before(wrap); }
+    }
+    place(); setInterval(place, 1500);
+})();
+
+</script>
 
 <footer>© 2026 Hesper. All rights reserved. · <span id="footVersion"></span></footer>
 
@@ -1527,7 +2097,7 @@ const dayShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const showroomLat = 24.494089, showroomLon = 54.375722, allowedRadiusKM = 2.0;
 // Optional features, switched on per showroom (all off by default).
 const FEATURES = { logDelete: false, logSearch: false, csv: false, sectionNav: false, studio: false, calendar: false, records: false };
-const PALETTE = ["#006d6d", "#00a39b", "#f59e0b", "#3b82f6", "#8b5cf6", "#ec4899", "#10b981", "#f97316", "#64748b", "#14b8a6"];
+const PALETTE = ["#A8843F", "#3D6FCC", "#2E8B6E", "#7A5CA8", "#B5654A", "#4F7FA8", "#8C7A3B", "#5C6B8A", "#2F7F8C", "#9A5B7A"];
 
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2, "0");
@@ -1710,6 +2280,7 @@ function unlockApp() {
     else renderAll();
     if (getCurrentPin() === DEFAULT_PIN) setTimeout(openChangePin, 700);   // nudge off the shared default PIN
     else setTimeout(nudgeAlerts, 2500);
+    setTimeout(() => { if (pushIsOn() && notifOK()) pushEnable(true); }, 3000);   // keeps the device registered with the right name
 }
 
 function logout() {
@@ -2071,7 +2642,6 @@ function renderGoal() {
         <div class="goal-foot">
             <span>Forecast <strong>${fmt(A.forecast)}</strong> ${A.forecast >= target ? "— on course to hit target" : `— ${fmt(target - A.forecast)} short at current pattern`}</span>
             ${remaining ? `<span>Need <strong>${r1(remaining / daysLeft)}</strong> per day for the remaining ${daysLeft} day${daysLeft === 1 ? "" : "s"}</span>` : ""}
-            <span>Marker = expected position today</span>
         </div>`;
 }
 
@@ -2376,8 +2946,8 @@ function theme() {
     const cs = getComputedStyle(document.body), dark = document.body.classList.contains("dark"), v = (k, d) => cs.getPropertyValue(k).trim() || d;
     return {
         dark, primary: v("--cat", "#006666"), walk: v("--walk", "#0d9488"), phone: v("--phone", "#6366f1"), accent: v("--accent", "#00c2b8"),
-        amber: "#f59e0b", tick: dark ? "#8aa9a7" : "#5f7979", grid: dark ? "rgba(255,255,255,.06)" : "rgba(0,102,102,.08)",
-        gray: dark ? "rgba(200,212,212,.5)" : "rgba(105,122,122,.55)", card: v("--card", "#fff")
+        amber: dark ? "#E7AE4A" : "#B07A12", tick: dark ? "#9BA7BD" : "#566176", grid: dark ? "rgba(255,255,255,.06)" : "rgba(14,26,46,.08)",
+        gray: dark ? "rgba(155,167,189,.5)" : "rgba(86,97,118,.5)", card: v("--card", "#fff")
     };
 }
 function baseOpts(t, o) {
@@ -3024,7 +3594,7 @@ function buildTicker() {
     if (hour >= 12 && hour < 17) { gi = "☀️"; gw = "Good afternoon"; }
     else if (hour >= 17 && hour < 22) { gi = "🌇"; gw = "Good evening"; }
     else if (hour >= 22 || hour < 5) { gi = "🌙"; gw = "Late shift, legends"; }
-    const greeting = `${gi} <span class="feed-pill blue">TEAM AlZahia</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
+    const greeting = `${gi} <span class="feed-pill blue">TEAM ALZAHIA</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
 
     add("today", dailyTotal > 0
         ? `🚀 <span class="feed-pill green">TODAY</span> ${fmt(dailyTotal)} walk-in${s(dailyTotal)} served so far — momentum is building! 📈`
@@ -3141,7 +3711,10 @@ $("smart-insight").addEventListener("animationiteration", () => {
 // A new message pops up with a sound on every logged-in screen (managers and executives alike).
 // Head-office messages run in the red bar under the Live Feed; team messages run inside the Live Feed.
 // "Got it" records the acknowledgement under seen/{name}.
+// v4: head-office messages show as a pinned card (no scrolling), the Live Feed as one quiet line.
 let broadcasts = [], bcQueue = [], bcShown = null;
+let bcManual = "";                               // v4: message the user opened from the Notification Centre
+const bcQuiet = new Set();                       // v4: ordinary messages already announced with a quiet toast
 const isTeamMsg = b => !!b && b.kind === "team";
 const LS_BC_SEEN = () => `${window.STORE_ID}_bc_seen`;
 const bcMem = new Set();                         // fallback when this browser blocks localStorage
@@ -3188,10 +3761,20 @@ function bcWhen(ts) {
     return diff === 0 ? `Today, ${t}` : diff === 1 ? `Yesterday, ${t}` : `${d.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}, ${t}`;
 }
 const bcSender = b => b.from || (isTeamMsg(b) ? "Manager" : "Head office");
+// v4: only URGENT messages open the full pop-up by themselves (once, with one sound) and stay until "Got it".
+// Ordinary messages arrive as one quiet toast + the bell; opening them in the Notification Centre shows the
+// same pop-up, where "Got it" records the acknowledgement exactly as before.
 function showNextBroadcast() {
     const m = $("bcModal");
     if (!m) return;
-    const b = bcQueue[0];
+    if (bcManual && !bcQueue.some(x => x.id === bcManual)) bcManual = "";
+    const fresh = bcQueue.filter(x => !x.urgent && x.id !== bcManual && !bcQuiet.has(x.id));
+    if (fresh.length) {
+        fresh.forEach(x => bcQuiet.add(x.id));
+        const one = fresh[fresh.length - 1];
+        toast(fresh.length === 1 ? `New message from ${bcSender(one)}` : `${fresh.length} new messages`, 6000, { label: "Read", fn: () => openBroadcast(one.id) });
+    }
+    const b = bcManual ? bcQueue.find(x => x.id === bcManual) : bcQueue.find(x => x.urgent);
     if (!b) { if (!m.classList.contains("hidden")) { m.classList.add("hidden"); maybeApplyPending(); } bcShown = null; return; }
     bcShown = b.id;
     const team = isTeamMsg(b);
@@ -3201,10 +3784,15 @@ function showNextBroadcast() {
     $("bcAv").textContent = initials(bcSender(b));
     $("bcWhen").textContent = bcWhen(b.ts);
     $("bcText").textContent = b.text;
-    $("bcCount").textContent = bcQueue.length > 1 ? `1 of ${bcQueue.length}` : "";
-    $("bcOk").textContent = bcQueue.length > 1 ? "Got it · Next" : "Got it";
+    const nUrg = bcQueue.filter(x => x.urgent).length, more = bcManual ? 0 : nUrg;
+    $("bcCount").textContent = more > 1 ? `1 of ${more} urgent` : "";
+    $("bcOk").textContent = more > 1 ? "Got it · Next" : "Got it";
     m.classList.remove("hidden");
-    if (!bcSounded.has(b.id)) { bcSounded.add(b.id); playTone(b.urgent ? "urgent" : "message"); }
+    if (b.urgent && !bcSounded.has(b.id)) { bcSounded.add(b.id); playTone("urgent"); }   // one sound, urgent only
+}
+function openBroadcast(id) {
+    if (!bcQueue.some(x => x.id === id)) { const b = unreadBroadcasts().find(x => x.id === id); if (b) bcQueue.push(b); else return; }
+    bcManual = id; showNextBroadcast();
 }
 function ackRemote(id) {
     const who = (getCurrentExec() || "Screen").replace(/[.#$\[\]\/]/g, "_").slice(0, 60) || "Screen";
@@ -3214,6 +3802,7 @@ function ackBroadcast() {
     const id = bcShown;
     if (!id) { showNextBroadcast(); return; }
     bcMarkSeen(id); ackRemote(id);
+    if (bcManual === id) bcManual = "";
     bcQueue = bcQueue.filter(b => b.id !== id); bcShown = null;
     showNextBroadcast();
     updateBell();
@@ -3285,6 +3874,7 @@ async function sendTeamMsg() {
         await window.dbSet(R(`broadcasts/${id}`), rec);
         $("tmText").value = ""; $("tmUrg").checked = false; tmCount();
         toast("✓ Message sent to the team", 2500);
+        pushSend([window.STORE_ID], id);                             // phones and computers, even with the app closed
     } catch (e) {
         alert(`Couldn't send. Your Firebase rules need to allow writes to stores/${window.STORE_ID}/broadcasts.`);
     }
@@ -3337,7 +3927,7 @@ updateDateTime(); setInterval(updateDateTime, 1000);
 // ---------- Theme / fullscreen ----------
 const LS_THEME = "zahia_theme";
 const savedTheme = (() => { try { return localStorage.getItem(LS_THEME); } catch (e) { return null; } })();
-if (savedTheme === "dark" || (!savedTheme && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches)) document.body.classList.add("dark");
+if (savedTheme !== "light") document.body.classList.add("dark");   // v4: premium dark by default; 🌓 remembers light
 function toggleDark() {
     document.body.classList.toggle("dark");
     localStorage.setItem(LS_THEME, document.body.classList.contains("dark") ? "dark" : "light");
@@ -3352,7 +3942,7 @@ function toggleFullScreen() {
 // ================================================================
 //  ADMIN
 // ================================================================
-let execDefaultPin = {}, mgrDefaultPin = {}, admTab = "team";
+let execDefaultPin = {}, mgrDefaultPin = {}, admTab = "dash";
 
 function openAdmin() {
     if (isManager()) { showAdmin(); return; }
@@ -3379,6 +3969,8 @@ function setAdminTab(tab) {
     if (tab === "app") { renderUpdateStatus(); checkForUpdate(false); }
     if (tab === "entries") renderAdminEntries();
     if (tab === "msg") { renderTeamMsgs(); tmCount(); }
+    if (tab === "dash" && typeof renderAdminDash === "function") renderAdminDash();
+    if (tab === "idle" && typeof renderAdminIdle === "function") renderAdminIdle();
 }
 $("admTabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) setAdminTab(b.dataset.tab); });
 
@@ -3791,7 +4383,7 @@ function notifyBroadcasts() {
     if (!fresh.length) return;
     const unrung = fresh.filter(b => !bcRung.has(b.id));
     if (unrung.length) { unrung.forEach(b => bcRung.add(b.id)); ringBell(); }
-    if (!notifOK()) return;
+    if (!notifOK() || pushIsOn()) return;                         // phone/computer alerts handle it
     fresh.slice(0, 3).forEach(b => {
         done.add(b.id);
         sysNotify(`${b.urgent ? "🚨 " : ""}${bcSender(b)}${isTeamMsg(b) ? " · Team" : ""}`, b.text, "bc-" + b.id, { sticky: !!b.urgent, onclick: showNextBroadcast });
@@ -3874,7 +4466,7 @@ function renderNotif() {
 document.addEventListener("click", e => {
     const b = e.target.closest && e.target.closest("[data-bc]"); if (!b) return;
     const id = b.dataset.bc;
-    if (unreadBroadcasts().some(x => x.id === id)) { toggleNotif(false); queueBroadcasts(); }
+    if (unreadBroadcasts().some(x => x.id === id)) { toggleNotif(false); openBroadcast(id); }
 });
 
 // ================================================================
@@ -3957,7 +4549,7 @@ function checkIdleAlerts() {
     const H = idleLimitH(), names = fresh.map(r => r.n);
     const title = lastIdle.allIdle ? `⚠️ No activity at ${STORE_NAME} for ${H}h+` : `⏱ ${names.length} executive${names.length === 1 ? "" : "s"} inactive ${H}h+ · ${STORE_NAME}`;
     const body = fresh.map(r => `${r.n} — ${fmtIdle(r.idle)} without an entry`).join("\n") + "\nOff-duty staff are not included.";
-    sysNotify(title, body, "idle-" + window.STORE_ID, { sticky: true });
+    if (!pushIsOn()) sysNotify(title, body, "idle-" + window.STORE_ID, { sticky: true });
     ringBell();
     fresh.forEach(r => { done[r.n] = r.since; });
     try { localStorage.setItem(LS_IDLE_NOTE(), JSON.stringify(done)); } catch (e) {}
@@ -4069,6 +4661,269 @@ function renderMePanel() {
     if (isIOS) setTimeout(() => show("ios"), 1500);
     else if (safariMac) setTimeout(() => show("mac"), 1500);
 })();
+</script>
+<script>
+// ================================================================
+//  v4 · EXECUTIVE PREMIUM LAYOUT — section tabs, quiet Live Feed,
+//  pinned head-office card, Notification Centre filters, Admin dashboard.
+//  Presentation only: it reads the existing state (executives, AT, settings,
+//  historyData, broadcasts, lastIdle …) and calls the existing functions.
+//  It never writes to Firebase.
+// ================================================================
+(function () {
+    const $q = id => document.getElementById(id);
+    const LS_VIEW = () => `${window.STORE_ID}_view`;
+    const VIEWS = ["dash", "analysis", "studio", "calrec", "log", "export"];
+    let view = (() => { try { return localStorage.getItem(LS_VIEW()) || "dash"; } catch (e) { return "dash"; } })();
+    if (!VIEWS.includes(view)) view = "dash";
+
+    // ---------- Section tabs ----------
+    function tabAvailable(v) {
+        if (v === "studio") return !!$q("studio") && !$q("studio").hidden;
+        if (v === "calrec") return (!!$q("calPanel") && !$q("calPanel").hidden) || (!!$q("recPanel") && !$q("recPanel").hidden);
+        if (v === "log") return typeof isManager === "function" && isManager() && !!$q("activityLog") && !$q("activityLog").hidden;
+        return true;
+    }
+    function setView(v, keep) {
+        if (!VIEWS.includes(v) || !tabAvailable(v)) v = "dash";
+        view = v;
+        if (!keep) { try { localStorage.setItem(LS_VIEW(), v); } catch (e) {} }
+        document.querySelectorAll(".view[data-view]").forEach(el => { el.hidden = el.dataset.view !== v; });
+        document.querySelectorAll("#viewTabs button[data-view]").forEach(b => {
+            const on = b.dataset.view === v; b.classList.toggle("active", on); b.setAttribute("aria-selected", on);
+        });
+        // charts drawn while their tab was hidden: let Chart.js re-measure now that they are visible
+        try { if (window.Chart && Chart.instances) Object.values(Chart.instances).forEach(c => { try { c.resize(); } catch (e) {} }); } catch (e) {}
+    }
+    window.setView = setView;
+    function refreshTabs() {
+        document.body.classList.toggle("is-mgr", typeof isManager === "function" && isManager());
+        document.querySelectorAll("#viewTabs button[data-view]").forEach(b => { b.hidden = !tabAvailable(b.dataset.view); });
+        if (!tabAvailable(view)) setView("dash", true);
+    }
+    const tabs = $q("viewTabs");
+    if (tabs) tabs.addEventListener("click", e => {
+        const b = e.target.closest("button[data-view]"); if (!b) return;
+        setView(b.dataset.view); window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    refreshTabs(); setView(view, true);
+    setInterval(refreshTabs, 1500);
+
+
+    // ---------- Themes: Teal (default) · Gold · Blue · Light ----------
+    const LOOKS = ["teal-light", "teal"], LS_LOOK = "ep_look";
+    function currentLook() { return document.body.dataset.look || (document.body.classList.contains("dark") ? "teal" : "light"); }
+    function applyLook(look, save) {
+        if (!LOOKS.includes(look)) look = "teal";
+        const dark = look !== "light" && look !== "teal-light";
+        document.body.classList.toggle("dark", dark);
+        document.body.dataset.look = look;
+        try { if (save) { localStorage.setItem(LS_LOOK, look); localStorage.setItem(LS_THEME, dark ? "dark" : "light"); } } catch (e) {}
+        document.querySelectorAll("[data-th]").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === look));
+        const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = { "teal-light": "#006666", teal: "#061518", gold: "#0A0A0B", light: "#F4F7FB" }[look];
+        if (save) setTimeout(() => { try { renderAll(); if (!$q("detailModal").classList.contains("hidden") && window.__detName) openDetail(window.__detName); } catch (e) {} }, 50);
+    }
+    (function initLook() {
+        let look = null; try { look = localStorage.getItem(LS_LOOK); } catch (e) {}
+        if (!LOOKS.includes(look)) { let t = null; try { t = localStorage.getItem(LS_THEME); } catch (e) {} look = t === "dark" ? "teal" : "teal-light"; }
+        applyLook(look, false);
+    })();
+    window.setLook = l => applyLook(l, true);
+    // the 🌓 button now steps through the four themes
+    window.toggleDark = function () { const i = LOOKS.indexOf(currentLook()); applyLook(LOOKS[(i + 1) % LOOKS.length], true); toast(`Theme: ${["Light", "Dark"][(i + 1) % LOOKS.length]}`, 1500); };
+    document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-th]"); if (b) applyLook(b.dataset.th, true); });
+
+    // ---------- Sidebar: showroom name, user, unread count ----------
+    function renderSide() {
+        const st = $q("sideStore"); if (st) st.textContent = STORE_NAME;
+        const u = $q("sideUser"), me = typeof getCurrentExec === "function" ? getCurrentExec() : "";
+        if (u) u.innerHTML = me ? `<span class="av">${esc(initials(me))}</span><div><b>${esc(me)}</b><small>${isManager() ? "Manager" : "Executive"} · <a href="#" onclick="logout();return false">Log out</a></small></div>` : "";
+        const bb = $q("bellBadge"), sb = $q("sideBell"); if (bb && sb) sb.textContent = bb.hidden ? "" : bb.textContent;
+    }
+    renderSide(); setInterval(renderSide, 1000);
+
+    // ---------- Recent activity card (dashboard) ----------
+    let recKey = "";
+    function renderRecent() {
+        const el = $q("epRecent"); if (!el) return;
+        const hist = typeof historyData !== "undefined" ? historyData : [];
+        const mgr = isManager(), me = getCurrentExec();
+        const rows = hist.filter(e => e && e.timestamp && (mgr || e.executive === me || e.submittedBy === me)).sort((a, b) => b.timestamp - a.timestamp).slice(0, 7);
+        const key = rows.map(e => e._key + (e.count || 0)).join("|") + mgr; if (key === recKey) return; recKey = key;
+        $q("epRecentSub").textContent = mgr ? "Latest entries · whole team" : "Your latest entries";
+        el.innerHTML = rows.map(e => {
+            const ph = typeof entryType === "function" && entryType(e) === "phone", neg = (+e.count || 0) < 0;
+            const by = e.submittedBy && e.submittedBy !== e.executive ? ` · by ${esc(e.submittedBy)}` : "";
+            return `<li><span class="av ${neg ? "m" : ph ? "p" : ""}">${neg ? "−1" : ph ? "☎" : "+1"}</span><span><b>${esc(e.executive || "—")}</b> <span class="mut">· ${ph ? "Phone" : "Walk-in"}${neg ? " correction" : ""}${by}</span></span><small>${esc(bcWhen(e.timestamp))}</small></li>`;
+        }).join("") || `<li><span></span><span class="mut">No entries yet.</span><span></span></li>`;
+    }
+    setInterval(() => { try { renderRecent(); } catch (e) {} }, 2000);
+
+    // ---------- Welcome line: name · showroom · location check ----------
+    function renderWho() {
+        const el = $q("heroWho"); if (!el) return;
+        const me = typeof getCurrentExec === "function" ? getCurrentExec() : "";
+        const role = typeof isManager === "function" && isManager() ? "Manager" : "Executive";
+        const pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>';
+        el.innerHTML = me ? `${esc(me)} · ${role} · ${esc(STORE_NAME)}<br><span class="loc">${pin}Location verified at each entry</span>` : "";
+    }
+    renderWho(); setInterval(renderWho, 1000);
+
+    // ---------- Live Feed: one quiet rotating line ----------
+    const SEPR = /<span class="feed-sep">✦<\/span>/;
+    const src = $q("smart-insight"), ticker = src && src.closest(".ticker");
+    let items = [], idx = 0, lastHtml = "";
+    if (ticker) {
+        const line = document.createElement("div"); line.className = "feed-line"; line.id = "feedLine"; line.setAttribute("aria-live", "off");
+        const cnt = document.createElement("span"); cnt.className = "feed-count"; cnt.id = "feedCount";
+        ticker.appendChild(line); ticker.appendChild(cnt);
+        const show = () => {
+            if (!items.length) { line.innerHTML = src.innerHTML.split(SEPR)[0] || ""; cnt.textContent = ""; return; }
+            idx = idx % items.length;
+            line.classList.add("fade");
+            setTimeout(() => { line.innerHTML = items[idx]; cnt.textContent = `${idx + 1} / ${items.length}`; line.classList.remove("fade"); }, 300);
+        };
+        const sync = () => {
+            const h = src.innerHTML; if (h === lastHtml) return;
+            lastHtml = h; items = h.split(SEPR).map(s => s.trim()).filter(Boolean); idx = 0; show();
+        };
+        sync(); setInterval(sync, 2000);
+        setInterval(() => { if (items.length > 1 && !document.hidden) { idx++; show(); } }, 12000);
+        line.addEventListener("click", () => { if (items.length > 1) { idx++; show(); } });
+    }
+
+    // ---------- Head-office pinned card opens the Notification Centre ----------
+    const hq = $q("hqTicker");
+    if (hq) {
+        const open = document.createElement("span"); open.className = "hq-open"; open.textContent = "Open in notifications ›";
+        hq.appendChild(open);
+        hq.setAttribute("tabindex", "0");
+        hq.addEventListener("click", () => { try { toggleNotif(true); } catch (e) {} });
+        hq.addEventListener("keydown", e => { if (e.key === "Enter") { try { toggleNotif(true); } catch (x) {} } });
+    }
+
+    // ---------- Notification Centre: All · Unread · Urgent · Head office ----------
+    let npFilter = "all";
+    const np = $q("notifPanel"), list = $q("npList");
+    if (np && list) {
+        const bar = document.createElement("div"); bar.className = "np-tabs"; bar.setAttribute("role", "tablist");
+        bar.innerHTML = [["all", "All"], ["unread", "Unread"], ["urgent", "Urgent"], ["hq", "Head office"]]
+            .map(([k, l]) => `<button type="button" role="tab" data-f="${k}"${k === "all" ? ' class="active"' : ""}>${l}<em data-n="${k}">0</em></button>`).join("");
+        np.insertBefore(bar, $q("npPerm"));
+        bar.addEventListener("click", e => {
+            const b = e.target.closest("button[data-f]"); if (!b) return;
+            npFilter = b.dataset.f; bar.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b)); applyNp();
+        });
+        const hint = document.createElement("p"); hint.className = "np-hint";
+        hint.textContent = "Ordinary messages arrive quietly here. Urgent messages also open a full-screen alert, once, until acknowledged.";
+        np.insertBefore(hint, list);
+        function applyNp() {
+            const nodes = [...list.querySelectorAll(".np-item[data-bc], .np-item.idle")];
+            const byId = {}; (typeof broadcasts !== "undefined" ? broadcasts : []).forEach(b => { byId[b.id] = b; });
+            const test = el => {
+                if (npFilter === "all") return true;
+                if (el.classList.contains("idle")) return npFilter === "unread";
+                const b = byId[el.dataset.bc] || {};
+                if (npFilter === "unread") return el.classList.contains("unread");
+                if (npFilter === "urgent") return !!b.urgent;
+                if (npFilter === "hq") return !(typeof isTeamMsg === "function" && isTeamMsg(b));
+                return true;
+            };
+            const n = { all: 0, unread: 0, urgent: 0, hq: 0 };
+            nodes.forEach(el => {
+                const b = byId[el.dataset.bc] || {}, idle = el.classList.contains("idle");
+                n.all++; if (el.classList.contains("unread") || idle) n.unread++;
+                if (!idle && b.urgent) n.urgent++;
+                if (!idle && !(typeof isTeamMsg === "function" && isTeamMsg(b))) n.hq++;
+                el.hidden = !test(el);
+            });
+            list.querySelectorAll(".np-sec").forEach(s => {
+                let x = s.nextElementSibling, any = false;
+                while (x && !x.classList.contains("np-sec")) { if (!x.hidden) any = true; x = x.nextElementSibling; }
+                s.hidden = !any;
+            });
+            bar.querySelectorAll("em[data-n]").forEach(e => { e.textContent = n[e.dataset.n]; });
+        }
+        new MutationObserver(applyNp).observe(list, { childList: true });
+        applyNp();
+    }
+
+    // ---------- Admin dashboard + inactivity page ----------
+    const IC = { add: "＋", msg: "✉", target: "◎", pin: "⚿", del: "⌫", xls: "⬇" };
+    window.renderAdminDash = function () {
+        const el = $q("admDash"); if (!el) return;
+        const ready = typeof dataReady !== "undefined" && dataReady.execs && dataReady.walkins;
+        const ex = typeof executives !== "undefined" ? executives : [], mg = typeof managers !== "undefined" ? managers : [];
+        const lk = typeof lockedUsers !== "undefined" ? lockedUsers : {};
+        const onDuty = ex.filter(n => !lk[n]);
+        const snap = typeof AT !== "undefined" && AT ? AT : null;
+        const active = snap ? onDuty.filter(n => snap.exec[n] && snap.exec[n].today > 0).length : null;
+        const target = +((typeof settings !== "undefined" && settings.monthlyTarget) || 0);
+        const month = snap ? Math.max(0, snap.m) : null, today = snap ? Math.max(0, snap.d) : null;
+        const unread = typeof unreadBroadcasts === "function" ? unreadBroadcasts() : [];
+        const urgent = unread.filter(b => b.urgent).length;
+        const idle = typeof lastIdle !== "undefined" && lastIdle && lastIdle.lim ? lastIdle.idle : [];
+        const dpE = typeof execDefaultPin !== "undefined" ? ex.filter(n => execDefaultPin[n]) : [];
+        const dpM = typeof mgrDefaultPin !== "undefined" ? mg.filter(n => mgrDefaultPin[n]) : [];
+        const v = x => x == null ? "—" : fmt(x);
+        const pctT = target && month != null ? Math.round(month / target * 1000) / 10 : null;
+        const me = typeof getCurrentExec === "function" ? getCurrentExec() : "";
+        const h = new Date().getHours(), greet = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+        const chips = [];
+        if (idle.length) chips.push(`<button type="button" class="ad-chip warn" onclick="setAdminTab('idle')">${idle.length} idle over ${idleLimitH()} h</button>`);
+        if (urgent) chips.push(`<button type="button" class="ad-chip bad" onclick="toggleNotif(true)">${urgent} urgent unread</button>`);
+        if (dpE.length + dpM.length) chips.push(`<button type="button" class="ad-chip warn" onclick="setAdminTab('idle')">${dpE.length + dpM.length} still on default PIN</button>`);
+        chips.push(`<button type="button" class="ad-chip" onclick="setAdminTab('idle')">Inactivity alert · ${idleLimitH() ? idleLimitH() + " h" : "off"}</button>`);
+        const goal = $q("goalCard"), goalHtml = goal && !goal.hidden && goal.innerHTML.trim() ? goal.innerHTML : "";
+        const hist = typeof historyData !== "undefined" ? historyData : [];
+        const recent = [...hist].filter(e => e && e.timestamp).sort((a, b) => b.timestamp - a.timestamp).slice(0, 8).map(e => {
+            const ph = typeof entryType === "function" && entryType(e) === "phone", neg = (+e.count || 0) < 0;
+            const by = e.submittedBy && e.submittedBy !== e.executive ? ` · by ${esc(e.submittedBy)}` : "";
+            return `<div><i class="${neg ? "m" : ph ? "p" : ""}"></i><span><b>${esc(e.executive || "—")}</b> · ${ph ? "Phone" : "Walk-in"} ${neg ? "−1 correction" : "+" + (+e.count || 1)}${by}</span><small>${esc(bcWhen(e.timestamp))}</small></div>`;
+        }).join("") || `<div class="adm-empty">No entries yet.</div>`;
+        el.innerHTML = `
+        <div class="ad-hero">
+            <div><h3>${greet}${me ? ", " + esc(me) : ""}</h3><p>${esc(STORE_NAME)} · management status · ${new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}</p></div>
+            <div class="ad-tiles">
+                <div class="ad-tile"><span>Team</span><b>${ex.length}</b><small>executives · ${mg.length} manager${mg.length === 1 ? "" : "s"}</small></div>
+                <div class="ad-tile ${ready && active === 0 && onDuty.length ? "warn" : ""}"><span>Active today</span><b>${ready && active != null ? active + " / " + onDuty.length : "—"}</b><small>on duty with an entry today</small></div>
+                <div class="ad-tile"><span>Today</span><b>${ready ? v(today) : "—"}</b><small>walk-ins + phone</small></div>
+                <div class="ad-tile ${pctT != null && pctT < 100 ? "" : "ok"}"><span>Target</span><b>${!target ? "Not set" : ready ? pctT + "%" : "—"}</b><small>${target ? `${ready ? v(month) : "—"} of ${fmt(target)} this month` : "set one under Target"}</small></div>
+                <div class="ad-tile ${urgent ? "bad" : ""}"><span>Unread</span><b>${unread.length}</b><small>${urgent ? urgent + " urgent" : "messages on this device"}</small></div>
+            </div>
+            <div class="ad-chips">${chips.join("")}</div>
+        </div>
+        <div class="adm-card"><div class="adm-card-head"><b>Quick actions</b></div>
+            <div class="ad-qa">
+                <button type="button" onclick="setAdminTab('team');setTimeout(()=>{const f=document.getElementById('newExecName');if(f)f.focus()},200)"><i>${IC.add}</i>Add executive</button>
+                <button type="button" onclick="setAdminTab('msg')"><i>${IC.msg}</i>Message team</button>
+                <button type="button" onclick="setAdminTab('target')"><i>${IC.target}</i>Set target</button>
+                <button type="button" onclick="setAdminTab('team')"><i>${IC.pin}</i>Reset a PIN</button>
+                ${FEATURES.logDelete ? `<button type="button" onclick="setAdminTab('entries')"><i>${IC.del}</i>Remove entry</button>` : `<button type="button" onclick="setAdminTab('mgr')"><i>${IC.pin}</i>Managers</button>`}
+                <button type="button" onclick="closeAdmin();setView('export')"><i>${IC.xls}</i>Export Excel</button>
+            </div></div>
+        <div class="adm-card ad-goal">${goalHtml || `<div class="adm-card-head"><b>Monthly target</b></div><div class="adm-empty">No target set for this month.</div>`}</div>
+        <div class="adm-card adm-wide"><div class="adm-card-head"><b>Recent activity</b><span class="adm-count">${hist.length ? fmt(Math.min(8, hist.length)) : 0}</span></div><div class="ad-feed">${recent}</div></div>`;
+    };
+    window.renderAdminIdle = function () {
+        const el = $q("admIdleList"); if (!el) return;
+        const iw = $q("idleWatch");
+        const body = iw && !iw.hidden && iw.innerHTML.trim() ? iw.innerHTML : `<div class="adm-empty">Inactivity data appears once the team list and entries have loaded.</div>`;
+        const ex = typeof executives !== "undefined" ? executives : [], mg = typeof managers !== "undefined" ? managers : [];
+        const dp = [...ex.filter(n => typeof execDefaultPin !== "undefined" && execDefaultPin[n]), ...mg.filter(n => typeof mgrDefaultPin !== "undefined" && mgrDefaultPin[n]).map(n => n + " (manager)")];
+        el.innerHTML = `<div class="panel watch" style="margin:0">${body}</div>
+            <div class="adm-card" style="margin-top:16px"><div class="adm-card-head"><b>Still on the default PIN 1234</b><span class="adm-count">${dp.length}</span></div>
+            ${dp.length ? `<div class="ad-pins">${dp.map(n => `<span>${esc(n)}</span>`).join("")}</div><div class="adm-help" style="margin-top:10px">Anyone on the team can log entries as these people. Ask them to open <b>Change PIN</b>, or reset and re-issue from Team.</div>` : `<div class="adm-empty">Everyone has their own PIN.</div>`}</div>`;
+    };
+    setInterval(() => {
+        try {
+            const p = $q("adminPanel"); if (!p || !p.classList.contains("active")) return;
+            if (typeof admTab !== "undefined" && admTab === "dash") renderAdminDash();
+            if (typeof admTab !== "undefined" && admTab === "idle") renderAdminIdle();
+        } catch (e) {}
+    }, 30000);
+})();
+
 </script>
 </body>
 </html>
