@@ -14,7 +14,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, set, remove, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    
     const firebaseConfig = {
         apiKey: "AIzaSyDfjbpGfUEzYCbKYyQi6XVt7zZ4Tp54phU",
         authDomain: "rakretail.firebaseapp.com",
@@ -41,6 +42,11 @@
     window.STORE_ID = "zahia";
     window.basePath = "stores/" + window.STORE_ID + "/";
 
+        try {
+        await signInAnonymously(getAuth(app));
+    } catch (e) {
+        console.error("Firebase sign-in failed", e);
+    }
     bootAuth();
 </script>
 
