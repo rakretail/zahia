@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="app-version" content="3.3">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>AlZahia Showroom · Tracker</title>
+<title>Al Salam Showroom · Tracker</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0A1324">
 <link rel="apple-touch-icon" href="rakwalkin.png">
@@ -1560,7 +1560,7 @@ button,input,select,textarea{font-family:inherit}
 <div id="pinOverlay" class="pin-overlay">
     <div class="pin-card">
         <div class="pin-logo"><span class="brand-mark" aria-label="RAK Ceramics"><b>RAK</b><span>CERAMICS</span></span></div>
-        <span class="pin-store-tag" id="pinStoreTag">AlZahia Showroom</span>
+        <span class="pin-store-tag" id="pinStoreTag">Al Salam Showroom</span>
         <h2>Welcome back</h2>
         <p class="sub">Enter your 4-digit PIN to open the showroom tracker.</p>
         <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
@@ -1628,7 +1628,7 @@ button,input,select,textarea{font-family:inherit}
     <div class="topbar-in">
         <div class="brand">
             <span class="brand-mark" aria-label="RAK Ceramics"><b>RAK</b><span>CERAMICS</span></span>
-            <div class="brand-txt"><b>AlZahia Showroom</b><small>Walk-in Tracker</small></div>
+            <div class="brand-txt"><b>Al Salam Showroom</b><small>Walk-in Tracker</small></div>
         </div>
         <nav class="catswitch" id="catSeg" aria-label="Inquiry type">
             <button data-cat="all"><span class="cs-ic">∑</span><span><b>All inquiries</b><small id="csAll">—</small></span></button>
@@ -1888,7 +1888,7 @@ button,input,select,textarea{font-family:inherit}
 <div id="adminScrim" class="adm-scrim" onclick="closeAdmin()"></div>
 <aside id="adminPanel" aria-label="Admin tools">
     <div class="adm-head">
-        <div class="adm-title"><span class="ic">⚙️</span><div><h2>Admin Control Centre</h2><small>AlZahia Showroom · manager tools</small></div></div>
+        <div class="adm-title"><span class="ic">⚙️</span><div><h2>Admin Control Centre</h2><small>Al Salam Showroom · manager tools</small></div></div>
         <button class="btn-tool" type="button" onclick="closeAdmin()" aria-label="Close admin">✕</button>
     </div>
     <nav class="adm-tabs" id="admTabs" aria-label="Admin sections">
@@ -3114,7 +3114,7 @@ function update(name, val, type) {
             if (dist > allowedRadiusKM) {
                 $("toast").classList.remove("show");
                 const acc = pos.coords.accuracy ? ` (GPS accuracy ±${pos.coords.accuracy >= 1000 ? (pos.coords.accuracy / 1000).toFixed(1) + " km" : Math.round(pos.coords.accuracy) + " m"})` : "";
-                alert(`Access denied: you are ${dist.toFixed(2)} km from the showroom${acc}. You must be at AlZahia Showroom to log entries.`);
+                alert(`Access denied: you are ${dist.toFixed(2)} km from the showroom${acc}. You must be at Al Salam Showroom to log entries.`);
                 return;
             }
             const entry = { executive: name, count: val, timestamp: Date.now(), submittedBy: who, pin: pin };
@@ -3968,7 +3968,7 @@ function buildTicker() {
     if (hour >= 12 && hour < 17) { gi = "☀️"; gw = "Good afternoon"; }
     else if (hour >= 17 && hour < 22) { gi = "🌇"; gw = "Good evening"; }
     else if (hour >= 22 || hour < 5) { gi = "🌙"; gw = "Late shift, legends"; }
-    const greeting = `${gi} <span class="feed-pill blue">TEAM ALZAHIA SHOWROOM</span> ${gw}, AlZahia Showroom — let's make today legendary!`;
+    const greeting = `${gi} <span class="feed-pill blue">TEAM Al Salam SHOWROOM</span> ${gw}, Al Salam Showroom — let's make today legendary!`;
 
     add("today", dailyTotal > 0
         ? `🚀 <span class="feed-pill green">TODAY</span> ${fmt(dailyTotal)} walk-in${s(dailyTotal)} served so far — momentum is building! 📈`
@@ -4032,7 +4032,7 @@ function buildTicker() {
         `💬 "People don't buy for logical reasons. They buy for emotional reasons." — Zig Ziglar`,
         `💬 "Begin by always expecting good things to happen." — Tom Hopkins`,
         `💬 "Treat objections as requests for further information." — Brian Tracy`,
-        `💬 "Today's walk-in is tomorrow's repeat customer." — AlZahia Showroom Floor Wisdom`,
+        `💬 "Today's walk-in is tomorrow's repeat customer." — Al Salam Showroom Floor Wisdom`,
         `💬 "A satisfied customer is the best business strategy of all." — Michael LeBoeuf`,
         `💬 "Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time." — Thomas Edison`
     ], "quote"));
@@ -4047,11 +4047,11 @@ function buildTicker() {
         `👃 <span class="feed-pill gold">Mohab SENSES</span> "I can smell a big sale from the parking lot. Get ready!" 💰`
     ], "boss"));
 
-    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> TEAM ALZAHIA SHOWROOM has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
+    if (A.m >= 1000) add("milestone", `🎉 <span class="feed-pill gold">LEGENDARY</span> TEAM Al Salam SHOWROOM has crossed ${fmt(A.m)} walk-ins this month! 🏅`);
     else if (A.m >= 500) add("milestone", `🎊 <span class="feed-pill green">MILESTONE</span> ${fmt(A.m)} walk-ins this month — only ${fmt(1000 - A.m)} more to reach 1,000! Push! 💥`);
     else if (A.m >= 100) add("milestone", `🎈 <span class="feed-pill blue">CENTURY+</span> ${fmt(A.m)} walk-ins logged this month. Onwards! 🚀`);
 
-    const closing = `👩‍💻 <span class="feed-pill green">TEAM ALZAHIA SHOWROOM</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
+    const closing = `👩‍💻 <span class="feed-pill green">TEAM Al Salam SHOWROOM</span> Converting 'maybe' into 'invoice' — one smile at a time. 💚`;
     const middle = messages.map(m => ({ html: m.html, o: tickerRand("order:" + m.key) })).sort((a, b) => a.o - b.o).map(m => m.html);
     // Manager's messages to the team lead the feed, and come round again half-way through.
     const team = activeTeamMsgs().map(b => `<span class="feed-pill mgr${b.urgent ? " urg" : ""}">${esc(bcSender(b).toUpperCase())}</span><span class="feed-mgr">${esc(b.text.replace(/\s+/g, " "))}</span>`);
@@ -4635,7 +4635,7 @@ function exportData() {
     let bestDay = null;
     Object.keys(dayTotals).forEach(k => { if (!bestDay || sum(dayTotals[k]) > sum(dayTotals[bestDay])) bestDay = k; });
     const summary = [
-        ["AlZahia Showroom — Inquiry Report"], [],
+        ["Al Salam Showroom — Inquiry Report"], [],
         ["From", gb(s)], ["To", gb(e)], ["Generated", new Date().toLocaleString("en-GB")], [],
         ["Channel", "Inquiries", "Share %"],
         ["Walk-ins", gw, pct(gw)], ["Phone inquiries", gp, pct(gp)], ["Total", grand, grand ? 100 : 0], [],
